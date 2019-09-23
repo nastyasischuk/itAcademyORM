@@ -1,12 +1,13 @@
 package tablecreation;
 
-import annotations.Column;
 import annotations.*;
+import annotations.ForeignKey;
+import annotations.PrimaryKey;
 
 import java.lang.reflect.Field;
 
 
-public class ColumnConstructor {
+public class ColumnConstructor{
    private Field field;
    private tablecreation.Column column;
 

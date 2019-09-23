@@ -5,12 +5,25 @@ import java.util.List;
 public class Table {
     private String name;
     private List<Column> columns;
-    //TODO PK
-    //TODO FK
+    PrimaryKey primaryKey;
+    List<ForeignKey> foreignKeys;
+
     public Table(String name){
         this.name = name;
+
     }
-    public void addColumn(Column column){
-        //TODO determine whether fk or pk;
+
+    public void addForeignKey(ForeignKey foreignKey){
+        foreignKeys.add(foreignKey);
+    }
+
+    public void setPrimaryKey(PrimaryKey primaryKey) {
+        if(primaryKey!=null)
+            throw new RuntimeException();//todo several primary keys then throw
+        this.primaryKey = primaryKey;
+    }
+
+    public void setColumns(List<Column> columns) {
+        this.columns = columns;
     }
 }
