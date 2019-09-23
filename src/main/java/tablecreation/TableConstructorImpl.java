@@ -8,7 +8,6 @@ public class TableConstructorImpl implements TableConstructor {
     Class<?> toBuildClass;
     Table table;
 
-
     public TableConstructorImpl(Class<?> toBuildClass) {
         this.table = new Table(getTableName());
         this.toBuildClass = toBuildClass;
@@ -24,7 +23,8 @@ public class TableConstructorImpl implements TableConstructor {
         if(toBuildClass.isAnnotationPresent(annotations.Table.class)){
             return toBuildClass.getAnnotation(annotations.Table.class).name();
         }else{
-            return toBuildClass.getName();
+            // todo лучше использовать getSimpleName()
+            return toBuildClass.getName(); //вернет полное имя типа package.package.Name
         }
 
     }
