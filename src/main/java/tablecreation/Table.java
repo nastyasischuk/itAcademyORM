@@ -17,6 +17,10 @@ public class Table {
         foreignKeys.add(foreignKey);
     }
 
+    public List<Column> getColumns() {
+        return columns;
+    }
+
     public void setPrimaryKey(PrimaryKey primaryKey) {
         if(primaryKey!=null)
             throw new RuntimeException();//todo several primary keys then throw
