@@ -7,7 +7,6 @@ import java.sql.Statement;
 
 public class QueryExecutor {
     private DataBaseImplementation dataBaseImplementation;
-    private SQLTableQueryCreator creator;
 
     public void executeQuery(String query){
         dataBaseImplementation.openConnection();
