@@ -1,4 +1,4 @@
-package Transaction;
+package transaction;
 
 public interface Transactions {
     public abstract void begin();

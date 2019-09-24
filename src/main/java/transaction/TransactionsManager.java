@@ -1,6 +1,6 @@
-package Transaction;
+package transaction;
 
-import org.apache.log4j.BasicConfigurator;
+import exceptions.TransactionException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -22,8 +22,8 @@ public class TransactionsManager implements Transactions {
     public void begin() {
         try {
             connection.setAutoCommit(false);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException var2) {
+            throw new TransactionException(var2.getMessage(), var2);
         }
     }
 
@@ -37,8 +37,8 @@ public class TransactionsManager implements Transactions {
                 }
                 connection.commit();
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException var2) {
+            throw new TransactionException(var2.getMessage(), var2);
         }
     }
 
@@ -52,8 +52,8 @@ public class TransactionsManager implements Transactions {
                 }
                 connection.rollback();
             }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+        } catch (SQLException var2) {
+            throw new TransactionException(var2.getMessage(), var2);
         }
     }
 
