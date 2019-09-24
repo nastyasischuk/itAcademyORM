@@ -5,8 +5,8 @@ import java.util.List;
 public class Table {
     private String name;
     private List<Column> columns;
-    PrimaryKey primaryKey;
-    List<ForeignKey> foreignKeys;
+    private PrimaryKey primaryKey;
+    private List<ForeignKey> foreignKeys;
 
     public Table(String name){
         this.name = name;
@@ -25,5 +25,17 @@ public class Table {
 
     public void setColumns(List<Column> columns) {
         this.columns = columns;
+    }
+
+    public PrimaryKey getPrimaryKey() {
+        return primaryKey;
+    }
+
+    public List<ForeignKey> getForeignKeys() {
+        return foreignKeys;
+    }
+
+    public void setForeignKeys(List<ForeignKey> foreignKeys) {
+        this.foreignKeys = foreignKeys;
     }
 }

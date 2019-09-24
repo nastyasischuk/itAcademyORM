@@ -1,5 +1,7 @@
 package tablecreation;
 
+import exceptions.NoPrimaryKeyException;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,7 @@ public class TableConstructorImpl implements TableConstructor {
         if(toBuildClass.isAnnotationPresent(annotations.Table.class)){
             return toBuildClass.getAnnotation(annotations.Table.class).name();
         }else{
-            return toBuildClass.getName();
+            return toBuildClass.getSimpleName();
         }
 
     }
@@ -51,6 +53,10 @@ public class TableConstructorImpl implements TableConstructor {
    private ForeignKey formFK(){
 
         return null;
+   }
+   private void checkIfPrimaryKeyPresent(){
+        if(table.getPrimaryKey()==null)
+            throw new NoPrimaryKeyException();
    }
 
 
