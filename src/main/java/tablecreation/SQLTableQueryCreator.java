@@ -7,7 +7,7 @@ public class SQLTableQueryCreator {
 
     String createTableQuery(){
         StringBuilder request = new StringBuilder();
-        request.append(SQLStatements.CREATE).append(fk.getTableName()).append("\n");
+        request.append(SQLStatements.CREATETABLE).append(fk.getTableName()).append("\n");
         for(Column column: table.getColumns()){
             request.append(column.getName()).append(" ").append(column.getType().toString()).append("\n");
             if(column.isNullable()){

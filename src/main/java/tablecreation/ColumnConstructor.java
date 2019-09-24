@@ -24,7 +24,7 @@ public class ColumnConstructor{
     }
 
     private String getNameOfField(){
-        if(field.getAnnotation(annotations.Column.class).name()!=""){
+        if(field.getAnnotation(annotations.Column.class).name().equals("")){
             return field.getAnnotation(annotations.Column.class).name();
         }else{
             return field.getName();
@@ -40,7 +40,7 @@ public class ColumnConstructor{
         }
     }
     private void checkConstraints(){
-        if(field.isAnnotationPresent(Unique.class)){
+        if(field.getAnnotation(annotations.Column.class).unique()){
             column.setUnique(true);
         }
         if(field.isAnnotationPresent(ForeignKey.class)){
