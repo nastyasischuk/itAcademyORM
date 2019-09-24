@@ -6,9 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Column {
-    String name()default "";
-   boolean autoincrement() default false;
-   boolean unique() default false;
+@Target(ElementType.TYPE)
+public @interface Index {
+    String name();
+    boolean unique() default false;
 }
