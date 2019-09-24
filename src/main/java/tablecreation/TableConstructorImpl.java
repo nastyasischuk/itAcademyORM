@@ -3,6 +3,7 @@ package tablecreation;
 import annotations.Check;
 import annotations.Index;
 import exceptions.NoPrimaryKeyException;
+import exceptions.WrongSQLType;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class TableConstructorImpl implements TableConstructor {
     @Override
     public Table buildTable() {
        table.setColumns(getColumns());
+       addcheckConstraintIfExists();
         return table;
     }
 
@@ -39,21 +41,31 @@ public class TableConstructorImpl implements TableConstructor {
     }
 
     private List<Column> getColumns(){
-        Field[] classFields = toBuildClass.getFields();
+        Field[] classFields = toBuildClass.getDeclaredFields();
         List<Column> columns  = new ArrayList<>();
         for(int i=0;i<classFields.length;i++){
-            Column builtColumn = new ColumnConstructor(classFields[i]).buildColumn();
+            //todo check if column
+            if(!classFields[i].isAnnotationPresent(annotations.Column.class) ||
+                    !classFields[i].isAnnotationPresent(annotations.ForeignKey.class) )
+               continue;
+            Column builtColumn = null;
+            try {
+                builtColumn = new ColumnConstructor(classFields[i]).buildColumn();
+            }catch (WrongSQLType e){
+                continue;
+            }
             columns.add(builtColumn);
             if(builtColumn.isForeignKey()){
             formFK(classFields[i]);
             }
             if(builtColumn.isPrimaryKey()){
-                formPK(builtColumn);
+                table.setPrimaryKey(formPK(builtColumn));
             }
             if(classFields[i].isAnnotationPresent(Index.class)){
                 tablecreation.Index indexToTable = generateIndex(classFields[i]);
                 indexToTable.addColumns(builtColumn);
             }
+
 
         }
         checkIfPrimaryKeyPresent();//todo check
@@ -73,7 +85,7 @@ public class TableConstructorImpl implements TableConstructor {
         return new ForeignKeyConstructorImpl(field).buildForeignKey();
    }
    private tablecreation.Index generateIndex(Field field){
-       tablecreation.Index indexTOCreate = new tablecreation.Index(field.getAnnotation(Index.class).name());
+       tablecreation.Index indexTOCreate = new tablecreation.Index(field.getAnnotation(Index.class).name(),field.getAnnotation(Index.class).unique());
        if(table.getIndexes().contains(indexTOCreate)){
            indexTOCreate = table.getIndexes().get(table.getIndexes().indexOf(indexTOCreate));
        }

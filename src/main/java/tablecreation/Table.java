@@ -37,9 +37,6 @@ public class Table {
         return tableName;
     }
 
-    public void setName(String name) {
-        this.tableName = name;
-    }
 
     public String getCheckConstraint() {
         return checkConstraint;
