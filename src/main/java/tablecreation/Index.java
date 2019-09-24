@@ -7,7 +7,8 @@ import java.util.Objects;
 public class Index {
     private String name;
     private List<Column> columnsInIndex;
-    public Index(String name){
+    private boolean unique;
+    public Index(String name,boolean unique){
         this.name = name;
         columnsInIndex = new ArrayList<>();
     }
@@ -27,5 +28,13 @@ public class Index {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isUnique() {
+        return unique;
     }
 }
