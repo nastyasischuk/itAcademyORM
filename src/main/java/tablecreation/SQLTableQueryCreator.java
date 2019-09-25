@@ -23,7 +23,11 @@ public class SQLTableQueryCreator {
             }
             if (column.isAutoincrement()) {
                 request.append(SQLStatements.A_INCREMENT);
-            }if(!(table.getCheckConstraint().equals(""))){
+            }
+            if (!(column.getDefaultValue().equals(""))) {
+                request.append(SQLStatements.DEFAULT).append(column.getDefaultValue());
+            }
+            if (!(table.getCheckConstraint().equals(""))) {
                 request.append(SQLStatements.CHECK).append('(').append(table.getCheckConstraint()).append(')');
             }
         }
@@ -36,16 +40,16 @@ public class SQLTableQueryCreator {
         StringBuilder request = new StringBuilder();
         StringBuilder columns = new StringBuilder();
         request.append(SQLStatements.CREATE);
-        for (Index index: table.getIndexes()){
-            if(index.isUnique()){
+        for (Index index : table.getIndexes()) {
+            if (index.isUnique()) {
                 request.append(SQLStatements.UNIQUE);
             }
             request.append(SQLStatements.INDEX).append(index.getName()).append(SQLStatements.ON);
-            for(Column column: index.getColumnsInIndex()){
+            for (Column column : index.getColumnsInIndex()) {
                 columns.append(column);
-                if(index.getColumnsInIndex().isEmpty()){
+                if (index.getColumnsInIndex().isEmpty()) {
                     break;
-                }else{
+                } else {
                     columns.append(", ");
                 }
             }
