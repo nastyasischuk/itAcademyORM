@@ -1,11 +1,11 @@
 package exceptions;
 
-public class NoPrimaryKeyException extends Exception{
-    public NoPrimaryKeyException() {
-        super("Cannot build a table without primary key");
+public class WrongSQLType extends Exception {
+    public WrongSQLType(Class<?> type) {
+        super("Cannot build a column of type "+type);
     }
 
-    public NoPrimaryKeyException(String message) {
+    public WrongSQLType(String message) {
         super(message);
     }
 

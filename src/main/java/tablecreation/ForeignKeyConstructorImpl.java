@@ -12,10 +12,7 @@ public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
     private ForeignKey foreignKey;
 
     public ForeignKeyConstructorImpl(Field field) {
-        if(field.isAnnotationPresent(annotations.ForeignKey.class) || field.isAnnotationPresent(ManyToOne.class))
-            this.field = field;
-       else
-            throw new RuntimeException("");
+           this.field = field;
         foreignKey = new ForeignKey();
     }
 
@@ -45,7 +42,7 @@ public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
         if (!field.getAnnotation(annotations.ForeignKey.class).name().equals("")){
             return field.getAnnotation(annotations.ForeignKey.class).name();
         } else {
-            return getReferencedPKName();//
+            return field.getName();
         }
     }
 

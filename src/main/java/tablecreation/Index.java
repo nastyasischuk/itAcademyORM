@@ -8,6 +8,7 @@ public class Index {
     private String name;
     private List<Column> columnsInIndex;
     private boolean unique;
+
     public Index(String name,boolean unique){
         this.name = name;
         columnsInIndex = new ArrayList<>();
@@ -31,10 +32,6 @@ public class Index {
 
     public String getName() {
         return name;
-    }
-
-    public List<Column> getColumnsInIndex() {
-        return columnsInIndex;
     }
 
     public boolean isUnique() {

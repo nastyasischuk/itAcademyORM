@@ -39,7 +39,7 @@ public class SQLTableQueryCreator {
         List<String> queryIndexList = new ArrayList<>();
         StringBuilder request = new StringBuilder();
         StringBuilder columns = new StringBuilder();
-        request.append(SQLStatements.CREATE);
+
         for (Index index : table.getIndexes()) {
             if (index.isUnique()) {
                 request.append(SQLStatements.UNIQUE);
