@@ -4,6 +4,7 @@ import annotations.Column;
 import annotations.Entity;
 import annotations.PrimaryKey;
 import annotations.Table;
+import java.sql.*;
 
 @Entity
 @Table(name="person")
@@ -15,6 +16,8 @@ public class PersonWithSimpleProperColumns {
     private String name;
     @Column
     private int age;
+    @Column
+    Date bd;
 
     public PersonWithSimpleProperColumns(int id, String name, int age) {
         this.id = id;
