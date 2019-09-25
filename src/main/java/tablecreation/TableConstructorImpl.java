@@ -16,8 +16,8 @@ public class TableConstructorImpl implements TableConstructor {
 
 
     public TableConstructorImpl(Class<?> toBuildClass) {
-        this.table = new Table(getTableName());
         this.toBuildClass = toBuildClass;
+        this.table = new Table(getTableName());
     }
 
     @Override
@@ -45,9 +45,10 @@ public class TableConstructorImpl implements TableConstructor {
         List<Column> columns  = new ArrayList<>();
         for(int i=0;i<classFields.length;i++){
             //todo check if column
-            if(!classFields[i].isAnnotationPresent(annotations.Column.class) ||
+            if(!classFields[i].isAnnotationPresent(annotations.Column.class) &&
                     !classFields[i].isAnnotationPresent(annotations.ForeignKey.class) )
                continue;
+
             Column builtColumn = null;
             try {
                 builtColumn = new ColumnConstructor(classFields[i]).buildColumn();
@@ -56,7 +57,7 @@ public class TableConstructorImpl implements TableConstructor {
             }
             columns.add(builtColumn);
             if(builtColumn.isForeignKey()){
-            formFK(classFields[i]);
+           table.addForeignKey(formFK(classFields[i]));
             }
             if(builtColumn.isPrimaryKey()){
                 table.setPrimaryKey(formPK(builtColumn));

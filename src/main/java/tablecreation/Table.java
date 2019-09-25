@@ -55,7 +55,7 @@ public class Table {
     }
 
     public void setPrimaryKey(PrimaryKey primaryKey) {
-        if (primaryKey != null)
+        if (this.primaryKey != null)
             throw new RuntimeException();//todo several primary keys then throw
         this.primaryKey = primaryKey;
     }

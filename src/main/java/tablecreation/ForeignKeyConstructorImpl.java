@@ -45,7 +45,7 @@ public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
         if (!field.getAnnotation(annotations.ForeignKey.class).name().equals("")){
             return field.getAnnotation(annotations.ForeignKey.class).name();
         } else {
-            return getReferencedPKName();//
+            return field.getName();
         }
     }
 
