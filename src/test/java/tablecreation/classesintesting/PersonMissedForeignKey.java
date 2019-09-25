@@ -2,10 +2,12 @@ package tablecreation.classesintesting;
 
 import annotations.Column;
 import annotations.Entity;
+import annotations.PrimaryKey;
 
 @Entity
 public class PersonMissedForeignKey {
     @Column
+    @PrimaryKey
     private int id;
     @Column
     private String name;

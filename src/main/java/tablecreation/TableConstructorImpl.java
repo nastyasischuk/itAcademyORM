@@ -105,7 +105,7 @@ public class TableConstructorImpl implements TableConstructor {
             throw new NoPrimaryKeyException();
     }
     private void checkIfPrimaryKeyIsNotOne()throws SeveralPrimaryKeysException{
-        if(table.getPrimaryKey()==null){
+        if(table.getPrimaryKey()!=null){
             throw new SeveralPrimaryKeysException();
         }
     }
