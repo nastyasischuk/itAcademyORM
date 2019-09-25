@@ -1,5 +1,7 @@
 package tablecreation;
 
+import exceptions.SeveralPrimaryKeysException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,9 +56,7 @@ public class Table {
         this.foreignKeys = foreignKeys;
     }
 
-    public void setPrimaryKey(PrimaryKey primaryKey) {
-        if (primaryKey != null)
-            throw new RuntimeException();//todo several primary keys then throw
+    public void setPrimaryKey(PrimaryKey primaryKey){
         this.primaryKey = primaryKey;
     }
 
@@ -67,4 +67,5 @@ public class Table {
     public List<Index> getIndexes() {
         return indexes;
     }
+
 }
