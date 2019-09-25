@@ -3,7 +3,6 @@ package tablecreation.classesintesting;
 import annotations.*;
 
 @Entity
-@Table(name="person")
 public class PersonWithSeveralIndexes {
     @Column
     @PrimaryKey
