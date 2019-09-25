@@ -27,7 +27,7 @@ public class ColumnConstructor{
 
         if(field.isAnnotationPresent(annotations.Column.class) && !field.getAnnotation(annotations.Column.class).name().equals("")){
             return field.getAnnotation(annotations.Column.class).name();
-        }else if(field.isAnnotationPresent(ForeignKey.class) && field.getAnnotation(ForeignKey.class).name()!=""){
+        }else if(field.isAnnotationPresent(ForeignKey.class) && !field.getAnnotation(ForeignKey.class).name().equals("")){
            return field.getAnnotation(ForeignKey.class).name();
         }else{
             return field.getName();
