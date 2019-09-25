@@ -17,7 +17,6 @@ public class Index {
  public void addColumns(Column column){
         columnsInIndex.add(column);
  }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -34,9 +33,7 @@ public class Index {
     public String getName() {
         return name;
     }
-    public List<Column> getColumnsInIndex() {
-        return columnsInIndex;
-    }
+
     public boolean isUnique() {
         return unique;
     }
