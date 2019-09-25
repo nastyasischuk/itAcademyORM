@@ -34,7 +34,9 @@ public class Index {
     public String getName() {
         return name;
     }
-
+    public List<Column> getColumnsInIndex() {
+        return columnsInIndex;
+    }
     public boolean isUnique() {
         return unique;
     }
