@@ -1,5 +1,6 @@
 package connection;
 
+import annotations.Entity;
 import exceptions.ConfigFileException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -21,19 +22,19 @@ class ParseXMLConfig {
     }
 
     String getUrl() {
-        return getProperty("database.connection.url");
+        return getProperty("database.connection.url").trim();
     }
 
     String getDriverClass() {
-        return getProperty("database.connection.driver_class");
+        return getProperty("database.connection.driver_class").trim();
     }
 
     String getUsername() {
-        return getProperty("database.connection.username");
+        return getProperty("database.connection.username").trim();
     }
 
     String getPassword() {
-        return getProperty("database.connection.password");
+        return getProperty("database.connection.password").trim();
     }
 
     private String getProperty(String propertyName) {
@@ -51,7 +52,7 @@ class ParseXMLConfig {
                 }
             }
         }
-
+        //throw ConfigException
         return null;
     }
 
@@ -68,7 +69,7 @@ class ParseXMLConfig {
         }
     }
 
-    private List<Class<?>> getAllClasses() {
+    List<Class<?>> getAllClasses() {
         List<Class<?>> configuredClassList = new ArrayList<>();
         NodeList properties = getNode("mapping");
 
@@ -78,9 +79,9 @@ class ParseXMLConfig {
                 Element element = (Element) currentProperty;
                 try {
                     Class currentClass = Class.forName(element.getAttribute("name"));
-//                    if (currentClass.isAnnotationPresent(Entity.class)) {
-//                        configuredClassList.add(currentClass);
-//                    }
+                   if (currentClass.isAnnotationPresent(Entity.class)) {
+                       configuredClassList.add(currentClass);
+                    }
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
