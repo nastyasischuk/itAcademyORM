@@ -16,6 +16,12 @@ public class TableConstructorImplTest {
         Table  table = tableConstructor.buildTable();
         assertEquals("person",table.getTableName());
     }
+    @Test
+    public void buildTableTestNameWithoutTableFromAnnotation() throws Exception{
+        tableConstructor = new TableConstructorImpl(PersonWithSeveralIndexes.class);
+        Table  table = tableConstructor.buildTable();
+        assertEquals("PersonWithSeveralIndexes",table.getTableName());
+    }
 
     @Test(expected = NoPrimaryKeyException.class)
     public void buildTableTestTableWithoutPrimaryKey()throws Exception {

@@ -28,7 +28,7 @@ public class TableConstructorImpl implements TableConstructor {
     }
 
     private String getTableName() {
-        if (toBuildClass.isAnnotationPresent(annotations.Table.class)) {
+        if (toBuildClass.isAnnotationPresent(annotations.Table.class) && !toBuildClass.getAnnotation(annotations.Table.class).name().equals("")) {
             return toBuildClass.getAnnotation(annotations.Table.class).name();
         } else {
             return toBuildClass.getSimpleName();
