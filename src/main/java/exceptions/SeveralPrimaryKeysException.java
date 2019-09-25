@@ -1,11 +1,11 @@
 package exceptions;
 
-public class NoPrimaryKeyException extends Exception{
-    public NoPrimaryKeyException() {
-        super("Cannot build a table without primary key");
+public class SeveralPrimaryKeysException extends Exception{
+    public SeveralPrimaryKeysException() {
+        super("Several primary keys");
     }
 
-    public NoPrimaryKeyException(String message) {
+    public SeveralPrimaryKeysException(String message) {
         super(message);
     }
 
