@@ -1,6 +1,6 @@
 package exceptions;
 
-public class SeveralPrimaryKeysException extends RuntimeException{
+public class SeveralPrimaryKeysException extends Exception{
     public SeveralPrimaryKeysException() {
         super("Several primary keys");
     }

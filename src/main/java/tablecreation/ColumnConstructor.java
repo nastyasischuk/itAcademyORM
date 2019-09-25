@@ -55,15 +55,17 @@ public class ColumnConstructor{
             if(field.getAnnotation(annotations.Column.class).unique()){
                 column.setUnique(true);
             }
-            if(field.isAnnotationPresent(PrimaryKey.class)){
-                column.setPrimaryKey(true);
-            }
+
             if(field.isAnnotationPresent(Default.class)){
                 column.setDefaultValue(field.getAnnotation(Default.class).value());
             }
 
             if(field.getAnnotation(annotations.Column.class).autoincrement()){
                 column.setAutoincrement(true);
+            }
+            if(field.isAnnotationPresent(PrimaryKey.class)){
+                column.setPrimaryKey(true);
+                column.setNullable(false);
             }
         }
 

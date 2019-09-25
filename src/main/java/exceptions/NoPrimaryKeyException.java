@@ -1,6 +1,6 @@
 package exceptions;
 
-public class NoPrimaryKeyException extends RuntimeException{
+public class NoPrimaryKeyException extends Exception{
     public NoPrimaryKeyException() {
         super("Cannot build a table without primary key");
     }
