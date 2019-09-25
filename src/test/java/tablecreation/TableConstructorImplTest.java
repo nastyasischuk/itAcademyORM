@@ -2,6 +2,7 @@ package tablecreation;
 
 import exceptions.NoPrimaryKeyException;
 import exceptions.SeveralPrimaryKeysException;
+import exceptions.WrongSQLType;
 import org.junit.Test;
 import tablecreation.classesintesting.*;
 
