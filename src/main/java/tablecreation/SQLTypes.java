@@ -1,7 +1,7 @@
 package tablecreation;
 
 public enum SQLTypes {
-    VARCHAR(), BIGINT,SMALLINT,TINYINT,FLOAT,DOUBLE,INTEGER,BIT;
+    VARCHAR(), BIGINT,SMALLINT,TINYINT,FLOAT,DOUBLE,INTEGER,BIT,DATE,TIME,TIMESTAMP;
 
     private int length;
 

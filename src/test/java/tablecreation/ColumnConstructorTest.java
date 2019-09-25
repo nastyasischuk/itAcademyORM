@@ -84,7 +84,16 @@ ColumnConstructor columnConstructor;
         Column column = columnConstructor.buildColumn();
         assertFalse(column.isNullable());
     }
-
+    @Test
+    public void buildColumnTestClassWithDate(){
+        try {
+            columnConstructor = new ColumnConstructor(PersonWithSimpleProperColumns.class.getDeclaredField("bd"));
+        } catch (NoSuchFieldException | WrongSQLType e) {
+            e.printStackTrace();
+        }
+        Column column = columnConstructor.buildColumn();
+        assertEquals(SQLTypes.DATE,column.getType());
+    }
 
 
 }
