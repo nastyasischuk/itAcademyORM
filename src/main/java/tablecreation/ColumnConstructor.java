@@ -36,7 +36,7 @@ public class ColumnConstructor{
 
     private SQLTypes determineTypeOfColumnInSql()throws WrongSQLType{
         if(field.isAnnotationPresent(ForeignKey.class)){
-           return getTypeForForeignKey();
+           return DeterminatorOfType.getSQLType(Integer.class);
         }
         if (field.isAnnotationPresent(Type.class)){
             return field.getAnnotation(Type.class).type();
@@ -48,9 +48,7 @@ public class ColumnConstructor{
 
     }
 
-    private SQLTypes getTypeForForeignKey() {
-        return SQLTypes.INTEGER;
-    }
+
 
     private void checkConstraints(){
         if(field.isAnnotationPresent(annotations.Column.class)){

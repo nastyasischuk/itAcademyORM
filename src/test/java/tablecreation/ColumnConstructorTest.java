@@ -31,7 +31,6 @@ ColumnConstructor columnConstructor;
             e.printStackTrace();
         }
         assertEquals("age", columnConstructor.buildColumn().getName());
-        //assertNotEquals("id", columnConstructor.buildColumn().getName());
     }
 
 
