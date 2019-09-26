@@ -20,4 +20,9 @@ public class RowCUD extends Row {
     public void setToMap(String name,String value) {
         nameOfColumnsAndValues.put(name,value);
     }
+
+    @Override
+    public Map<String, String> getMap() {
+        return nameOfColumnsAndValues;
+    }
 }
