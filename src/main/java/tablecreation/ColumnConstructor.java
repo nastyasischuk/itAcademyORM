@@ -27,7 +27,7 @@ public class ColumnConstructor{
 
         if(field.isAnnotationPresent(annotations.Column.class) && !field.getAnnotation(annotations.Column.class).name().equals("")){
             return field.getAnnotation(annotations.Column.class).name();
-        }else if(field.isAnnotationPresent(ForeignKey.class) && field.getAnnotation(ForeignKey.class).name()!=""){
+        }else if(field.isAnnotationPresent(ForeignKey.class) && !field.getAnnotation(ForeignKey.class).name().equals("")){
            return field.getAnnotation(ForeignKey.class).name();
         }else{
             return field.getName();
@@ -36,7 +36,7 @@ public class ColumnConstructor{
 
     private SQLTypes determineTypeOfColumnInSql()throws WrongSQLType{
         if(field.isAnnotationPresent(ForeignKey.class)){
-           return getTypeForForeignKey();
+           return DeterminatorOfType.getSQLType(Integer.class);
         }
         if (field.isAnnotationPresent(Type.class)){
             return field.getAnnotation(Type.class).type();
@@ -48,9 +48,7 @@ public class ColumnConstructor{
 
     }
 
-    private SQLTypes getTypeForForeignKey() {
-        return SQLTypes.INTEGER;
-    }
+
 
     private void checkConstraints(){
         if(field.isAnnotationPresent(annotations.Column.class)){

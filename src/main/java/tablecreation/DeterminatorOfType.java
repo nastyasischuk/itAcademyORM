@@ -7,8 +7,11 @@ public class DeterminatorOfType {
    private static final Map<Class<?>, SQLTypes> map= new HashMap<>();
 
     public static SQLTypes getSQLType(Class<?> c){
+        //if(c==String.class)
         return map.get(c);
     }
+
+
     static {
         map.put(Integer.class,SQLTypes.INTEGER);
         map.put(int.class,SQLTypes.INTEGER);
