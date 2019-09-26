@@ -22,6 +22,16 @@ ColumnConstructor columnConstructor;
         assertEquals("p_id", columnConstructor.buildColumn().getName());
         assertNotEquals("id", columnConstructor.buildColumn().getName());
     }
+    @Test
+    public void buildColumnTestWithoutNameAssignment() {
+        try {
+
+            columnConstructor = new ColumnConstructor(PersonWithSimpleProperColumns.class.getDeclaredField("age"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertEquals("age", columnConstructor.buildColumn().getName());
+    }
 
 
     @Test(expected = WrongSQLType.class)

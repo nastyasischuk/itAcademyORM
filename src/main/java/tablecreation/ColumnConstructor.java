@@ -3,8 +3,6 @@ package tablecreation;
 import annotations.*;
 import annotations.ForeignKey;
 import annotations.PrimaryKey;
-import exceptions.NoPrimaryKeyException;
-import exceptions.SeveralPrimaryKeysException;
 import exceptions.WrongSQLType;
 
 import java.lang.reflect.Field;
@@ -31,28 +29,14 @@ public class ColumnConstructor{
             return field.getAnnotation(annotations.Column.class).name();
         }else if(field.isAnnotationPresent(ForeignKey.class) && !field.getAnnotation(ForeignKey.class).name().equals("")){
            return field.getAnnotation(ForeignKey.class).name();
-        }else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {
-            Class currentClass = field.getDeclaringClass();
-            Field[] fields = currentClass.getDeclaredFields();
-            for (Field f : fields) {
-                if (f.isAnnotationPresent(PrimaryKey.class)) {
-                    if (f.isAnnotationPresent(annotations.Column.class) && !f.getAnnotation(annotations.Column.class).name().equals("")) {
-                        return f.getAnnotation(annotations.Column.class).name();
-                    } else {
-                        return f.getName();
-                    }
-                }
-            }
-             return field.getName();
-            //return field.getAnnotation(annotations.Column.class).name();
-        }else {
+        }else{
             return field.getName();
         }
     }
 
     private SQLTypes determineTypeOfColumnInSql()throws WrongSQLType{
-        if(field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class)){
-           return getTypeForForeignKey();
+        if(field.isAnnotationPresent(ForeignKey.class)){
+           return DeterminatorOfType.getSQLType(Integer.class);
         }
         if (field.isAnnotationPresent(Type.class)){
             return field.getAnnotation(Type.class).type();
@@ -64,9 +48,7 @@ public class ColumnConstructor{
 
     }
 
-    private SQLTypes getTypeForForeignKey() {
-        return SQLTypes.INTEGER;
-    }
+
 
     private void checkConstraints(){
         if(field.isAnnotationPresent(annotations.Column.class)){
@@ -87,7 +69,7 @@ public class ColumnConstructor{
             }
         }
 
-        if(field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class)){
+        if(field.isAnnotationPresent(ForeignKey.class)){
             column.setForeignKey(true);
         }
         if(field.isAnnotationPresent(NotNull.class)){
