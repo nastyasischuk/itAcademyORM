@@ -6,8 +6,8 @@ import java.util.Map;
 public class RowCUD extends Row {
     private Map<String,String> nameOfColumnsAndValues;
 
-    public RowCUD(String tableName, String idName, Object id) {
-        super(tableName, idName, id);
+    public RowCUD(String tableName) {
+        super(tableName);
         this.nameOfColumnsAndValues = new HashMap<>();
 
     }

@@ -1,19 +1,16 @@
 package CRUD.rowhandler;
 
-import java.util.Map;
-
 public abstract class Row {
     private String tableName;
     private String idName;
-    private String id;
+    private String idValue;
 
     public Row() {
     }
 
-    public Row(String tableName, String idName, String id) {
+    public Row(String tableName) {
         this.tableName = tableName;
-        this.idName = idName;
-        this.id = id;
+
     }
 
     public abstract void setToMap(String name,String value);
@@ -33,11 +30,11 @@ public abstract class Row {
         this.idName = idName;
     }
 
-    public String getId() {
-        return id;
+    public String getIdValue() {
+        return idValue;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setIdValue(String idValue) {
+        this.idValue = idValue;
     }
 }
