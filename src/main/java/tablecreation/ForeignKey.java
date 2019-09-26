@@ -76,4 +76,15 @@ public class ForeignKey {
     public int hashCode() {
         return Objects.hash(tableName, constructionName, foreignKeyName, referenceTableName, referencePKName);
     }
+
+    @Override
+    public String toString() {
+        return "ForeignKey{" +
+                "tableName='" + tableName + '\'' +
+                ", constructionName='" + constructionName + '\'' +
+                ", foreignKeyName='" + foreignKeyName + '\'' +
+                ", referenceTableName='" + referenceTableName + '\'' +
+                ", referencePKName='" + referencePKName + '\'' +
+                '}';
+    }
 }

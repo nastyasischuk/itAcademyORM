@@ -1,6 +1,11 @@
 package tablecreation;
 
 import annotations.ManyToOne;
+import annotations.MapsId;
+import annotations.OneToOne;
+import annotations.PrimaryKey;
+import exceptions.NoPrimaryKeyException;
+import exceptions.SeveralPrimaryKeysException;
 
 import java.lang.reflect.Field;
 import java.math.BigInteger;
@@ -12,7 +17,7 @@ public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
     private ForeignKey foreignKey;
 
     public ForeignKeyConstructorImpl(Field field) {
-           this.field = field;
+        this.field = field;
         foreignKey = new ForeignKey();
     }
 
@@ -39,8 +44,22 @@ public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
     }
 
     private String getForeignKeyName() {
-        if (!field.getAnnotation(annotations.ForeignKey.class).name().equals("")){
+        if (field.isAnnotationPresent(annotations.ForeignKey.class) &&
+                !field.getAnnotation(annotations.ForeignKey.class).name().equals("")){
             return field.getAnnotation(annotations.ForeignKey.class).name();
+        } else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {
+            Class currentClass = field.getDeclaringClass();
+            Field[] fields = currentClass.getDeclaredFields();
+            for (Field f : fields) {
+                if (f.isAnnotationPresent(PrimaryKey.class)) {
+                    if (f.isAnnotationPresent(annotations.Column.class) && !f.getAnnotation(annotations.Column.class).name().equals("")) {
+                        return f.getAnnotation(annotations.Column.class).name();
+                    } else {
+                        return f.getName();
+                    }
+                }
+            }
+            return field.getName();
         } else {
             return field.getName();
         }
@@ -91,7 +110,7 @@ public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
             // By converting to base 35 (full alphanumeric), we guarantee
             // that the length of the name will always be smaller than the 30
             // character identifier restriction enforced by a few dialects.
-            return bigInt.toString( 35 );
+            return "FK" + bigInt.toString( 35 );
         }
         catch (NoSuchAlgorithmException e) {
             throw new RuntimeException( "Unable to generate a hashed Constraint name!", e); //todo: create exception?

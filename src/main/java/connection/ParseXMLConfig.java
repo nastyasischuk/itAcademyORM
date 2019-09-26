@@ -77,17 +77,26 @@ class ParseXMLConfig {
             Node currentProperty = properties.item(counter);
             if (currentProperty.getNodeType() == Node.ELEMENT_NODE) {
                 Element element = (Element) currentProperty;
-                try {
-                    Class currentClass = Class.forName(element.getAttribute("name"));
-                   if (currentClass.isAnnotationPresent(Entity.class)) {
-                       configuredClassList.add(currentClass);
-                    }
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                Class currentClass = loadClass(element);
+                if (currentClass.isAnnotationPresent(Entity.class) && currentClass != null) {
+                    configuredClassList.add(currentClass);
                 }
             }
         }
         return configuredClassList;
+    }
+
+    private Class loadClass(Element element) {
+        Class currentClass = null;
+        String className = element.getAttribute("class").trim();
+        try {
+            System.out.println("Try to load " + className );
+            currentClass = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            e.getCause().printStackTrace();
+        }
+        return currentClass;
     }
 
 }

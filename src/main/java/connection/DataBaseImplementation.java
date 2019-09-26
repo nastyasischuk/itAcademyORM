@@ -7,6 +7,7 @@ import exceptions.SeveralPrimaryKeysException;
 import org.apache.log4j.Logger;
 import tablecreation.SQLTableQueryCreator;
 import tablecreation.TableConstructorImpl;
+import transaction.TransactionsManager;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -17,6 +18,7 @@ import java.util.List;
 
 public class DataBaseImplementation implements DataBase {
     private static Logger logger = Logger.getLogger(DataBaseImplementation.class);
+    private static TransactionsManager transactionsManager = null;
 
     private ParseXMLConfig parseXMLConfig;
     private static final String DEFAULT = "default_db";
@@ -105,14 +107,28 @@ public class DataBaseImplementation implements DataBase {
 
     private void executeQuery(String query){
         this.openConnection();
+        Statement statement = null;
         try {
-            Statement statement = this.getConnection().createStatement();
-            statement.execute(query);
-            logger.debug(query);
+            statement = this.getConnection().createStatement();
+            logger.debug("Executing query " + query);
+            statement.executeUpdate(query);
         } catch (SQLException e) {
             throw new DatabaseException(e.getMessage());
         } finally {
-            this.close();
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                this.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    public TransactionsManager getTransactionManager() {
+        if (transactionsManager == null)
+            transactionsManager = new TransactionsManager(this.getConnection());
+        return transactionsManager;
     }
 }

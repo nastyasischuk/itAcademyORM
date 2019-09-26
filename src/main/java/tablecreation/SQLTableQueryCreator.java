@@ -17,6 +17,10 @@ public class SQLTableQueryCreator {
         for (Column column : table.getColumns()) {//TODO value of column.getType length varchar
             Column lastColumn = table.getColumns().get(table.getColumns().size() - 1);
 
+            if (column.isForeignKey() && column.getName().equals(findPKName(table.getColumns()))) {
+                continue;
+            }
+
             request.append(column.getName()).append(" ").append(column.getType());
             if (column.getType().equals(SQLTypes.VARCHAR)) {
                 request.append('(').append(column.getType().getLength()).append(')');
@@ -43,7 +47,9 @@ public class SQLTableQueryCreator {
             }
         }
         request.append(')').append(';');
-        request.append(" ").append(createPKQuery());
+        if (request.toString().endsWith(", );"))
+            request = new StringBuilder(request.toString().replace(", );", ");"));
+        //request.append(" ").append(createPKQuery());
         return request.toString();
     }
 
@@ -104,6 +110,15 @@ public class SQLTableQueryCreator {
         }
         request.append(SQLStatements.PK.value).append('(').append(columnNames).append(')').append(';');
         return request.toString();
+    }
+
+    private String findPKName(List<Column> columns) {
+        for (Column column : columns) {
+            if (column.isPrimaryKey()) {
+                return column.getName();
+            }
+        }
+        return null;
     }
 
 }
