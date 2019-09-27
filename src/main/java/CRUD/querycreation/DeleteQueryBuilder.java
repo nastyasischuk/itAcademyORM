@@ -1,20 +1,20 @@
 package CRUD.querycreation;
 
-import CRUD.rowhandler.Row;
+import CRUD.rowhandler.RowToDB;
 import tablecreation.SQLStatements;
 
 public class DeleteQueryBuilder extends QueryBuilder{
-    private Row row;//TODO change to right Class
 
-    public DeleteQueryBuilder(Row row) {
+    public DeleteQueryBuilder(RowToDB row) {
         super(row);
     }
 
     @Override
     public String buildQuery() {
         StringBuilder request = new StringBuilder();
-        request.append(SQLStatements.DELETE.getValue()).append(SQLStatements.FROM.getValue()).append(row.getTable_name()).append(SQLStatements.WHERE.getValue());
-        //TODO forEach map of row
+        request.append(SQLStatements.DELETE.getValue()).append(SQLStatements.FROM.getValue())
+                .append(row.getTableName()).append(SQLStatements.WHERE.getValue());
+        row.getMap().forEach((k, v) -> request.append(k + "=" + v));
         request.append(';');
         return request.toString();
     }

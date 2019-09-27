@@ -99,7 +99,11 @@ public class SQLTableQueryCreator {
         request.append(SQLStatements.ALTER_TABLE.getValue()).append(table.getTableName())
                 .append(SQLStatements.ADD.getValue());
         if (table.getPrimaryKey().getPKList().size() > 1) {
+<<<<<<< Updated upstream
             request.append(SQLStatements.CONSTRAINT.getValue()).append("Need to create method constraint ");
+=======
+            request.append(SQLStatements.CONSTRAINT.value).append(table.getCheckConstraint());
+>>>>>>> Stashed changes
         }
         for (Column column : table.getPrimaryKey().getPKList()) {
             Column lastColumn = table.getPrimaryKey().getPKList().get(table.getPrimaryKey().getPKList().size()-1);
