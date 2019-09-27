@@ -6,13 +6,15 @@ public class Column {
     private String defaultValue;
     private boolean primaryKey;
     private boolean foreignKey;
-    private boolean nullable = true;
+    private boolean nullable;
     private boolean unique;
     private boolean autoincrement;
+    //todo add length
 
     public Column(String name, SQLTypes type) {
         this.name = name;
         this.type = type;
+        this.nullable = true;
     }
 
     public String getName() {
@@ -45,10 +47,6 @@ public class Column {
 
     public void setNullable(boolean nullable) {
         this.nullable = nullable;
-    }
-
-    public void setType(SQLTypes type) {
-        this.type = type;
     }
 
     public void setPrimaryKey(boolean primaryKey) {
