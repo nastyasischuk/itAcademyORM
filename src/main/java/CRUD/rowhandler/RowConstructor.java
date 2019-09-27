@@ -6,9 +6,9 @@ import java.lang.reflect.Field;
 
 public abstract class RowConstructor  {
     public abstract Row buildRow();
-    protected String getTableName(Class classToConvertTorow) {
-        if (classToConvertTorow.getClass().isAnnotationPresent(annotations.Table.class) && !classToConvertTorow.getClass().getAnnotation(annotations.Table.class).name().equals("")) {
-            return classToConvertTorow.getClass().getAnnotation(annotations.Table.class).name();
+    protected String getTableName(Class<?> classToConvertTorow) {
+        if (classToConvertTorow.isAnnotationPresent(annotations.Table.class) && !classToConvertTorow.getAnnotation(annotations.Table.class).name().equals("")) {
+            return classToConvertTorow.getAnnotation(annotations.Table.class).name();
         } else {
             return classToConvertTorow.getClass().getSimpleName();
         }
