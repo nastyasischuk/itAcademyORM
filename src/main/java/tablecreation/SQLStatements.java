@@ -1,3 +1,4 @@
+
 package tablecreation;
 
 public enum SQLStatements {
@@ -17,3 +18,4 @@ public enum SQLStatements {
         return value;
     }
 }
+

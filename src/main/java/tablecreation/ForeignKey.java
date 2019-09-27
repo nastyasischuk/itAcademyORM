@@ -1,5 +1,7 @@
 package tablecreation;
 
+import java.util.Objects;
+
 public class ForeignKey {
     private String tableName;
     private String constructionName;
@@ -56,5 +58,33 @@ public class ForeignKey {
 
     public void setReferencePKName(String referencePKName) {
         this.referencePKName = referencePKName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ForeignKey that = (ForeignKey) o;
+        return Objects.equals(tableName, that.tableName) &&
+                Objects.equals(constructionName, that.constructionName) &&
+                Objects.equals(foreignKeyName, that.foreignKeyName) &&
+                Objects.equals(referenceTableName, that.referenceTableName) &&
+                Objects.equals(referencePKName, that.referencePKName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tableName, constructionName, foreignKeyName, referenceTableName, referencePKName);
+    }
+
+    @Override
+    public String toString() {
+        return "ForeignKey{" +
+                "tableName='" + tableName + '\'' +
+                ", constructionName='" + constructionName + '\'' +
+                ", foreignKeyName='" + foreignKeyName + '\'' +
+                ", referenceTableName='" + referenceTableName + '\'' +
+                ", referencePKName='" + referencePKName + '\'' +
+                '}';
     }
 }

@@ -1,36 +1,43 @@
 package CRUD.rowhandler;
 
-import CRUD.CRUD;
+import java.util.Map;
 
 public abstract class Row {
-    private String table_name;
-    private String id_name;
-    private Object id;
+    private String tableName;
+    private String idName;
+    private String idValue;
 
     public Row() {
     }
 
-    public String getTable_name() {
-        return table_name;
+    public Row(String tableName) {
+        this.tableName = tableName;
+
     }
 
-    public void setTable_name(String table_name) {
-        this.table_name = table_name;
+    public abstract void setToMap(String name,String value);
+    public abstract Map<String,String> getMap();
+    public String getTableName() {
+        return tableName;
     }
 
-    public String getId_name() {
-        return id_name;
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
-    public void setId_name(String id_name) {
-        this.id_name = id_name;
+    public String getIdName() {
+        return idName;
     }
 
-    public Object getId() {
-        return id;
+    public void setIdName(String idName) {
+        this.idName = idName;
     }
 
-    public void setId(Object id) {
-        this.id = id;
+    public String getIdValue() {
+        return idValue;
+    }
+
+    public void setIdValue(String idValue) {
+        this.idValue = idValue;
     }
 }
