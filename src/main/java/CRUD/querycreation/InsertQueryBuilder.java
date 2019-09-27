@@ -1,12 +1,9 @@
 package CRUD.querycreation;
 
-import CRUD.rowhandler.Row;
-import tablecreation.SQLStatements;
+import CRUD.rowhandler.RowToDB;
 
 public class InsertQueryBuilder extends QueryBuilder {
-    private Row row;//TODO change to right Class
-
-    public InsertQueryBuilder(Row row) {
+    public InsertQueryBuilder(RowToDB row) {
         super(row);
     }
 

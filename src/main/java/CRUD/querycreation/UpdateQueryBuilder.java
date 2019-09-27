@@ -1,12 +1,15 @@
 package CRUD.querycreation;
 
-import CRUD.rowhandler.Row;
+
+import CRUD.rowhandler.RowToDB;
+
 import tablecreation.SQLStatements;
+
 
 public class UpdateQueryBuilder extends QueryBuilder {
     private Row row;//TODO change to right Class
 
-    public UpdateQueryBuilder(Row row) {
+    public UpdateQueryBuilder(RowToDB row) {
         super(row);
     }
 

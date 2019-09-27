@@ -1,10 +1,10 @@
 package CRUD.querycreation;
 
 
-import CRUD.rowhandler.Row;
+import CRUD.rowhandler.RowToDB;
 
 public class QueryBuilderFactory {
-    public QueryBuilder createQueryBuilder(Row row,QueryType queryType){
+    public QueryBuilder createQueryBuilder(RowToDB row,QueryType queryType){
         switch (queryType){
             case INSERT:
                 return new DeleteQueryBuilder(row);
@@ -12,6 +12,8 @@ public class QueryBuilderFactory {
                 return new InsertQueryBuilder(row);
             case UPDATE:
                 return new UpdateQueryBuilder(row);
+            case SELECTID:
+                return new SelectLatestIdQueryBuilder(row);
         }
         return null;//todo change
     }

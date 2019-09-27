@@ -16,7 +16,6 @@ public abstract class Row {
     }
 
 
-    public abstract Map<String,String> getMap();
     public String getTableName() {
         return tableName;
     }

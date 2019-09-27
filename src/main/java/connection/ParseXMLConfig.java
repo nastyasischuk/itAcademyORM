@@ -14,6 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ParseXMLConfig {
+        public static final String URL = "database.connection.URL";
+    public static final String DRIVER_CLASS = "database.connection.driver_class";
+    public static final String USERNAME = "database.connection.USERNAME";
+    public static final String PASSWORD = "database.connection.PASSWORD";
+    public static final String PROPERTY = "property";
+    public static final String NAME = "name";
+    public static final String MAPPING = "mapping";
+    public static final String CLASS = "class";
+
 
     private File xmlConfigFile;
 
@@ -22,23 +31,23 @@ class ParseXMLConfig {
     }
 
     String getUrl() {
-        return getProperty("database.connection.url").trim();
+        return getProperty(URL).trim();
     }
 
     String getDriverClass() {
-        return getProperty("database.connection.driver_class").trim();
+        return getProperty(DRIVER_CLASS).trim();
     }
 
     String getUsername() {
-        return getProperty("database.connection.username").trim();
+        return getProperty(USERNAME).trim();
     }
 
     String getPassword() {
-        return getProperty("database.connection.password").trim();
+        return getProperty(PASSWORD).trim();
     }
 
     private String getProperty(String propertyName) {
-        NodeList properties = getNode("property");
+        NodeList properties = getNode(PROPERTY);
         if (properties == null) {
             return null;
         }
@@ -47,12 +56,11 @@ class ParseXMLConfig {
             Node currentProperty = properties.item(counter);
             if (currentProperty.getNodeType() == Node.ELEMENT_NODE) {
                 Element element = (Element) currentProperty;
-                if (element.getAttribute("name").equals(propertyName)) {
+                if (element.getAttribute(NAME).equals(propertyName)) {
                     return properties.item(counter).getTextContent();
                 }
             }
         }
-        //throw ConfigException
         return null;
     }
 
@@ -71,14 +79,14 @@ class ParseXMLConfig {
 
     List<Class<?>> getAllClasses() {
         List<Class<?>> configuredClassList = new ArrayList<>();
-        NodeList properties = getNode("mapping");
+        NodeList properties = getNode(MAPPING);
 
         for (int counter = 0; counter < properties.getLength(); counter++) {
             Node currentProperty = properties.item(counter);
             if (currentProperty.getNodeType() == Node.ELEMENT_NODE) {
                 Element element = (Element) currentProperty;
                 Class currentClass = loadClass(element);
-                if (currentClass.isAnnotationPresent(Entity.class) && currentClass != null) {
+                if (currentClass.isAnnotationPresent(Entity.class)) {
                     configuredClassList.add(currentClass);
                 }
             }
@@ -88,9 +96,9 @@ class ParseXMLConfig {
 
     private Class loadClass(Element element) {
         Class currentClass = null;
-        String className = element.getAttribute("class").trim();
+        String className = element.getAttribute(CLASS).trim();
         try {
-            System.out.println("Try to load " + className );
+            //todo System.out.println("Try to load " + className );
             currentClass = Class.forName(className);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
