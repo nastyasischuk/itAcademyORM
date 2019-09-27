@@ -56,11 +56,13 @@ public class RowConstructorToDB extends RowConstructor {
             if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(OneToMany.class)) {
                 return determineValueOfForeignKey(field).toString();
             }else
+                if(getValueOfSimpleField(field)!=null)
                 return getValueOfSimpleField(field).toString();
         }catch (Exception e){
             e.printStackTrace();
-            return null;
+
         }
+        return null;
     }
     private Object determineValueOfForeignKey(Field field) throws IllegalAccessException{
         Object object = field.get(classToConvertTorow);
