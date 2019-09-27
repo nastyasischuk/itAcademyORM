@@ -3,8 +3,8 @@ package CRUD.rowhandler;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RowToDB extends Row {
 
+public class RowToDB extends Row {
     private Map<String,String> nameOfColumnsAndValues;
 
     public RowToDB(String tableName) {
@@ -17,11 +17,11 @@ public class RowToDB extends Row {
         this.nameOfColumnsAndValues = new HashMap<>();
     }
 
-    public Map<String, String> getNameOfColumnsAndValues() {
-        return nameOfColumnsAndValues;
+    public void setToMap(String name,String value) {
+        nameOfColumnsAndValues.put(name,value);
     }
 
-    public void setNameOfColumnsAndValues(Map<String, String> nameOfColumnsAndValues) {
-        this.nameOfColumnsAndValues = nameOfColumnsAndValues;
+    public Map<String, String> getMap() {
+        return nameOfColumnsAndValues;
     }
 }
