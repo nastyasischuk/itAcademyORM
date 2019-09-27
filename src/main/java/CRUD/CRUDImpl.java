@@ -4,7 +4,13 @@ import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.RowConstructorToDB;
 import CRUD.rowhandler.RowToDB;
+import annotations.AnnotationUtils;
+import annotations.PrimaryKey;
 import connection.DataBaseImplementation;
+
+import java.lang.reflect.Field;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class CRUDImpl implements CRUD {
 
@@ -18,8 +24,9 @@ public class CRUDImpl implements CRUD {
     public void save(Object objectToDB) {
         RowToDB rowToDB = cudBasics(objectToDB, QueryType.INSERT);
         if (rowToDB.isAutoIncrement()) {
-            String getLatestPrimaryKeyQuery = null;  //todo getQuery for primary key;
-            //setPrimary key fromresultset to current object
+          ResultSet idTable = queryId(rowToDB,QueryType.INSERT);
+        Object calculatedId = calculateId(idTable);
+            setIdToObject(objectToDB,calculatedId);
         }
 
     }
@@ -44,6 +51,42 @@ public class CRUDImpl implements CRUD {
         String query = new QueryBuilderFactory().createQueryBuilder(rowToDB, queryType).buildQuery();
         dataBase.executeQuery(query);
         return rowToDB;
+    }
+    private ResultSet queryId(RowToDB row,QueryType queryType){
+        String query = new QueryBuilderFactory().createQueryBuilder(row, queryType).buildQuery();
+        return null;
+        //todo execute update  dataBase.executeQuery(query);
+    }
+
+
+    private Object calculateId(ResultSet resultSet){
+        try {
+            return resultSet.getObject(1);
+        }catch (SQLException e){
+            //todo handle exception
+            return null;
+        }
+    }
+    public  void setIdToObject(Object object,Object idToObject){
+       Field fields[] = object.getClass().getDeclaredFields();
+       String nameOfId = getNameOfPrimaryKey(fields);
+       Field field = null;
+       try {
+          field = object.getClass().getDeclaredField(nameOfId);
+          field.setAccessible(true);
+          field.set(object,idToObject);
+       }catch (NoSuchFieldException | IllegalAccessException e){
+           e.printStackTrace();
+           //todo add logger exception
+       }
+    }
+    private  String getNameOfPrimaryKey(Field fields[]){
+        for(int i=0;i<fields.length;i++){
+            if(fields[i].isAnnotationPresent(PrimaryKey.class)){
+               return fields[i].getName();
+            }
+        }
+        return null;//todo change;
     }
 
 

@@ -12,6 +12,8 @@ public class QueryBuilderFactory {
                 return new InsertQueryBuilder(row);
             case UPDATE:
                 return new UpdateQueryBuilder(row);
+            case SELECTID:
+                return new SelectLatestIdQueryBuilder(row);
         }
         return null;//todo change
     }
