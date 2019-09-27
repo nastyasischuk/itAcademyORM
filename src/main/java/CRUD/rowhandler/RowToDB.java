@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RowToDB extends Row {
+
     private Map<String,String> nameOfColumnsAndValues;
 
     public RowToDB(String tableName) {
@@ -16,13 +17,11 @@ public class RowToDB extends Row {
         this.nameOfColumnsAndValues = new HashMap<>();
     }
 
-    @Override
-    public void setToMap(String name,String value) {
-        nameOfColumnsAndValues.put(name,value);
+    public Map<String, String> getNameOfColumnsAndValues() {
+        return nameOfColumnsAndValues;
     }
 
-    @Override
-    public Map<String, String> getMap() {
-        return nameOfColumnsAndValues;
+    public void setNameOfColumnsAndValues(Map<String, String> nameOfColumnsAndValues) {
+        this.nameOfColumnsAndValues = nameOfColumnsAndValues;
     }
 }

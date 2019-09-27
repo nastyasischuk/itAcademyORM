@@ -5,9 +5,9 @@ import annotations.*;
 import java.lang.reflect.Field;
 
 public class RowConstructorToDB extends RowConstructor {
-    Row row;
-    Object classToConvertTorow;
-    Field idField;
+    private RowToDB row;
+    private Object classToConvertTorow;
+    private Field idField;
 
     public RowConstructorToDB(Object initialObject) {
         this.classToConvertTorow = initialObject;
