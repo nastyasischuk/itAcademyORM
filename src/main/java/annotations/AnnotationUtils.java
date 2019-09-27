@@ -2,6 +2,7 @@ package annotations;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
@@ -25,4 +26,17 @@ public class AnnotationUtils {
     public static boolean isPrimaryKeyPresent(Field field) {
         return field.isAnnotationPresent(PrimaryKey.class);
     }
+
+    public static String getTableName(Class toBuildClass) {
+        return ((annotations.Table) toBuildClass.getAnnotation(annotations.Table.class)).name();
+    }
+
+    public static String getColumnName(Field field) {
+        return field.getAnnotation(Column.class).name();
+    }
+
+    public static String getFKName(Field field) {
+        return field.getAnnotation(ForeignKey.class).name();
+    }
+
 }
