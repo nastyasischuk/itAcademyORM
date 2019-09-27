@@ -1,5 +1,7 @@
 package CRUD.rowhandler;
 
+import java.util.Map;
+
 public abstract class Row {
     private String tableName;
     private String idName;
@@ -13,6 +15,8 @@ public abstract class Row {
 
     }
 
+
+    public abstract Map<String,String> getMap();
     public String getTableName() {
         return tableName;
     }
