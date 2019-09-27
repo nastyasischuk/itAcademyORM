@@ -1,12 +1,12 @@
 package connection;
 
+import CRUD.CRUDImpl;
 import exceptions.DatabaseException;
 import exceptions.NoPrimaryKeyException;
 import exceptions.OpenConnectionException;
 import exceptions.SeveralPrimaryKeysException;
 import org.apache.log4j.Logger;
 import tablecreation.SQLTableQueryCreator;
-import tablecreation.Table;
 import tablecreation.TableConstructorImpl;
 import transaction.TransactionsManager;
 
@@ -20,6 +20,7 @@ import java.util.List;
 public class DataBaseImplementation implements DataBase {
     private static Logger logger = Logger.getLogger(DataBaseImplementation.class);
     private static TransactionsManager transactionsManager = null;
+    private CRUDImpl crud;
 
     private ParseXMLConfig parseXMLConfig;
     private static final String DEFAULT = "default_db";
@@ -27,6 +28,7 @@ public class DataBaseImplementation implements DataBase {
 
     public DataBaseImplementation(String pathToXml) {
         parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
         this.name = DEFAULT;
         createAllTables();
     }
@@ -87,27 +89,26 @@ public class DataBaseImplementation implements DataBase {
             tablecreation.Table table = null;
             try {
                 table = new TableConstructorImpl(currentClass).buildTable();
-            } catch (NoPrimaryKeyException | SeveralPrimaryKeysException e) {
+            } catch (NoPrimaryKeyException e) {
+                e.printStackTrace();
+            } catch (SeveralPrimaryKeysException e) {
                 e.printStackTrace();
             }
-            createExecuteQuery(table,fkQueriesToExecute);
+            SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
+            String createTableQuery = sqlTableQueryCreator.createTableQuery();
+            String createPKQuery = sqlTableQueryCreator.createPKQuery();
+            fkQueriesToExecute.addAll(sqlTableQueryCreator.createFKQuery());
+
+            executeQueryForCreateDB(createTableQuery);
+            executeQueryForCreateDB(createPKQuery);
         }
 
         for (String query : fkQueriesToExecute) {
-            executeQuery(query);
+            executeQueryForCreateDB(query);
         }
     }
-    private void createExecuteQuery(Table table,List<String> fkQueriesToExecute){
-        SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
-        String createTableQuery = sqlTableQueryCreator.createTableQuery();
-        String createPKQuery = sqlTableQueryCreator.createPKQuery();
-        fkQueriesToExecute.addAll(sqlTableQueryCreator.createFKQuery());
 
-        executeQuery(createTableQuery);
-        executeQuery(createPKQuery);
-    }
-
-    private void executeQuery(String query){
+    private void executeQueryForCreateDB(String query){
         this.openConnection();
         Statement statement = null;
         try {
@@ -122,6 +123,41 @@ public class DataBaseImplementation implements DataBase {
                     statement.close();
                 }
                 this.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void save(Object object) {
+        crud.save(object);
+    }
+
+    public void delete(Object object) {
+        crud.delete(object);
+    }
+
+    public void update(Object object) {
+        crud.update(object);
+    }
+
+    public Object find(Class type, Object id) {
+        return crud.find(type, id);
+    }
+
+    public void executeQuery(String query) {
+        Statement statement = null;
+        try {
+            statement = this.getConnection().createStatement();
+            logger.debug("Executing query " + query);
+            statement.executeUpdate(query);
+        } catch (SQLException e) {
+            throw new DatabaseException(e.getMessage());
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
