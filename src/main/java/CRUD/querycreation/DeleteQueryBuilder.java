@@ -1,6 +1,5 @@
 package CRUD.querycreation;
 
-
 import CRUD.rowhandler.RowToDB;
 
 public class DeleteQueryBuilder extends QueryBuilder{
@@ -10,6 +9,10 @@ public class DeleteQueryBuilder extends QueryBuilder{
 
     @Override
     public String buildQuery() {
-        return null;
+        StringBuilder request = new StringBuilder();
+        request.append(SQLStatements.DELETE.getValue()).append(SQLStatements.FROM.getValue()).append(row.getTable_name()).append(SQLStatements.WHERE.getValue());
+        //TODO forEach map of row
+        request.append(';');
+        return request.toString();
     }
 }
