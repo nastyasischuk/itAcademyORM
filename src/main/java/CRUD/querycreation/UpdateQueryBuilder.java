@@ -1,10 +1,10 @@
 package CRUD.querycreation;
 
-import CRUD.rowhandler.Row;
+import CRUD.rowhandler.RowToDB;
 
 public class UpdateQueryBuilder extends QueryBuilder {
 
-    public UpdateQueryBuilder(Row row) {
+    public UpdateQueryBuilder(RowToDB row) {
         super(row);
     }
 

@@ -1,9 +1,9 @@
 package CRUD.querycreation;
 
-import CRUD.rowhandler.Row;
+import CRUD.rowhandler.RowToDB;
 
 public class InsertQueryBuilder extends QueryBuilder {
-    public InsertQueryBuilder(Row row) {
+    public InsertQueryBuilder(RowToDB row) {
         super(row);
     }
 

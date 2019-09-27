@@ -1,9 +1,10 @@
 package CRUD.querycreation;
 
-import CRUD.rowhandler.Row;
+
+import CRUD.rowhandler.RowToDB;
 
 public class DeleteQueryBuilder extends QueryBuilder{
-    public DeleteQueryBuilder(Row row) {
+    public DeleteQueryBuilder(RowToDB row) {
         super(row);
     }
 
