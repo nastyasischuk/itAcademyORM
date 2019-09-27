@@ -7,9 +7,13 @@ public enum SQLStatements {
     ALTER_TABLE(" ALTER TABLE "), UNIQUE(" UNIQUE "), DEFAULT(" DEFAULT "),CHECK(" CHECK "),
     INDEX(" INDEX "), A_INCREMENT(" AUTO_INCREMENT "), ADD(" ADD "), REFERENCE(" REFERENCES ");
 
-    String value;
+    private String value;
 
     SQLStatements(String value){
         this.value = value;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

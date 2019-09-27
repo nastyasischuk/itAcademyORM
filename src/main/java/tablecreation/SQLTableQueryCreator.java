@@ -13,7 +13,7 @@ public class SQLTableQueryCreator {
 
     public String createTableQuery() {
         StringBuilder request = new StringBuilder();
-        request.append(SQLStatements.CREATE_TABLE.value).append(table.getTableName()).append('(');
+        request.append(SQLStatements.CREATE_TABLE.getValue()).append(table.getTableName()).append('(');
         for (Column column : table.getColumns()) {//TODO value of column.getType length varchar
             Column lastColumn = table.getColumns().get(table.getColumns().size() - 1);
 
@@ -26,19 +26,19 @@ public class SQLTableQueryCreator {
                 request.append('(').append(column.getType().getLength()).append(')');
             }
             if (!column.isNullable()) {
-                request.append(SQLStatements.NOT_NULL.value);
+                request.append(SQLStatements.NOT_NULL.getValue());
             }
             if (column.isUnique()) {
-                request.append(SQLStatements.UNIQUE.value);
+                request.append(SQLStatements.UNIQUE.getValue());
             }
             if (column.isAutoincrement()) {
-                request.append(SQLStatements.A_INCREMENT.value);
+                request.append(SQLStatements.A_INCREMENT.getValue());
             }
             if (!(column.getDefaultValue() == null)) {
-                request.append(SQLStatements.DEFAULT.value).append(column.getDefaultValue());
+                request.append(SQLStatements.DEFAULT.getValue()).append(column.getDefaultValue());
             }
             if (!(table.getCheckConstraint() == null)) {
-                request.append(SQLStatements.CHECK.value).append('(').append(table.getCheckConstraint()).append(')');
+                request.append(SQLStatements.CHECK.getValue()).append('(').append(table.getCheckConstraint()).append(')');
             }
             if (column.equals(lastColumn)) {
                 break;
@@ -57,13 +57,13 @@ public class SQLTableQueryCreator {
         List<String> queryIndexList = new ArrayList<>();
         StringBuilder request = new StringBuilder();
         StringBuilder columns = new StringBuilder();
-        request.append(SQLStatements.CREATE_TABLE.value);
+        request.append(SQLStatements.CREATE_TABLE.getValue());
         for (Index index : table.getIndexes()) {
             if (index.isUnique()) {
-                request.append(SQLStatements.UNIQUE.value);
+                request.append(SQLStatements.UNIQUE.getValue());
             }
             Column lastColumnInIndex = index.getColumnsInIndex().get(index.getColumnsInIndex().size() - 1);
-            request.append(SQLStatements.INDEX.value).append(index.getName()).append(SQLStatements.ON);
+            request.append(SQLStatements.INDEX.getValue()).append(index.getName()).append(SQLStatements.ON);
             for (Column column : index.getColumnsInIndex()) {
                 columns.append(column);
                 if (!column.equals(lastColumnInIndex)) {
@@ -82,10 +82,10 @@ public class SQLTableQueryCreator {
         StringBuilder request = new StringBuilder();
         for (ForeignKey fk : table.getForeignKeys())
             if (!table.getForeignKeys().isEmpty()) {
-                request.append(SQLStatements.ALTER_TABLE.value).append(fk.getTableName())
-                        .append(SQLStatements.ADD.value).append(SQLStatements.CONSTRAINT.value).append(fk.getConstructionName())
-                        .append(SQLStatements.FK.value).append('(').append(fk.getForeignKeyName()).append(')')
-                        .append(SQLStatements.REFERENCE.value).append(fk.getReferenceTableName())
+                request.append(SQLStatements.ALTER_TABLE.getValue()).append(fk.getTableName())
+                        .append(SQLStatements.ADD.getValue()).append(SQLStatements.CONSTRAINT.getValue()).append(fk.getConstructionName())
+                        .append(SQLStatements.FK.getValue()).append('(').append(fk.getForeignKeyName()).append(')')
+                        .append(SQLStatements.REFERENCE.getValue()).append(fk.getReferenceTableName())
                         .append('(').append(fk.getReferencePKName()).append(')').append(';');
                 queryFKList.add(request.toString());
             }
@@ -96,10 +96,10 @@ public class SQLTableQueryCreator {
     public String createPKQuery() {
         StringBuilder request = new StringBuilder();
         StringBuilder columnNames = new StringBuilder();
-        request.append(SQLStatements.ALTER_TABLE.value).append(table.getTableName())
-                .append(SQLStatements.ADD.value);
+        request.append(SQLStatements.ALTER_TABLE.getValue()).append(table.getTableName())
+                .append(SQLStatements.ADD.getValue());
         if (table.getPrimaryKey().getPKList().size() > 1) {
-            request.append(SQLStatements.CONSTRAINT.value).append("Need to create method constraint ");
+            request.append(SQLStatements.CONSTRAINT.getValue()).append("Need to create method constraint ");
         }
         for (Column column : table.getPrimaryKey().getPKList()) {
             Column lastColumn = table.getPrimaryKey().getPKList().get(table.getPrimaryKey().getPKList().size()-1);
@@ -108,7 +108,7 @@ public class SQLTableQueryCreator {
                 columnNames.append(", ");
             }
         }
-        request.append(SQLStatements.PK.value).append('(').append(columnNames).append(')').append(';');
+        request.append(SQLStatements.PK.getValue()).append('(').append(columnNames).append(')').append(';');
         return request.toString();
     }
 
