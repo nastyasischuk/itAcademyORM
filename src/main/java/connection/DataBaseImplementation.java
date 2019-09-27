@@ -6,6 +6,7 @@ import exceptions.OpenConnectionException;
 import exceptions.SeveralPrimaryKeysException;
 import org.apache.log4j.Logger;
 import tablecreation.SQLTableQueryCreator;
+import tablecreation.Table;
 import tablecreation.TableConstructorImpl;
 import transaction.TransactionsManager;
 
@@ -86,23 +87,24 @@ public class DataBaseImplementation implements DataBase {
             tablecreation.Table table = null;
             try {
                 table = new TableConstructorImpl(currentClass).buildTable();
-            } catch (NoPrimaryKeyException e) {
-                e.printStackTrace();
-            } catch (SeveralPrimaryKeysException e) {
+            } catch (NoPrimaryKeyException | SeveralPrimaryKeysException e) {
                 e.printStackTrace();
             }
-            SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
-            String createTableQuery = sqlTableQueryCreator.createTableQuery();
-            String createPKQuery = sqlTableQueryCreator.createPKQuery();
-            fkQueriesToExecute.addAll(sqlTableQueryCreator.createFKQuery());
-
-            executeQuery(createTableQuery);
-            executeQuery(createPKQuery);
+            createExecuteQuery(table,fkQueriesToExecute);
         }
 
         for (String query : fkQueriesToExecute) {
             executeQuery(query);
         }
+    }
+    private void createExecuteQuery(Table table,List<String> fkQueriesToExecute){
+        SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
+        String createTableQuery = sqlTableQueryCreator.createTableQuery();
+        String createPKQuery = sqlTableQueryCreator.createPKQuery();
+        fkQueriesToExecute.addAll(sqlTableQueryCreator.createFKQuery());
+
+        executeQuery(createTableQuery);
+        executeQuery(createPKQuery);
     }
 
     private void executeQuery(String query){
