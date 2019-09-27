@@ -5,9 +5,8 @@ import annotations.*;
 import java.lang.reflect.Field;
 
 public class RowConstructorToDB extends RowConstructor {
-    Row row;
+    RowToDB row;
     Object classToConvertTorow;
-    Field idField;
 
     public RowConstructorToDB(Object initialObject) {
         this.classToConvertTorow = initialObject;
@@ -15,7 +14,7 @@ public class RowConstructorToDB extends RowConstructor {
     }
 
     @Override
-    public Row buildRow() {
+    public RowToDB buildRow() {
         setColumnValuesAndNames();
         return row;
     }
@@ -30,7 +29,7 @@ public class RowConstructorToDB extends RowConstructor {
            String name = getNameOfField(fieldToAdd);
             String value = getValueOfAllFields(fieldToAdd);
             if (fieldToAdd.isAnnotationPresent(PrimaryKey.class)) {
-              setIdField(fieldToAdd);
+              row.setIdField(fieldToAdd);
               setId(name,value);
             } else {
                 row.setToMap(name, value);
@@ -39,9 +38,6 @@ public class RowConstructorToDB extends RowConstructor {
         }
     }
 
-    private void setIdField(Field prField){
-        idField = prField;
-    }
     private void setId(String name,String value){
         row.setIdValue(value);
         row.setIdName(name);
@@ -56,11 +52,13 @@ public class RowConstructorToDB extends RowConstructor {
             if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(OneToMany.class)) {
                 return determineValueOfForeignKey(field).toString();
             }else
+                if(getValueOfSimpleField(field)!=null)
                 return getValueOfSimpleField(field).toString();
         }catch (Exception e){
             e.printStackTrace();
-            return null;
+
         }
+        return null;
     }
     private Object determineValueOfForeignKey(Field field) throws IllegalAccessException{
         Object object = field.get(classToConvertTorow);
