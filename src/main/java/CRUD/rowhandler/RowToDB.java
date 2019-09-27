@@ -3,21 +3,26 @@ package CRUD.rowhandler;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RowCUD extends Row {
+public class RowToDB extends Row {
     private Map<String,String> nameOfColumnsAndValues;
 
-    public RowCUD(String tableName, String idName, Object id) {
-        super(tableName, idName, id);
+    public RowToDB(String tableName) {
+        super(tableName);
         this.nameOfColumnsAndValues = new HashMap<>();
 
     }
 
-    public RowCUD() {
+    public RowToDB() {
         this.nameOfColumnsAndValues = new HashMap<>();
     }
 
     @Override
     public void setToMap(String name,String value) {
         nameOfColumnsAndValues.put(name,value);
+    }
+
+    @Override
+    public Map<String, String> getMap() {
+        return nameOfColumnsAndValues;
     }
 }
