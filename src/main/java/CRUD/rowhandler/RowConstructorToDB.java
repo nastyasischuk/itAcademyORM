@@ -4,14 +4,14 @@ import annotations.*;
 
 import java.lang.reflect.Field;
 
-public class RowConstructorImpl implements RowConstructor {
+public class RowConstructorToDB extends RowConstructor {
     Row row;
     Object classToConvertTorow;
     Field idField;
 
-    public RowConstructorImpl(Object initialObject) {
+    public RowConstructorToDB(Object initialObject) {
         this.classToConvertTorow = initialObject;
-        row = new RowCUD(getTableName());
+        row = new RowToDB(getTableName(initialObject.getClass()));
     }
 
     @Override
@@ -19,14 +19,7 @@ public class RowConstructorImpl implements RowConstructor {
         setColumnValuesAndNames();
         return row;
     }
-    private String getTableName() {
-        if (classToConvertTorow.getClass().isAnnotationPresent(annotations.Table.class) && !classToConvertTorow.getClass().getAnnotation(annotations.Table.class).name().equals("")) {
-            return classToConvertTorow.getClass().getAnnotation(annotations.Table.class).name();
-        } else {
-            return classToConvertTorow.getClass().getSimpleName();
-        }
 
-    }
     private void setColumnValuesAndNames(){
         Field[] classFields = classToConvertTorow.getClass().getDeclaredFields();
         for(int i =0;i<classFields.length;i++){
@@ -45,12 +38,7 @@ public class RowConstructorImpl implements RowConstructor {
 
         }
     }
-    private String getNameOfField(Field field){
-        if(field.isAnnotationPresent(Column.class) && !field.getAnnotation(Column.class).name().equals("")){
-            return field.getAnnotation(Column.class).name();
-        }
-        return field.getName();
-    }
+
     private void setIdField(Field prField){
         idField = prField;
     }

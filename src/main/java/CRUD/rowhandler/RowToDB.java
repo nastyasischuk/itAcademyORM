@@ -3,16 +3,16 @@ package CRUD.rowhandler;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RowCUD extends Row {
+public class RowToDB extends Row {
     private Map<String,String> nameOfColumnsAndValues;
 
-    public RowCUD(String tableName) {
+    public RowToDB(String tableName) {
         super(tableName);
         this.nameOfColumnsAndValues = new HashMap<>();
 
     }
 
-    public RowCUD() {
+    public RowToDB() {
         this.nameOfColumnsAndValues = new HashMap<>();
     }
 
