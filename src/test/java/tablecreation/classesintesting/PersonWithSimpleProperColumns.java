@@ -19,11 +19,10 @@ public class PersonWithSimpleProperColumns {
     @Column
     Date bd;
 
-    public PersonWithSimpleProperColumns(int id, String name, int age,Date date) {
+    public PersonWithSimpleProperColumns(int id, String name, int age) {
         this.id = id;
         this.name = name;
         this.age = age;
-        this.bd = date;
     }
 
     public int getId() {
