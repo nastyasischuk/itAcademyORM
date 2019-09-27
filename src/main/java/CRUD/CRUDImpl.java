@@ -2,12 +2,18 @@ package CRUD;
 
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
-import CRUD.rowhandler.Row;
 import CRUD.rowhandler.RowConstructorToDB;
 import CRUD.rowhandler.RowToDB;
-import tablecreation.SQLTypes;
+import connection.DataBaseImplementation;
 
 public class CRUDImpl implements CRUD {
+
+    private DataBaseImplementation dataBase;
+
+    public CRUDImpl(DataBaseImplementation dataBase) {
+        this.dataBase = dataBase;
+    }
+
     @Override
     public void save(Object objectToDB) {
         RowToDB rowToDB = cudBasics(objectToDB, QueryType.INSERT);
@@ -27,15 +33,18 @@ public class CRUDImpl implements CRUD {
     public void update(Object objectToUpdate) {
         cudBasics(objectToUpdate,QueryType.UPDATE);
     }
+
     @Override
     public Object find(Class<?> objectType, Object id) {
         return null;
     }
 
-    private RowToDB cudBasics(Object objectToDB,QueryType queryType){
+    private RowToDB cudBasics(Object objectToDB, QueryType queryType){
         RowToDB rowToDB = new RowConstructorToDB(objectToDB).buildRow();
         String query = new QueryBuilderFactory().createQueryBuilder(rowToDB, queryType).buildQuery();
-        //execute query
+        dataBase.executeQuery(query);
         return rowToDB;
     }
+
+
 }

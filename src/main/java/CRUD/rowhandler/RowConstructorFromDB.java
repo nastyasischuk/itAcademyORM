@@ -23,7 +23,7 @@ public class RowConstructorFromDB extends RowConstructor {
         rowFromDB.setTableName(getTableName(typeOfObject));
         rowFromDB.setIdName(getIdName());
         rowFromDB.setNameAndType(getNameAndType());
-        return null;
+        return rowFromDB;
     }
 
     private String getIdName() {
@@ -52,5 +52,4 @@ public class RowConstructorFromDB extends RowConstructor {
         }
         return namesAndType;
     }
-
 }
