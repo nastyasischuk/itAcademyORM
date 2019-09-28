@@ -18,15 +18,15 @@ public class RowConstructorFromDB extends RowConstructor {
     }
 
     @Override
-    public Row buildRow() {
+    public RowFromDB buildRow() {
         rowFromDB.setIdValue(id.toString());
-        rowFromDB.setTableName(getTableName(typeOfObject));
         rowFromDB.setIdName(getIdName());
+        rowFromDB.setTableName(getTableName(typeOfObject));
         rowFromDB.setNameAndType(getNameAndType());
         return rowFromDB;
     }
 
-    private String getIdName() {
+    protected String getIdName() {
         Field[] fields = typeOfObject.getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(PrimaryKey.class)) {
@@ -40,16 +40,17 @@ public class RowConstructorFromDB extends RowConstructor {
         Field[] allFields = typeOfObject.getDeclaredFields();
         Map<String, Class> namesAndType = new HashMap<>();
         for (Field currentField : allFields) {
-            if (currentField.isAnnotationPresent(ForeignKey.class) || currentField.isAnnotationPresent(MapsId.class)) {
-                String name = getNameOfField(currentField);
-                Class type = currentField.getType();
-                namesAndType.put(name, type);
-            } else {
+            if (!currentField.isAnnotationPresent(PrimaryKey.class)) {
                 String name = getNameOfField(currentField);
                 Class type = currentField.getType();
                 namesAndType.put(name, type);
             }
         }
         return namesAndType;
+    }
+
+
+    public Class getTypeOfObject() {
+        return typeOfObject;
     }
 }

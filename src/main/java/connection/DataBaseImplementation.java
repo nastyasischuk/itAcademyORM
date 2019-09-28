@@ -10,10 +10,7 @@ import tablecreation.SQLTableQueryCreator;
 import tablecreation.TableConstructorImpl;
 import transaction.TransactionsManager;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -141,11 +138,11 @@ public class DataBaseImplementation implements DataBase {
         crud.update(object);
     }
 
-    public Object find(Class type, Object id) {
+    public Object find(Class type, Object id) throws SQLException{
         return crud.find(type, id);
     }
 
-    public void executeQuery(String query) {
+    public void executeQuery(String query) {//todo rename because it is only for execute update not for getting result set
         Statement statement = null;
         try {
             statement = this.getConnection().createStatement();
@@ -162,6 +159,26 @@ public class DataBaseImplementation implements DataBase {
                 e.printStackTrace();
             }
         }
+    }
+    public ResultSet executeQueryWuthResult(String query){//todo check ussage of result set
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = this.getConnection().createStatement();
+            logger.debug("Executing query " + query);
+            resultSet = statement.executeQuery(query);
+        } catch (SQLException e) {
+            throw new DatabaseException(e.getMessage());
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return resultSet;
     }
 
     public TransactionsManager getTransactionManager() {

@@ -1,16 +1,18 @@
 package CRUD;
 
+import CRUD.buildingObject.ObjectBuilder;
+import CRUD.buildingObject.ObjectBuilderWithLinks;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
-import CRUD.rowhandler.RowConstructorToDB;
-import CRUD.rowhandler.RowToDB;
-import annotations.AnnotationUtils;
+import CRUD.rowhandler.*;
 import annotations.PrimaryKey;
 import connection.DataBaseImplementation;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class CRUDImpl implements CRUD {
 
@@ -42,8 +44,28 @@ public class CRUDImpl implements CRUD {
     }
 
     @Override
-    public Object find(Class<?> objectType, Object id) {
+    public Object find(Class<?> objectType, Object id) throws SQLException{
+        RowFromDB row = new RowConstructorFromDB(objectType,id).buildRow();
+        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
+        ResultSet resultSet = dataBase.executeQueryWuthResult(queryFind);
+        resultSet.next();
+        try {
+            Object object = new ObjectBuilder(row, resultSet, objectType).buildObject();
+        }catch (Exception e){
+            //todo logger check
+        }
+
         return null;
+    }
+    public Collection<Object> find(Class classToFind,Object id,Object usingForeignKey,String mapping) throws Exception{
+        RowFromDB row = new RowConstructorFromDBByForeignKey(classToFind,id,usingForeignKey.getClass()).buildRow();
+        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
+        ResultSet resultSet = dataBase.executeQueryWuthResult(queryFind);
+        Collection<Object> collection = new HashSet<>();
+        while(resultSet.next()){
+            collection.add(new ObjectBuilderWithLinks(row,resultSet,classToFind,usingForeignKey,mapping).buildObject());
+        }
+        return collection;
     }
 
     private RowToDB cudBasics(Object objectToDB, QueryType queryType){
@@ -88,6 +110,7 @@ public class CRUDImpl implements CRUD {
         }
         return null;//todo change;
     }
+
 
 
 }

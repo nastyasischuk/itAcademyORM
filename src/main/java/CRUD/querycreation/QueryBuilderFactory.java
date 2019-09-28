@@ -1,6 +1,7 @@
 package CRUD.querycreation;
 
 
+import CRUD.rowhandler.RowFromDB;
 import CRUD.rowhandler.RowToDB;
 
 public class QueryBuilderFactory {
@@ -16,6 +17,9 @@ public class QueryBuilderFactory {
                 return new SelectLatestIdQueryBuilder(row);
         }
         return null;//todo change
+    }
+    public QueryBuilderFromDB createQueryBuilderFromDB(RowFromDB row){
+        return new QueryBuilderFromDB(row);
     }
 
 }
