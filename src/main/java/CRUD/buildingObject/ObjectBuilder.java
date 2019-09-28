@@ -2,6 +2,8 @@ package CRUD.buildingObject;
 
 import CRUD.rowhandler.RowFromDB;
 import annotations.*;
+import connection.DataBase;
+import connection.DataBaseImplementation;
 import tablecreation.DeterminatorOfType;
 
 import java.lang.reflect.Field;
@@ -13,6 +15,7 @@ import java.util.Map;
 public class ObjectBuilder {
     public static final String METHODNAMEFORINTEGER ="getInt";
     public static final String STARTOFMETHODRESULTSETTOGETVALUE ="get";
+    protected DataBaseImplementation database;
     protected Object objectToBuildFromDB;
     protected RowFromDB row;
     protected ResultSet resultSet;
@@ -20,10 +23,11 @@ public class ObjectBuilder {
     public ObjectBuilder(){
 
     }
-    public ObjectBuilder(RowFromDB rowFromDB, ResultSet resultSet,Class<?> classType){
+    public ObjectBuilder(RowFromDB rowFromDB, ResultSet resultSet,Class<?> classType,DataBaseImplementation db){
         this.resultSet = resultSet;
         this.row = rowFromDB;
         this.classType = classType;
+        this.database= db;
         instantiateObject();
 
     }
@@ -38,37 +42,30 @@ public class ObjectBuilder {
             field.setAccessible(true);
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(entry.getValue());
             Object fieldValue=null;
-            if(nameOfMethodInResultSetToGetValue==null){//we could not find proper type then we check if it is foreign key
-                handleCasesWhenTypeIsNotSimple(field);
+            if(nameOfMethodInResultSetToGetValue==null){
+               fieldValue= handleCasesWhenTypeIsNotSimple(field,entry.getKey());
             }else {
-                 fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, field.getName());
+                 fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, entry.getKey());
+
             }
-            field.set(objectToBuildFromDB,fieldValue);//setting value that we got from resultSet
+            field.set(objectToBuildFromDB,fieldValue);
         }
     }
-    private Object handleCasesWhenTypeIsNotSimple(Field field){
+    protected Object handleCasesWhenTypeIsNotSimple(Field field,String nameOfFieldToGet){
         Object fieldValue= null;
+        Object foreignKeyValue = getValueFromResultSet(METHODNAMEFORINTEGER,nameOfFieldToGet);
         if(field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class) || field.isAnnotationPresent(OneToOne.class)
         || field.isAnnotationPresent(ManyToOne.class)){
-           //todo getInteger of ResultSet
-            fieldValue = null;//todo we have to call find for this method
+            fieldValue = database.getCrud().find(field.getType(),foreignKeyValue);
         }else if(field.isAnnotationPresent(OneToMany.class)){
-            //todo getInteger of ResultSet
-            //fieldValue = find(field.getAnnotation(OneToMany.class).typeOfReferencedObject(),id,classType);
-            //
+            fieldValue = database.getCrud().find(field.getAnnotation(OneToMany.class).typeOfReferencedObject(),row.getIdValue(),objectToBuildFromDB,field.getAnnotation(OneToMany.class).mappedBy());
+
         }
-        return null;
+        return fieldValue;
     }
-
-
-
-
-
-
     public String constructResultSetMethodName(Class<?> typeOfresult){
         if(DeterminatorOfType.getSQLType(typeOfresult)==null){
             return null;
-            //todo if it is not primitive or not a sql date then it has to be a foreign key or exception
         }
         if(typeOfresult==Integer.class){
             return METHODNAMEFORINTEGER;

@@ -44,26 +44,30 @@ public class CRUDImpl implements CRUD {
     }
 
     @Override
-    public Object find(Class<?> objectType, Object id) throws SQLException{
+    public Object find(Class<?> objectType, Object id){
         RowFromDB row = new RowConstructorFromDB(objectType,id).buildRow();
         String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
-        ResultSet resultSet = dataBase.executeQueryWuthResult(queryFind);
-        resultSet.next();
+        ResultSet resultSet = dataBase.executeQueryWithResult(queryFind);
         try {
-            Object object = new ObjectBuilder(row, resultSet, objectType).buildObject();
+            resultSet.next();
+            Object object = new ObjectBuilder(row, resultSet, objectType,dataBase).buildObject();
         }catch (Exception e){
             //todo logger check
         }
 
         return null;
     }
-    public Collection<Object> find(Class classToFind,Object id,Object usingForeignKey,String mapping) throws Exception{
+    public Collection<Object> find(Class classToFind,Object id,Object usingForeignKey,String mapping) {
         RowFromDB row = new RowConstructorFromDBByForeignKey(classToFind,id,usingForeignKey.getClass()).buildRow();
         String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
-        ResultSet resultSet = dataBase.executeQueryWuthResult(queryFind);
+        ResultSet resultSet = dataBase.executeQueryWithResult(queryFind);
         Collection<Object> collection = new HashSet<>();
-        while(resultSet.next()){
-            collection.add(new ObjectBuilderWithLinks(row,resultSet,classToFind,usingForeignKey,mapping).buildObject());
+        try {
+            while (resultSet.next()) {
+                collection.add(new ObjectBuilderWithLinks(row, resultSet, classToFind, usingForeignKey, mapping,dataBase).buildObject());
+            }
+        }catch (Exception e){
+            //todo handle exception
         }
         return collection;
     }
