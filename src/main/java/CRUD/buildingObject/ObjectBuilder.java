@@ -17,6 +17,9 @@ public class ObjectBuilder {
     protected RowFromDB row;
     protected ResultSet resultSet;
     protected Class<?> classType;
+    public ObjectBuilder(){
+
+    }
     public ObjectBuilder(RowFromDB rowFromDB, ResultSet resultSet,Class<?> classType){
         this.resultSet = resultSet;
         this.row = rowFromDB;
