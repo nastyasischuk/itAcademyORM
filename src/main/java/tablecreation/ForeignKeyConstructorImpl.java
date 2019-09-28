@@ -1,11 +1,8 @@
 package tablecreation;
 
-import annotations.ManyToOne;
 import annotations.MapsId;
 import annotations.OneToOne;
 import annotations.PrimaryKey;
-import exceptions.NoPrimaryKeyException;
-import exceptions.SeveralPrimaryKeysException;
 
 import java.lang.reflect.Field;
 import java.math.BigInteger;
@@ -33,6 +30,7 @@ public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
     private String getTableName() {
         Class entityClass = field.getDeclaringClass();
         // если присутствует аннотация Table c именем отличным от `""`
+        //comment to method
         if (entityClass.isAnnotationPresent(annotations.Table.class) &&
                 !((annotations.Table) entityClass.getAnnotation(annotations.Table.class)).name().equals("")) {
 

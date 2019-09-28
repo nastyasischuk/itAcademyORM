@@ -40,11 +40,7 @@ public class RowConstructorFromDB extends RowConstructor {
         Field[] allFields = typeOfObject.getDeclaredFields();
         Map<String, Class> namesAndType = new HashMap<>();
         for (Field currentField : allFields) {
-            if (currentField.isAnnotationPresent(ForeignKey.class) || currentField.isAnnotationPresent(MapsId.class)) {
-                String name = getNameOfField(currentField);
-                Class type = currentField.getType();
-                namesAndType.put(name, type);
-            } else {
+            if (!currentField.isAnnotationPresent(PrimaryKey.class)) {
                 String name = getNameOfField(currentField);
                 Class type = currentField.getType();
                 namesAndType.put(name, type);
@@ -52,4 +48,6 @@ public class RowConstructorFromDB extends RowConstructor {
         }
         return namesAndType;
     }
+
+
 }

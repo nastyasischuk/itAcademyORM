@@ -7,15 +7,15 @@ import java.lang.reflect.Field;
 public abstract class RowConstructor  {
     public abstract Row buildRow();
 
-    protected String getTableName(Class<?> classToConvertTorow) {
-        if (classToConvertTorow.isAnnotationPresent(annotations.Table.class) && !classToConvertTorow.getAnnotation(annotations.Table.class).name().equals("")) {
-            return classToConvertTorow.getAnnotation(annotations.Table.class).name();
+    protected String getTableName(Class<?> classToConvertToRow) {
+        if (AnnotationUtils.isTablePresentAndNotEmpty(classToConvertToRow)) {
+            return classToConvertToRow.getAnnotation(annotations.Table.class).name();
         } else {
-            return classToConvertTorow.getSimpleName();
+            return classToConvertToRow.getSimpleName();
         }
-
     }
-    String getNameOfField(Field field){
+
+    String getNameOfField(Field field) {
         if(field.isAnnotationPresent(annotations.Column.class) && !field.getAnnotation(annotations.Column.class).name().equals("")){
             return field.getAnnotation(annotations.Column.class).name();
         }else if(field.isAnnotationPresent(ForeignKey.class) && !field.getAnnotation(ForeignKey.class).name().equals("")){

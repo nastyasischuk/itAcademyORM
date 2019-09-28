@@ -20,7 +20,7 @@ class ParseXMLConfig {
     ParseXMLConfig(String pathToXmlConfigFile) {
         this.xmlConfigFile = new File(pathToXmlConfigFile);
     }
-
+// TODO move strings to constants
     String getUrl() {
         return getProperty("database.connection.url").trim();
     }

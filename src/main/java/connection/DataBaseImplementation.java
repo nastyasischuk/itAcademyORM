@@ -89,9 +89,7 @@ public class DataBaseImplementation implements DataBase {
             tablecreation.Table table = null;
             try {
                 table = new TableConstructorImpl(currentClass).buildTable();
-            } catch (NoPrimaryKeyException e) {
-                e.printStackTrace();
-            } catch (SeveralPrimaryKeysException e) {
+            } catch (NoPrimaryKeyException | SeveralPrimaryKeysException e) {
                 e.printStackTrace();
             }
             SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
