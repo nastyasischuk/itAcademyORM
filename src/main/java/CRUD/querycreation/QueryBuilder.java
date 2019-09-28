@@ -1,10 +1,11 @@
 package CRUD.querycreation;
 
-import CRUD.rowhandler.Row;
+
+import CRUD.rowhandler.RowToDB;
 
 public abstract class QueryBuilder {
-   Row row;
-    public QueryBuilder(Row row){
+   RowToDB row;
+    public QueryBuilder(RowToDB row){
         this.row = row;
     }
    public abstract String buildQuery();
