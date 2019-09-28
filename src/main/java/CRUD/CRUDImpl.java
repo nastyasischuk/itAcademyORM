@@ -1,5 +1,7 @@
 package CRUD;
 
+import CRUD.buildingObject.ObjectBuilder;
+import CRUD.buildingObject.ObjectBuilderWithLinks;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.*;
@@ -55,13 +57,13 @@ public class CRUDImpl implements CRUD {
 
         return null;
     }
-    public Collection<Object> find(Class classToFind,Object id,Class usingForeignKey) throws Exception{
-        RowFromDB row = new RowConstructorFromDBByForeignKey(classToFind,id,usingForeignKey).buildRow();
+    public Collection<Object> find(Class classToFind,Object id,Object usingForeignKey,String mapping) throws Exception{
+        RowFromDB row = new RowConstructorFromDBByForeignKey(classToFind,id,usingForeignKey.getClass()).buildRow();
         String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
         ResultSet resultSet = dataBase.executeQueryWuthResult(queryFind);
         Collection<Object> collection = new HashSet<>();
         while(resultSet.next()){
-            collection.add(new ObjectBuilder(row,resultSet,classToFind).buildObject());
+            collection.add(new ObjectBuilderWithLinks(row,resultSet,classToFind,usingForeignKey,mapping).buildObject());
         }
         return collection;
     }

@@ -1,4 +1,4 @@
-package CRUD;
+package CRUD.buildingObject;
 
 import CRUD.rowhandler.RowFromDB;
 import annotations.*;
@@ -13,13 +13,10 @@ import java.util.Map;
 public class ObjectBuilder {
     public static final String METHODNAMEFORINTEGER ="getInt";
     public static final String STARTOFMETHODRESULTSETTOGETVALUE ="get";
-    private Object objectToBuildFromDB;
-    private RowFromDB row;
-    private ResultSet resultSet;
-    private Class<?> classType;
-    public ObjectBuilder(){
-
-    }
+    protected Object objectToBuildFromDB;
+    protected RowFromDB row;
+    protected ResultSet resultSet;
+    protected Class<?> classType;
     public ObjectBuilder(RowFromDB rowFromDB, ResultSet resultSet,Class<?> classType){
         this.resultSet = resultSet;
         this.row = rowFromDB;
@@ -39,7 +36,7 @@ public class ObjectBuilder {
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(entry.getValue());
             Object fieldValue=null;
             if(nameOfMethodInResultSetToGetValue==null){//we could not find proper type then we check if it is foreign key
-
+                handleCasesWhenTypeIsNotSimple(field);
             }else {
                  fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, field.getName());
             }
@@ -80,7 +77,7 @@ public class ObjectBuilder {
     }
 
 
-    private Object getValueFromResultSet(String nameOfMethod,String nameOfAttributeToGet){
+    protected Object getValueFromResultSet(String nameOfMethod,String nameOfAttributeToGet){
         Method method;
         Object valueOfObject = null;
         try {
