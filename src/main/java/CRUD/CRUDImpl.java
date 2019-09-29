@@ -71,6 +71,20 @@ public class CRUDImpl implements CRUD {
         }
         return collection;
     }
+    public Collection<Object> find(Class classToFind,Object id,Object usingForeignKey,String mapping,String nameOfTableManyToMany) {
+        RowFromDB row = new RowConstructorFromDBByForeignKey(classToFind,id,usingForeignKey.getClass()).buildRow();
+        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
+        ResultSet resultSet = dataBase.executeQueryWithResult(queryFind);
+        Collection<Object> collection = new HashSet<>();
+        try {
+            while (resultSet.next()) {
+                collection.add(new ObjectBuilderWithLinks(row, resultSet, classToFind, usingForeignKey, mapping,dataBase).buildObject());
+            }
+        }catch (Exception e){
+            //todo handle exception
+        }
+        return collection;
+    }
 
     private RowToDB cudBasics(Object objectToDB, QueryType queryType){
         RowToDB rowToDB = new RowConstructorToDB(objectToDB).buildRow();
