@@ -1,7 +1,5 @@
 package tablecreation;
 
-import exceptions.SeveralPrimaryKeysException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +8,7 @@ public class Table {
     private List<Column> columns;
     private PrimaryKey primaryKey;
     private List<ForeignKey> foreignKeys;
+    private List<ManyToMany> mtmAssociations;
     private String checkConstraint;
     private List<Index> indexes;
 
@@ -17,6 +16,7 @@ public class Table {
         this.tableName = tableName;
         indexes = new ArrayList<>();
         foreignKeys = new ArrayList<>();
+        mtmAssociations = new ArrayList<>();
     }
 
     public List<Column> getColumns() {
@@ -68,4 +68,11 @@ public class Table {
         return indexes;
     }
 
+    public void addManyToManyAssociation(ManyToMany manyToMany) {
+        mtmAssociations.add(manyToMany);
+    }
+
+    public List<ManyToMany> getMtmAssociations() {
+        return mtmAssociations;
+    }
 }
