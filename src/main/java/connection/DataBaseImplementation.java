@@ -1,5 +1,6 @@
 package connection;
 
+import CRUD.CRUDImpl;
 import exceptions.DatabaseException;
 import exceptions.NoPrimaryKeyException;
 import exceptions.OpenConnectionException;
@@ -9,16 +10,14 @@ import tablecreation.SQLTableQueryCreator;
 import tablecreation.TableConstructorImpl;
 import transaction.TransactionsManager;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DataBaseImplementation implements DataBase {
     private static Logger logger = Logger.getLogger(DataBaseImplementation.class);
     private static TransactionsManager transactionsManager = null;
+    private CRUDImpl crud;
 
     private ParseXMLConfig parseXMLConfig;
     private static final String DEFAULT = "default_db";
@@ -26,6 +25,7 @@ public class DataBaseImplementation implements DataBase {
 
     public DataBaseImplementation(String pathToXml) {
         parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
         this.name = DEFAULT;
         createAllTables();
     }
@@ -96,16 +96,16 @@ public class DataBaseImplementation implements DataBase {
             String createPKQuery = sqlTableQueryCreator.createPKQuery();
             fkQueriesToExecute.addAll(sqlTableQueryCreator.createFKQuery());
 
-            executeQuery(createTableQuery);
-            executeQuery(createPKQuery);
+            executeQueryForCreateDB(createTableQuery);
+            executeQueryForCreateDB(createPKQuery);
         }
 
         for (String query : fkQueriesToExecute) {
-            executeQuery(query);
+            executeQueryForCreateDB(query);
         }
     }
 
-    private void executeQuery(String query){
+    private void executeQueryForCreateDB(String query){
         this.openConnection();
         Statement statement = null;
         try {
@@ -124,6 +124,61 @@ public class DataBaseImplementation implements DataBase {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void save(Object object) {
+        crud.save(object);
+    }
+
+    public void delete(Object object) {
+        crud.delete(object);
+    }
+
+    public void update(Object object) {
+        crud.update(object);
+    }
+
+    public Object find(Class type, Object id) throws SQLException{
+        return crud.find(type, id);
+    }
+
+    public void executeQuery(String query) {//todo rename because it is only for execute update not for getting result set
+        Statement statement = null;
+        try {
+            statement = this.getConnection().createStatement();
+            logger.debug("Executing query " + query);
+            statement.executeUpdate(query);
+        } catch (SQLException e) {
+            throw new DatabaseException(e.getMessage());
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public ResultSet executeQueryWuthResult(String query){//todo check ussage of result set
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = this.getConnection().createStatement();
+            logger.debug("Executing query " + query);
+            resultSet = statement.executeQuery(query);
+        } catch (SQLException e) {
+            throw new DatabaseException(e.getMessage());
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return resultSet;
     }
 
     public TransactionsManager getTransactionManager() {
