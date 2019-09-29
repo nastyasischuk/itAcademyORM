@@ -6,7 +6,6 @@ import java.util.List;
 public class SQLTableQueryCreator {
     private Table table;
 
-
     public SQLTableQueryCreator(Table table) {
         this.table = table;
     }
@@ -17,9 +16,10 @@ public class SQLTableQueryCreator {
         for (Column column : table.getColumns()) {//TODO value of column.getType length varchar
             Column lastColumn = table.getColumns().get(table.getColumns().size() - 1);
 
-            if (column.isForeignKey() && column.getName().equals(findPKName(table.getColumns()))) {
+            if (column.isForeignKey() && column.getName().equals(findPKName(table.getColumns())))
                 continue;
-            }
+            if (column.isManyToMany())
+                continue;
 
             request.append(column.getName()).append(" ").append(column.getType());
             if (column.getType().equals(SQLTypes.VARCHAR)) {
@@ -49,7 +49,6 @@ public class SQLTableQueryCreator {
         request.append(')').append(';');
         if (request.toString().endsWith(", );"))
             request = new StringBuilder(request.toString().replace(", );", ");"));
-        //request.append(" ").append(createPKQuery());
         return request.toString();
     }
 
@@ -92,6 +91,17 @@ public class SQLTableQueryCreator {
         return queryFKList;
     }
 
+    public List<String> createManyToManyQuery() {
+        List<String> queryMTMList = new ArrayList<>();
+        StringBuilder query = new StringBuilder();
+        for (ManyToMany mtm : table.getMtmAssociations()) {
+            if (!table.getMtmAssociations().isEmpty()) {
+
+            }
+        }
+        // TODO: Create query
+        return null;
+    }
 
     public String createPKQuery() {
         StringBuilder request = new StringBuilder();
