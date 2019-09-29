@@ -13,6 +13,10 @@ public class AnnotationUtils {
                 && !StringUtils.isEmpty(annotatedClass.getAnnotation(Table.class).name());
     }
 
+    public static boolean isColumnPresent(Field field) {
+        return field.isAnnotationPresent(Column.class);
+    }
+
     public static boolean isColumnPresentAndNotEmpty(Field field) {
         return field.isAnnotationPresent(Column.class)
                 && !StringUtils.isEmpty(field.getAnnotation(Column.class).name());
@@ -27,6 +31,10 @@ public class AnnotationUtils {
         return field.isAnnotationPresent(PrimaryKey.class);
     }
 
+    public static boolean isOneToOneAndMapsIdPresent(Field field) {
+        return field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class);
+    }
+
     public static String getTableName(Class toBuildClass) {
         return ((annotations.Table) toBuildClass.getAnnotation(annotations.Table.class)).name();
     }
@@ -39,4 +47,26 @@ public class AnnotationUtils {
         return field.getAnnotation(ForeignKey.class).name();
     }
 
+    public static boolean isManyToManyPresent(Field field) {
+        return field.isAnnotationPresent(ManyToMany.class);
+    }
+
+    public static boolean isAssociatedTablePresentAndNotEmpty(Field field) {
+        return field.isAnnotationPresent(AssociatedTable.class) &&
+                !StringUtils.isEmpty(field.getAnnotation(AssociatedTable.class).associatedTableName()) &&
+                !StringUtils.isEmpty(field.getAnnotation(AssociatedTable.class).inverseJoinColumns().name()) &&
+                !StringUtils.isEmpty(field.getAnnotation(AssociatedTable.class).joinColumns().name());
+    }
+
+    public static String getAssociatedTableName(Field field) {
+        return field.getAnnotation(AssociatedTable.class).associatedTableName();
+    }
+
+    public static String getJoinColumn(Field field) {
+        return field.getAnnotation(AssociatedTable.class).joinColumns().name();
+    }
+
+    public static String getInverseJoinColumn(Field field) {
+        return field.getAnnotation(AssociatedTable.class).inverseJoinColumns().name();
+    }
 }
