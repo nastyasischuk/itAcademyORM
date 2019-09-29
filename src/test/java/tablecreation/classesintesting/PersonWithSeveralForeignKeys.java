@@ -46,4 +46,12 @@ public class PersonWithSeveralForeignKeys {
     public void setAge(int age) {
         this.age = age;
     }
+
+    public void setPerson1(PersonWithConstraints person1) {
+        this.person1 = person1;
+    }
+
+    public void setPerson2(PersonWithSimpleProperColumns person2) {
+        this.person2 = person2;
+    }
 }

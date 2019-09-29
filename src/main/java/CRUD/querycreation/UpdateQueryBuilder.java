@@ -1,11 +1,15 @@
 package CRUD.querycreation;
 
-import CRUD.rowhandler.Row;
+
 import CRUD.rowhandler.RowToDB;
+
 import tablecreation.SQLStatements;
 
+import java.util.Map;
+
+
 public class UpdateQueryBuilder extends QueryBuilder {
-    //TODO change to right Class
+
 
     public UpdateQueryBuilder(RowToDB row) {
         super(row);
@@ -16,9 +20,11 @@ public class UpdateQueryBuilder extends QueryBuilder {
         StringBuilder request = new StringBuilder();
         StringBuilder columnNamesAndColumnValues = new StringBuilder();
         request.append(SQLStatements.UPDATE.getValue()).append(" ").append(row.getTableName());
+        for(Map.Entry<String,String> entry: row.getMap().entrySet()) {
+            request.append(SQLStatements.SET).append(columnNamesAndColumnValues);
+            request.append(SQLStatements.WHERE.getValue()).append(entry.getKey()).append(" ").append(entry.getValue()).append(';');
 
-        request.append(SQLStatements.SET).append(columnNamesAndColumnValues);
-        request.append(SQLStatements.WHERE.getValue()).append(row.getIdName()).append(" ").append(row.getIdValue()).append(';');;
+        }
         return request.toString();
     }
 }

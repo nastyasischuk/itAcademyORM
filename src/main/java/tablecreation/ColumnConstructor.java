@@ -25,11 +25,11 @@ public class ColumnConstructor{
 
     private String getNameOfField(){
 
-        if(field.isAnnotationPresent(annotations.Column.class) && !field.getAnnotation(annotations.Column.class).name().equals("")){
-            return field.getAnnotation(annotations.Column.class).name();
-        }else if(field.isAnnotationPresent(ForeignKey.class) && !field.getAnnotation(ForeignKey.class).name().equals("")){
-           return field.getAnnotation(ForeignKey.class).name();
-        }else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {
+        if(AnnotationUtils.isColumnPresentAndNotEmpty(field)){
+            return AnnotationUtils.getColumnName(field);
+        }else if(AnnotationUtils.isForeignKeyPresentAndNotEmpty(field)){
+           return AnnotationUtils.getFKName(field);
+        }else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {//todo create inAnnotatinUtils
             Class currentClass = field.getDeclaringClass();
             Field[] fields = currentClass.getDeclaredFields();
             for (Field f : fields) {
