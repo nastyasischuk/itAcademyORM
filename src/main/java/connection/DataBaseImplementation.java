@@ -83,28 +83,32 @@ public class DataBaseImplementation implements DataBase {
 
     private void createAllTables() {
         List<String> fkQueriesToExecute = new ArrayList<>();
+        List<String> mtmQueriesToExecute = new ArrayList<>();
+
         List<Class<?>> allEntities = parseXMLConfig.getAllClasses();
         for (Class currentClass : allEntities) {
             tablecreation.Table table = null;
             try {
                 table = new TableConstructorImpl(currentClass).buildTable();
-            } catch (NoPrimaryKeyException e) {
-                e.printStackTrace();
-            } catch (SeveralPrimaryKeysException e) {
+            } catch (NoPrimaryKeyException | SeveralPrimaryKeysException e) {
                 e.printStackTrace();
             }
             SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
             String createPKQuery = sqlTableQueryCreator.createPKQuery();
-            fkQueriesToExecute.addAll(sqlTableQueryCreator.createFKQuery());
 
+            fkQueriesToExecute.addAll(sqlTableQueryCreator.createFKQuery());
+            mtmQueriesToExecute.addAll(sqlTableQueryCreator.createManyToManyQuery());
+            //TODO: organise queries
             executeQueryForCreateDB(createTableQuery);
             executeQueryForCreateDB(createPKQuery);
         }
 
-        for (String query : fkQueriesToExecute) {
+        for (String query : fkQueriesToExecute)
             executeQueryForCreateDB(query);
-        }
+
+        for (String query : mtmQueriesToExecute)
+            executeQueryForCreateDB(query);
     }
 
     private void executeQueryForCreateDB(String query){
