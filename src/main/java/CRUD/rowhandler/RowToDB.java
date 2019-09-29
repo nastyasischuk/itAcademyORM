@@ -22,7 +22,7 @@ public class RowToDB extends Row {
         nameOfColumnsAndValues.put(name,value);
     }
 
-    @Override
+
     public Map<String, String> getMap() {
         return nameOfColumnsAndValues;
     }

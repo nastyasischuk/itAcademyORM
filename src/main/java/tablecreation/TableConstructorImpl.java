@@ -1,5 +1,6 @@
 package tablecreation;
 
+import annotations.AnnotationUtils;
 import annotations.Check;
 import annotations.Index;
 import annotations.MapsId;
@@ -29,8 +30,8 @@ public class TableConstructorImpl implements TableConstructor {
     }
 
     private String getTableName() {
-        if (toBuildClass.isAnnotationPresent(annotations.Table.class) && !toBuildClass.getAnnotation(annotations.Table.class).name().equals("")) {
-            return toBuildClass.getAnnotation(annotations.Table.class).name();
+        if (AnnotationUtils.isTablePresentAndNotEmpty(toBuildClass)) {
+            return AnnotationUtils.getTableName(toBuildClass);
         } else {
             return toBuildClass.getSimpleName();
         }

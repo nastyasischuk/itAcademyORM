@@ -1,5 +1,11 @@
 package CRUD.querycreation;
 
 public enum QueryType {
-    UPDATE,DELETE,INSERT;
+
+    UPDATE,
+    DELETE,
+    INSERT,
+    SELECTID
 }
+
+

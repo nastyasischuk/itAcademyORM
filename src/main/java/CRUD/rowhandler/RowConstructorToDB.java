@@ -5,11 +5,11 @@ import annotations.*;
 import java.lang.reflect.Field;
 
 public class RowConstructorToDB extends RowConstructor {
-    RowToDB row;
-    Object classToConvertTorow;
+   private RowToDB row;
+   private Object classToConvertToRow;
 
     public RowConstructorToDB(Object initialObject) {
-        this.classToConvertTorow = initialObject;
+        this.classToConvertToRow = initialObject;
         row = new RowToDB(getTableName(initialObject.getClass()));
     }
 
@@ -20,7 +20,7 @@ public class RowConstructorToDB extends RowConstructor {
     }
 
     private void setColumnValuesAndNames(){
-        Field[] classFields = classToConvertTorow.getClass().getDeclaredFields();
+        Field[] classFields = classToConvertToRow.getClass().getDeclaredFields();
         for(int i =0;i<classFields.length;i++){
            Field fieldToAdd = classFields[i];
            if(fieldToAdd.isAnnotationPresent(Column.class) && fieldToAdd.isAnnotationPresent(ForeignKey.class)
@@ -44,7 +44,7 @@ public class RowConstructorToDB extends RowConstructor {
     }
 
     private Object getValueOfSimpleField(Field field) throws IllegalAccessException{
-        return field.get(classToConvertTorow);
+        return field.get(classToConvertToRow);
     }
     public String getValueOfAllFields(Field field){
         field.setAccessible(true);
@@ -61,7 +61,7 @@ public class RowConstructorToDB extends RowConstructor {
         return null;
     }
     private Object determineValueOfForeignKey(Field field) throws IllegalAccessException{
-        Object object = field.get(classToConvertTorow);
+        Object object = field.get(classToConvertToRow);
         Field[] fieldsOfReferencedClass = object.getClass().getDeclaredFields();
         for(Field fieldInArray:fieldsOfReferencedClass){
             if(fieldInArray.isAnnotationPresent(PrimaryKey.class)){
