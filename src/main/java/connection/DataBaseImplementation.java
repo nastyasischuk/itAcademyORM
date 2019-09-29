@@ -10,10 +10,7 @@ import tablecreation.SQLTableQueryCreator;
 import tablecreation.TableConstructorImpl;
 import transaction.TransactionsManager;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,28 +81,32 @@ public class DataBaseImplementation implements DataBase {
 
     private void createAllTables() {
         List<String> fkQueriesToExecute = new ArrayList<>();
+        List<String> mtmQueriesToExecute = new ArrayList<>();
+
         List<Class<?>> allEntities = parseXMLConfig.getAllClasses();
         for (Class currentClass : allEntities) {
             tablecreation.Table table = null;
             try {
                 table = new TableConstructorImpl(currentClass).buildTable();
-            } catch (NoPrimaryKeyException e) {
-                e.printStackTrace();
-            } catch (SeveralPrimaryKeysException e) {
+            } catch (NoPrimaryKeyException | SeveralPrimaryKeysException e) {
                 e.printStackTrace();
             }
             SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
             String createPKQuery = sqlTableQueryCreator.createPKQuery();
-            fkQueriesToExecute.addAll(sqlTableQueryCreator.createFKQuery());
 
+            fkQueriesToExecute.addAll(sqlTableQueryCreator.createFKQuery());
+            mtmQueriesToExecute.addAll(sqlTableQueryCreator.createManyToManyQuery());
+            //TODO: organise queries
             executeQueryForCreateDB(createTableQuery);
             executeQueryForCreateDB(createPKQuery);
         }
 
-        for (String query : fkQueriesToExecute) {
+        for (String query : fkQueriesToExecute)
             executeQueryForCreateDB(query);
-        }
+
+        for (String query : mtmQueriesToExecute)
+            executeQueryForCreateDB(query);
     }
 
     private void executeQueryForCreateDB(String query){
@@ -141,11 +142,11 @@ public class DataBaseImplementation implements DataBase {
         crud.update(object);
     }
 
-    public Object find(Class type, Object id) {
+    public Object find(Class type, Object id) throws SQLException{
         return crud.find(type, id);
     }
 
-    public void executeQuery(String query) {
+    public void executeQuery(String query) {//todo rename because it is only for execute update not for getting result set
         Statement statement = null;
         try {
             statement = this.getConnection().createStatement();
@@ -162,6 +163,26 @@ public class DataBaseImplementation implements DataBase {
                 e.printStackTrace();
             }
         }
+    }
+    public ResultSet executeQueryWuthResult(String query){//todo check ussage of result set
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = this.getConnection().createStatement();
+            logger.debug("Executing query " + query);
+            resultSet = statement.executeQuery(query);
+        } catch (SQLException e) {
+            throw new DatabaseException(e.getMessage());
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return resultSet;
     }
 
     public TransactionsManager getTransactionManager() {

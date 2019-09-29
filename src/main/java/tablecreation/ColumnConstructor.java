@@ -2,6 +2,7 @@ package tablecreation;
 
 import annotations.*;
 import annotations.ForeignKey;
+import annotations.ManyToMany;
 import annotations.PrimaryKey;
 import exceptions.WrongSQLType;
 
@@ -14,7 +15,7 @@ public class ColumnConstructor{
 
     public ColumnConstructor(Field field) throws WrongSQLType{
         this.field = field;
-        column = new tablecreation.Column(getNameOfField(),determineTypeOfColumnInSql());
+        column = new tablecreation.Column(getNameOfField(), determineTypeOfColumnInSql());
     }
 
     public tablecreation.Column buildColumn()
@@ -24,27 +25,30 @@ public class ColumnConstructor{
     }
 
     private String getNameOfField(){
-
-        if(field.isAnnotationPresent(annotations.Column.class) && !field.getAnnotation(annotations.Column.class).name().equals("")){
-            return field.getAnnotation(annotations.Column.class).name();
-        }else if(field.isAnnotationPresent(ForeignKey.class) && !field.getAnnotation(ForeignKey.class).name().equals("")){
-           return field.getAnnotation(ForeignKey.class).name();
-        }else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {
-            Class currentClass = field.getDeclaringClass();
-            Field[] fields = currentClass.getDeclaredFields();
-            for (Field f : fields) {
-                if (f.isAnnotationPresent(PrimaryKey.class)) {
-                    if (f.isAnnotationPresent(annotations.Column.class) && !f.getAnnotation(annotations.Column.class).name().equals("")) {
-                        return f.getAnnotation(annotations.Column.class).name();
-                    } else {
-                        return f.getName();
-                    }
-                }
-            }
-            return field.getName();
-        }else{
+        if(AnnotationUtils.isColumnPresentAndNotEmpty(field)){
+            return AnnotationUtils.getColumnName(field);
+        }else if(AnnotationUtils.isForeignKeyPresentAndNotEmpty(field)){
+           return AnnotationUtils.getFKName(field);
+        }else if (AnnotationUtils.isOneToOneAndMapsIdPresent(field)) {
+            return getNameIfOneToOne();
+        } else{
             return field.getName();
         }
+    }
+
+    private String getNameIfOneToOne() {
+        Class currentClass = field.getDeclaringClass();
+        Field[] fields = currentClass.getDeclaredFields();
+        for (Field currentField : fields) {
+            if (AnnotationUtils.isPrimaryKeyPresent(field)) {
+                if (AnnotationUtils.isColumnPresentAndNotEmpty(currentField)) {
+                    return AnnotationUtils.getColumnName(field);
+                } else {
+                    return currentField.getName();
+                }
+            }
+        }
+        return field.getName();
     }
 
     private SQLTypes determineTypeOfColumnInSql()throws WrongSQLType{
@@ -54,25 +58,22 @@ public class ColumnConstructor{
         if (field.isAnnotationPresent(Type.class)){
             return field.getAnnotation(Type.class).type();
         }
-            SQLTypes type = DeterminatorOfType.getSQLType(field.getType());
-            if(type==null)
-                throw new WrongSQLType(field.getClass());
-            return type;
-
+        if (AnnotationUtils.isManyToManyPresent(field))
+            return DeterminatorOfType.getSQLType(Integer.class);//TODO change for smth more normal
+        SQLTypes type = DeterminatorOfType.getSQLType(field.getType());
+        if(type==null)
+            throw new WrongSQLType(field.getClass());
+        return type;
     }
 
-
-
     private void checkConstraints(){
-        if(field.isAnnotationPresent(annotations.Column.class)){
+        if(AnnotationUtils.isColumnPresent(field)){
             if(field.getAnnotation(annotations.Column.class).unique()){
                 column.setUnique(true);
             }
-
             if(field.isAnnotationPresent(Default.class)){
                 column.setDefaultValue(field.getAnnotation(Default.class).value());
             }
-
             if(field.getAnnotation(annotations.Column.class).autoincrement()){
                 column.setAutoincrement(true);
             }
@@ -88,7 +89,8 @@ public class ColumnConstructor{
         if(field.isAnnotationPresent(NotNull.class)){
             column.setNullable(false);
         }
-
+        if (AnnotationUtils.isManyToManyPresent(field) && AnnotationUtils.isAssociatedTablePresentAndNotEmpty(field)) {
+            column.setManyToMany(true);
+        }
     }
-
 }
