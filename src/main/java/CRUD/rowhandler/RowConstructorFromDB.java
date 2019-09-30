@@ -19,11 +19,14 @@ public class RowConstructorFromDB extends RowConstructor {
 
     @Override
     public RowFromDB buildRow() {
+       operationsToBuild(rowFromDB);
+        return rowFromDB;
+    }
+    protected void operationsToBuild(RowFromDB rowFromDB){
         rowFromDB.setIdValue(id.toString());
         rowFromDB.setIdName(getIdName());
         rowFromDB.setTableName(getTableName(typeOfObject));
         rowFromDB.setNameAndType(getNameAndType());
-        return rowFromDB;
     }
 
     protected String getIdName() {
@@ -40,7 +43,13 @@ public class RowConstructorFromDB extends RowConstructor {
         Field[] allFields = typeOfObject.getDeclaredFields();
         Map<String, Class> namesAndType = new HashMap<>();
         for (Field currentField : allFields) {
-            if (!currentField.isAnnotationPresent(PrimaryKey.class)) {
+            if (currentField.isAnnotationPresent(Column.class)
+                    ||   currentField.isAnnotationPresent(ForeignKey.class)||
+                    currentField.isAnnotationPresent(ManyToMany.class)
+                    ||currentField.isAnnotationPresent(ManyToOne.class)
+                    ||currentField.isAnnotationPresent(OneToMany.class)
+            ||currentField.isAnnotationPresent(OneToOne.class)
+            ||currentField.isAnnotationPresent(PrimaryKey.class)) {
                 String name = getNameOfField(currentField);
                 Class type = currentField.getType();
                 namesAndType.put(name, type);

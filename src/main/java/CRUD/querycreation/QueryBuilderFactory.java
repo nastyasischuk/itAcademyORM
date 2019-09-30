@@ -20,6 +20,11 @@ public class QueryBuilderFactory {
     }
     public QueryBuilderFromDB createQueryBuilderFromDB(RowFromDB row){
         return new QueryBuilderFromDB(row);
+
+    }
+    public QueryBuilderFromDB createQueryBuilderFromDB(RowFromDB row,String manyToManyTable){
+        return new QueryBuilderFromDB(row);
+
     }
 
 }
