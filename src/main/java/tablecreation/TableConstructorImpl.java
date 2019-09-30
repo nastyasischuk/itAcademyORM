@@ -7,6 +7,7 @@ import annotations.MapsId;
 import exceptions.NoPrimaryKeyException;
 import exceptions.SeveralPrimaryKeysException;
 import exceptions.WrongSQLType;
+import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TableConstructorImpl implements TableConstructor {
+    private static Logger logger = Logger.getLogger(TableConstructorImpl.class);
     private Class<?> toBuildClass;
     private Table table;
 
@@ -57,7 +59,7 @@ public class TableConstructorImpl implements TableConstructor {
             try {
                 builtColumn = new ColumnConstructor(classFields[i]).buildColumn();
             } catch (WrongSQLType e) {
-                e.getMessage();
+                logger.error(e.getMessage());
                 continue;
             }
             columns.add(builtColumn);
