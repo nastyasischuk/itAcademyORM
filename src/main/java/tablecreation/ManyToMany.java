@@ -10,8 +10,10 @@ public class ManyToMany {
     private String AssociatedTableName;
     private String ForeignKeyToOriginalTableName;
     private String ForeignKeyToLinkedTableName;
+    private String typeOfPKOriginal;
+    private String typeOfPKLinked;
 
-    public ManyToMany(String originalTableName, String primaryKeyOfOriginalTableName, String linkedTableName, String primaryKeyOfLinkedTableName, String associatedTableName, String foreignKeyToOriginalTableName, String foreignKeyToLinkedTableName) {
+    public ManyToMany(String originalTableName, String primaryKeyOfOriginalTableName, String linkedTableName, String primaryKeyOfLinkedTableName, String associatedTableName, String foreignKeyToOriginalTableName, String foreignKeyToLinkedTableName, String typeOfPKOriginal, String typeOfPKLinked) {
         OriginalTableName = originalTableName;
         PrimaryKeyOfOriginalTableName = primaryKeyOfOriginalTableName;
         LinkedTableName = linkedTableName;
@@ -19,6 +21,8 @@ public class ManyToMany {
         AssociatedTableName = associatedTableName;
         ForeignKeyToOriginalTableName = foreignKeyToOriginalTableName;
         ForeignKeyToLinkedTableName = foreignKeyToLinkedTableName;
+        this.typeOfPKOriginal = typeOfPKOriginal;
+        this.typeOfPKLinked = typeOfPKLinked;
     }
 
     public ManyToMany() {
@@ -80,6 +84,22 @@ public class ManyToMany {
         ForeignKeyToLinkedTableName = foreignKeyToLinkedTableName;
     }
 
+    public String getTypeOfPKOriginal() {
+        return typeOfPKOriginal;
+    }
+
+    public void setTypeOfPKOriginal(String typeOfPKOriginal) {
+        this.typeOfPKOriginal = typeOfPKOriginal;
+    }
+
+    public String getTypeOfPKLinked() {
+        return typeOfPKLinked;
+    }
+
+    public void setTypeOfPKLinked(String typeOfPKLinked) {
+        this.typeOfPKLinked = typeOfPKLinked;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -109,6 +129,8 @@ public class ManyToMany {
                 ", AssociatedTableName='" + AssociatedTableName + '\'' +
                 ", ForeignKeyToOriginalTableName='" + ForeignKeyToOriginalTableName + '\'' +
                 ", ForeignKeyToLinkedTableName='" + ForeignKeyToLinkedTableName + '\'' +
+                ", typeOfPKOriginal='" + typeOfPKOriginal + '\'' +
+                ", typeOfPKLinked='" + typeOfPKLinked + '\'' +
                 '}';
     }
 }
