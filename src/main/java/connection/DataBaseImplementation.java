@@ -32,8 +32,27 @@ public class DataBaseImplementation implements DataBase {
         createAllTables();
     }
 
+    public DataBaseImplementation(String pathToXml, boolean createTables) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
+        this.name = DEFAULT;
+        if (createTables)
+            createAllTables();
+    }
+
     public DataBaseImplementation(String pathToXml, String name) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
         this.name = name;
+        createAllTables();
+    }
+
+    public DataBaseImplementation(String pathToXml, String name, boolean createTables) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
+        this.name = name;
+        if (createTables)
+            createAllTables();
     }
 
     public void openConnection() {
@@ -99,8 +118,12 @@ public class DataBaseImplementation implements DataBase {
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
             String createPKQuery = sqlTableQueryCreator.createPKQuery();
 
-            fkQueriesToExecute.addAll(sqlTableQueryCreator.createFKQuery());
-            mtmQueriesToExecute.addAll(sqlTableQueryCreator.createManyToManyQuery());
+            List<String> queriesFK = sqlTableQueryCreator.createFKQuery();
+            if (queriesFK != null && !queriesFK.isEmpty())
+                fkQueriesToExecute.addAll(queriesFK);
+            List<String> queriesMTM = sqlTableQueryCreator.createManyToManyQuery();
+            if (queriesMTM != null && !queriesMTM.isEmpty())
+                mtmQueriesToExecute.addAll(queriesMTM);
             //TODO: organise queries
             executeQueryForCreateDB(createTableQuery);
             executeQueryForCreateDB(createPKQuery);
