@@ -3,6 +3,7 @@ package CRUD.buildingObject;
 import CRUD.rowhandler.RowFromDB;
 import connection.DataBaseImplementation;
 
+import javax.sql.rowset.CachedRowSet;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,7 +14,7 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
     private String mapping;
     private Object objectToMappedBy;
 
-    public ObjectBuilderWithLinks(RowFromDB rowFromDB, ResultSet resultSet, Class<?> classType, Object objectToMappedBy, String fieldThatMapped, DataBaseImplementation db) {
+    public ObjectBuilderWithLinks(RowFromDB rowFromDB, CachedRowSet resultSet, Class<?> classType, Object objectToMappedBy, String fieldThatMapped, DataBaseImplementation db) {
         super(rowFromDB, resultSet, classType,db);
         this.mapping = fieldThatMapped;
         this.objectToMappedBy = objectToMappedBy;
@@ -45,7 +46,7 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
         if(field.getType() == objectToMappedBy.getClass())
             field.set(objectToBuildFromDB,objectToMappedBy);
         else{
-            Method methodToInsertIntoCollection = field.getType().getMethod("add",objectToMappedBy.getClass());
+            Method methodToInsertIntoCollection = field.getType().getMethod("add",classType);
             methodToInsertIntoCollection.invoke(field.get(objectToBuildFromDB),objectToMappedBy);
         }
     }

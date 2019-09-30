@@ -15,4 +15,10 @@ public class RowConstructorFromDBTest {
         assertFalse(row.getNameAndType().containsKey("age"));
         assertTrue(row.getNameAndType().containsKey("id"));
     }
+    @Test
+    public void buildRowTestAppropriateFieldsPrimaryKey() {
+        RowFromDB row = new RowConstructorFromDB(PersonOneFieldWithoutColumnAnnotation.class,1).buildRow();
+        assertFalse(row.getNameAndType().containsKey("age"));
+        assertTrue(row.getNameAndType().containsKey("id"));
+    }
 }

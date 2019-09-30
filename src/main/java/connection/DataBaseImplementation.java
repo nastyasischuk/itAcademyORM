@@ -32,8 +32,27 @@ public class DataBaseImplementation implements DataBase {
         createAllTables();
     }
 
+    public DataBaseImplementation(String pathToXml, boolean createTables) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
+        this.name = DEFAULT;
+        if (createTables)
+            createAllTables();
+    }
+
     public DataBaseImplementation(String pathToXml, String name) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
         this.name = name;
+        createAllTables();
+    }
+
+    public DataBaseImplementation(String pathToXml, String name, boolean createTables) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
+        this.name = name;
+        if (createTables)
+            createAllTables();
     }
 
     public void openConnection() {
@@ -99,8 +118,12 @@ public class DataBaseImplementation implements DataBase {
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
             String createPKQuery = sqlTableQueryCreator.createPKQuery();
 
-            fkQueriesToExecute.addAll(sqlTableQueryCreator.createFKQuery());
-            mtmQueriesToExecute.addAll(sqlTableQueryCreator.createManyToManyQuery());
+            List<String> queriesFK = sqlTableQueryCreator.createFKQuery();
+            if (queriesFK != null && !queriesFK.isEmpty())
+                fkQueriesToExecute.addAll(queriesFK);
+            List<String> queriesMTM = sqlTableQueryCreator.createManyToManyQuery();
+            if (queriesMTM != null && !queriesMTM.isEmpty())
+                mtmQueriesToExecute.addAll(queriesMTM);
             //TODO: organise queries
             executeQueryForCreateDB(createTableQuery);
             executeQueryForCreateDB(createPKQuery);
@@ -157,11 +180,11 @@ public class DataBaseImplementation implements DataBase {
                 }
             } catch (Exception e) {
                 logger.error(e.getMessage());
-//                e.printStackTrace();
+                e.printStackTrace();
             }
         }
     }
-    public ResultSet executeQueryWithResult(String query){//todo check ussage of result set
+    public Statement executeQueryWithResult(String query){//todo check ussage of result set
         Statement statement = null;
         ResultSet resultSet = null;
         try {
@@ -171,19 +194,18 @@ public class DataBaseImplementation implements DataBase {
         } catch (SQLException e) {
             logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
-        } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (Exception e) {
-                logger.error(e.getMessage());
-//                e.printStackTrace();
-            }
         }
-        return resultSet;
+        return statement;
     }
-
+public void closeStatement(Statement statement){
+    try {
+        if (statement != null) {
+            statement.close();
+        }
+    } catch (Exception e) {
+        logger.error(e.getMessage());
+    }
+}
     public TransactionsManager getTransactionManager() {
         if (transactionsManager == null)
             transactionsManager = new TransactionsManager(this.getConnection());

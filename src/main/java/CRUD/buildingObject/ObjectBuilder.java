@@ -6,6 +6,7 @@ import connection.DataBaseImplementation;
 import org.apache.log4j.Logger;
 import tablecreation.DeterminatorOfType;
 
+import javax.sql.rowset.CachedRowSet;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,18 +14,18 @@ import java.sql.ResultSet;
 import java.util.Map;
 
 public class ObjectBuilder {
-    private static Logger logger = Logger.getLogger(ObjectBuilder.class);
+    public static Logger logger = Logger.getLogger(ObjectBuilder.class);
     public static final String METHODNAMEFORINTEGER ="getInt";
     public static final String STARTOFMETHODRESULTSETTOGETVALUE ="get";
     protected DataBaseImplementation database;
     protected Object objectToBuildFromDB;
     protected RowFromDB row;
-    protected ResultSet resultSet;
+    protected CachedRowSet resultSet;
     protected Class<?> classType;
     public ObjectBuilder(){
 
     }
-    public ObjectBuilder(RowFromDB rowFromDB, ResultSet resultSet,Class<?> classType,DataBaseImplementation db){
+    public ObjectBuilder(RowFromDB rowFromDB, CachedRowSet resultSet,Class<?> classType,DataBaseImplementation db){
         this.resultSet = resultSet;
         this.row = rowFromDB;
         this.classType = classType;
@@ -38,6 +39,7 @@ public class ObjectBuilder {
     }
 
     public void setResultFromResultSet() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+
         for (Map.Entry<String,Class> entry: row.getNameAndType().entrySet()){
             Field field = classType.getDeclaredField(entry.getKey());
             field.setAccessible(true);
@@ -47,11 +49,13 @@ public class ObjectBuilder {
             if(nameOfMethodInResultSetToGetValue==null){
                 fieldValue = handleCasesWhenTypeIsNotSimple(field,entry.getKey());
             }else {
+                logger.info(nameOfMethodInResultSetToGetValue);
+                logger.info(entry.getKey());
                  fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, entry.getKey());
 
             }
             }catch (Exception e){
-
+            logger.info(e.getMessage());
             }
             field.set(objectToBuildFromDB,fieldValue);
         }
@@ -63,8 +67,10 @@ public class ObjectBuilder {
         || field.isAnnotationPresent(ManyToOne.class)){
             fieldValue = database.getCrud().find(field.getType(),foreignKeyValue);
         }else if(field.isAnnotationPresent(OneToMany.class)){
-            fieldValue = database.getCrud().findCollection(field.getAnnotation(OneToMany.class).typeOfReferencedObject(),row.getIdValue(),objectToBuildFromDB,field.getAnnotation(OneToMany.class).mappedBy());
-
+            try {
+                fieldValue = database.getCrud().findCollection(field.getAnnotation(OneToMany.class).typeOfReferencedObject(), row.getIdValue(), objectToBuildFromDB, field.getAnnotation(OneToMany.class).mappedBy());
+            logger.info(fieldValue);
+            }catch (Exception e){logger.info(e.getMessage());}
         }else return null;//todo
         return fieldValue;
     }
@@ -90,7 +96,7 @@ public class ObjectBuilder {
              method = ResultSet.class.getMethod(nameOfMethod,String.class);
            valueOfObject =  method.invoke(resultSet,nameOfAttributeToGet);
         }catch(NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
-            logger.error(e.getMessage());
+            logger.error(e);
         }
         return valueOfObject;
     }
