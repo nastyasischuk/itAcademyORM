@@ -1,6 +1,7 @@
 package CRUD.querycreation;
 
 import CRUD.rowhandler.RowFromDB;
+import tablecreation.SQLStatements;
 
 public class QueryBuilderFromDB {
     RowFromDB rowFromDB;
@@ -10,5 +11,10 @@ public class QueryBuilderFromDB {
     }
     public String buildQuery(){
         return null;//todo for method findCollection
+
+        StringBuilder request = new StringBuilder();
+        request.append(SQLStatements.SELECT.getValue()).append(" * ").append(rowFromDB.getTableName());
+        return request.toString();
+
     }
 }

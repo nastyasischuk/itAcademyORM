@@ -9,6 +9,7 @@ import annotations.AssociatedTable;
 import annotations.OneToMany;
 import annotations.PrimaryKey;
 import connection.DataBaseImplementation;
+import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
@@ -17,7 +18,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class CRUDImpl implements CRUD {
-
+    private static Logger logger = Logger.getLogger(CRUDImpl.class);
     private DataBaseImplementation dataBase;
 
     public CRUDImpl(DataBaseImplementation dataBase) {
@@ -44,6 +45,33 @@ public class CRUDImpl implements CRUD {
     public void update(Object objectToUpdate) {
         cudBasics(objectToUpdate,QueryType.UPDATE);
     }
+
+
+    @Override
+    public Object find(Class<?> objectType, Object id) throws SQLException{
+        RowFromDB row = new RowConstructorFromDB(objectType,id).buildRow();
+        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
+        ResultSet resultSet = dataBase.executeQueryWuthResult(queryFind);
+        resultSet.next();
+        try {
+            Object object = new ObjectBuilder(row, resultSet, objectType).buildObject();
+        }catch (Exception e){
+            logger.error(e.getMessage());
+        }
+
+        return null;
+    }
+    public Collection<Object> find(Class classToFind,Object id,Object usingForeignKey,String mapping) throws Exception{
+        RowFromDB row = new RowConstructorFromDBByForeignKey(classToFind,id,usingForeignKey.getClass()).buildRow();
+        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
+        ResultSet resultSet = dataBase.executeQueryWuthResult(queryFind);
+        Collection<Object> collection = new HashSet<>();
+        while(resultSet.next()){
+            collection.add(new ObjectBuilderWithLinks(row,resultSet,classToFind,usingForeignKey,mapping).buildObject());
+        }
+        return collection;
+    }
+
 
     private RowToDB cudBasics(Object objectToDB, QueryType queryType){
         RowToDB rowToDB = new RowConstructorToDB(objectToDB).buildRow();
@@ -81,10 +109,11 @@ public class CRUDImpl implements CRUD {
         try {
             return resultSet.getObject(1);
         }catch (SQLException e){
-            //todo handle exception
-            return null;
+            logger.error(e.getMessage());
         }
+        return null; //todo handle this
     }
+
 
 
 
@@ -103,6 +132,19 @@ public class CRUDImpl implements CRUD {
         }
 
         return resultObject;
+
+    public  void setIdToObject(Object object,Object idToObject){
+       Field fields[] = object.getClass().getDeclaredFields();
+       String nameOfId = getNameOfPrimaryKey(fields);
+       Field field = null;
+       try {
+          field = object.getClass().getDeclaredField(nameOfId);
+          field.setAccessible(true);
+          field.set(object,idToObject);
+       }catch (NoSuchFieldException | IllegalAccessException e){
+           logger.error(e.getMessage());
+       }
+
     }
     public Collection<Object> findCollection(Class classToFind, Object id, Object usingForeignKey, String mapping) {
         RowFromDB row = new RowConstructorFromDBByForeignKey(classToFind,id,usingForeignKey.getClass()).buildRow();

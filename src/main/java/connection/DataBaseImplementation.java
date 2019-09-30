@@ -75,6 +75,7 @@ public class DataBaseImplementation implements DataBase {
             connection.close();
             logger.debug("Closed connection: {}" + connection);
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
         } finally {
             OpenedConnection.removeConnection(this.name);
@@ -91,7 +92,8 @@ public class DataBaseImplementation implements DataBase {
             try {
                 table = new TableConstructorImpl(currentClass).buildTable();
             } catch (NoPrimaryKeyException | SeveralPrimaryKeysException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
+//                e.printStackTrace();
             }
             SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
@@ -119,6 +121,7 @@ public class DataBaseImplementation implements DataBase {
             logger.debug("Executing query " + query);
             statement.executeUpdate(query);
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
         } finally {
             try {
@@ -127,6 +130,7 @@ public class DataBaseImplementation implements DataBase {
                 }
                 this.close();
             } catch (Exception e) {
+                logger.error(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -144,6 +148,7 @@ public class DataBaseImplementation implements DataBase {
             logger.debug("Executing query " + query);
             statement.executeUpdate(query);
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
         } finally {
             try {
@@ -151,7 +156,8 @@ public class DataBaseImplementation implements DataBase {
                     statement.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
+//                e.printStackTrace();
             }
         }
     }
@@ -163,6 +169,7 @@ public class DataBaseImplementation implements DataBase {
             logger.debug("Executing query " + query);
             resultSet = statement.executeQuery(query);
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
         } finally {
             try {
@@ -170,7 +177,8 @@ public class DataBaseImplementation implements DataBase {
                     statement.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
+//                e.printStackTrace();
             }
         }
         return resultSet;
