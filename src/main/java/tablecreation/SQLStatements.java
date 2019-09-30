@@ -24,7 +24,10 @@ public enum SQLStatements {
     REFERENCE(" REFERENCES "),
     UPDATE(" UPDATE "),
     DELETE(" DELETE "),
-    INSERT(" INSERT ");
+    INSERT(" INSERT "),
+    SELECT(" SELECT "),
+    MIN(" MIN "),
+    MAX(" MAX ");
 
     private String value;
 

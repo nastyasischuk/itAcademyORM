@@ -7,6 +7,7 @@ import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.*;
 import annotations.PrimaryKey;
 import connection.DataBaseImplementation;
+import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
@@ -15,7 +16,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class CRUDImpl implements CRUD {
-
+    private static Logger logger = Logger.getLogger(CRUDImpl.class);
     private DataBaseImplementation dataBase;
 
     public CRUDImpl(DataBaseImplementation dataBase) {
@@ -52,7 +53,7 @@ public class CRUDImpl implements CRUD {
         try {
             Object object = new ObjectBuilder(row, resultSet, objectType).buildObject();
         }catch (Exception e){
-            //todo logger check
+            logger.error(e.getMessage());
         }
 
         return null;
@@ -85,9 +86,9 @@ public class CRUDImpl implements CRUD {
         try {
             return resultSet.getObject(1);
         }catch (SQLException e){
-            //todo handle exception
-            return null;
+            logger.error(e.getMessage());
         }
+        return null; //todo handle this
     }
     public  void setIdToObject(Object object,Object idToObject){
        Field fields[] = object.getClass().getDeclaredFields();
@@ -98,8 +99,7 @@ public class CRUDImpl implements CRUD {
           field.setAccessible(true);
           field.set(object,idToObject);
        }catch (NoSuchFieldException | IllegalAccessException e){
-           e.printStackTrace();
-           //todo add logger exception
+           logger.error(e.getMessage());
        }
     }
     private  String getNameOfPrimaryKey(Field fields[]){

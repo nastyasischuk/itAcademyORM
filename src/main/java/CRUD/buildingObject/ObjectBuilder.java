@@ -2,6 +2,7 @@ package CRUD.buildingObject;
 
 import CRUD.rowhandler.RowFromDB;
 import annotations.*;
+import org.apache.log4j.Logger;
 import tablecreation.DeterminatorOfType;
 
 import java.lang.reflect.Field;
@@ -11,6 +12,7 @@ import java.sql.ResultSet;
 import java.util.Map;
 
 public class ObjectBuilder {
+    private static Logger logger = Logger.getLogger(ObjectBuilder.class);
     public static final String METHODNAMEFORINTEGER ="getInt";
     public static final String STARTOFMETHODRESULTSETTOGETVALUE ="get";
     protected Object objectToBuildFromDB;
@@ -87,7 +89,7 @@ public class ObjectBuilder {
              method = ResultSet.class.getMethod(nameOfMethod,String.class);
            valueOfObject =  method.invoke(resultSet,nameOfAttributeToGet);
         }catch(NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
-            //todo add logger
+            logger.error(e.getMessage());
         }
         return valueOfObject;
     }
@@ -97,6 +99,7 @@ public class ObjectBuilder {
         try{
             objectToBuildFromDB = classType.newInstance();
         }catch (Exception e){
+            logger.error(e.getMessage());
             //todo add logger
         }
     }
