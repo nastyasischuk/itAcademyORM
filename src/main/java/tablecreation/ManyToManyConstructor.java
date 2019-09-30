@@ -25,6 +25,9 @@ public class ManyToManyConstructor {
         mtmToBuild.setAssociatedTableName(getAssociatedTableName());
         mtmToBuild.setForeignKeyToOriginalTableName(getFKToOriginalTable());
         mtmToBuild.setForeignKeyToLinkedTableName(getFKToLinkedTable());
+
+        mtmToBuild.setTypeOfPKOriginal(getTypeOfPKOriginal());
+        mtmToBuild.setTypeOfPKLinked(getTypeOfPKLinked());
         return mtmToBuild;
     }
 
@@ -46,6 +49,28 @@ public class ManyToManyConstructor {
     private String getPrimaryKeyOfLinkedTableName() throws NoPrimaryKeyException {
         Class linkedTableClass = getLinkedTableClass();
         return getPrimaryKeyName(linkedTableClass);
+    }
+
+    private String getTypeOfPKOriginal() throws NoPrimaryKeyException {
+        Class originalClass = fieldOfOriginalTableClass.getDeclaringClass();
+        Field[] fields = originalClass.getDeclaredFields();
+        for (Field currentField : fields) {
+            if (AnnotationUtils.isPrimaryKeyPresent(currentField)) {
+                return DeterminatorOfType.getSQLType(currentField.getClass()).toString();
+            }
+        }
+        throw new NoPrimaryKeyException();
+    }
+
+    private String getTypeOfPKLinked() throws NoPrimaryKeyException {
+        Class linkedTableClass = getLinkedTableClass();
+        Field[] fields = linkedTableClass.getDeclaredFields();
+        for (Field currentField : fields) {
+            if (AnnotationUtils.isPrimaryKeyPresent(currentField)) {
+                return DeterminatorOfType.getSQLType(currentField.getClass()).toString();
+            }
+        }
+        throw new NoPrimaryKeyException();
     }
 
     private String getAssociatedTableName() {
