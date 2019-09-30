@@ -56,7 +56,7 @@ public class ManyToManyConstructor {
         Field[] fields = originalClass.getDeclaredFields();
         for (Field currentField : fields) {
             if (AnnotationUtils.isPrimaryKeyPresent(currentField)) {
-                return DeterminatorOfType.getSQLType(currentField.getClass()).toString();
+                return DeterminatorOfType.getSQLType(currentField.getType()).toString();
             }
         }
         throw new NoPrimaryKeyException();
@@ -67,7 +67,7 @@ public class ManyToManyConstructor {
         Field[] fields = linkedTableClass.getDeclaredFields();
         for (Field currentField : fields) {
             if (AnnotationUtils.isPrimaryKeyPresent(currentField)) {
-                return DeterminatorOfType.getSQLType(currentField.getClass()).toString();
+                return DeterminatorOfType.getSQLType(currentField.getType()).toString();
             }
         }
         throw new NoPrimaryKeyException();
