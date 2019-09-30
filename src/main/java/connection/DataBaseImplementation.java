@@ -30,8 +30,27 @@ public class DataBaseImplementation implements DataBase {
         createAllTables();
     }
 
+    public DataBaseImplementation(String pathToXml, boolean createTables) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
+        this.name = DEFAULT;
+        if (createTables)
+            createAllTables();
+    }
+
     public DataBaseImplementation(String pathToXml, String name) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
         this.name = name;
+        createAllTables();
+    }
+
+    public DataBaseImplementation(String pathToXml, String name, boolean createTables) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
+        this.name = name;
+        if (createTables)
+            createAllTables();
     }
 
     public void openConnection() {
