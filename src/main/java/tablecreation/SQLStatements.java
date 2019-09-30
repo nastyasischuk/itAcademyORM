@@ -1,16 +1,37 @@
-
 package tablecreation;
 
 public enum SQLStatements {
-    CREATE("CREATE TABLE "), CONSTRAINT(" CONSTRAINT "), WHERE(" WHERE "),INTO(" INTO "),
-    UPDATE(" UPDATE "),DELETE(" DELETE "),INSERT(" INSERT "), SET(" SET "), VALUES(" VALUES "),
-    NOT_NULL(" NOT NULL "), PK(" PRIMARY KEY "),FROM(" FROM "), DEFAULT(" DEFAULT "),CHECK(" CHECK "),
-    FK(" FOREIGN KEY "), ALTER(" ALTER TABLE "), UNIQUE(" UNIQUE "),REFERENCE(" REFERENCES "),ON( " ON "),
-    INDEX(" INDEX "), A_INCREMENT(" AUTO_INCREMENT "), ADD("ADD ");
+
+    CREATE_TABLE("CREATE TABLE "),
+    CREATE("CREATE "),
+    WHERE(" WHERE "),
+    INTO(" INTO "),
+    SET(" SET "),
+    VALUES(" VALUES "),
+    FROM(" FROM "),
+    CONSTRAINT(" CONSTRAINT "),
+    NOT_NULL(" NOT NULL "),
+    PK(" PRIMARY KEY "),
+    ON(" ON "),
+    FK(" FOREIGN KEY "),
+    ALTER_TABLE(" ALTER TABLE "),
+    UNIQUE(" UNIQUE "),
+    DEFAULT(" DEFAULT "),
+    CHECK(" CHECK "),
+    INDEX(" INDEX "),
+    A_INCREMENT(" AUTO_INCREMENT "),
+    ADD(" ADD "),
+    REFERENCE(" REFERENCES "),
+    UPDATE(" UPDATE "),
+    DELETE(" DELETE "),
+    INSERT(" INSERT "),
+    SELECT(" SELECT "),
+    MIN(" MIN "),
+    MAX(" MAX ");
 
     private String value;
 
-    SQLStatements(String value){
+    SQLStatements(String value) {
         this.value = value;
     }
 
@@ -18,4 +39,3 @@ public enum SQLStatements {
         return value;
     }
 }
-
