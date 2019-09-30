@@ -9,7 +9,8 @@ public class DeterminatorOfTypeTest {
 
     @Test
     public void getSQLTypeTest() {
-        SQLTypes testedType = DeterminatorOfType.getSQLType(Integer.class);
+        int number =10;
+        SQLTypes testedType = DeterminatorOfType.getSQLType(int.class);
         assertEquals(SQLTypes.INTEGER,testedType);
         assertNotEquals(SQLTypes.SMALLINT,testedType);
     }

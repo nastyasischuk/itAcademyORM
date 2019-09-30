@@ -9,6 +9,6 @@ public class QueryBuilderFromDB {
         this.rowFromDB = rowFromDB;
     }
     public String buildQuery(){
-        return null;//todo for method find
+        return null;//todo for method findCollection
     }
 }

@@ -2,7 +2,6 @@ package CRUD.buildingObject;
 
 import CRUD.rowhandler.RowFromDB;
 import annotations.*;
-import connection.DataBase;
 import connection.DataBaseImplementation;
 import tablecreation.DeterminatorOfType;
 
@@ -31,38 +30,43 @@ public class ObjectBuilder {
         instantiateObject();
 
     }
-    public Object buildObject() throws NoSuchFieldException,IllegalAccessException{
+    public Object buildObject() throws NoSuchFieldException,IllegalAccessException,NoSuchMethodException,InvocationTargetException{
         setResultFromResultSet();
         return objectToBuildFromDB;
     }
 
-    public void setResultFromResultSet() throws NoSuchFieldException,IllegalAccessException{
+    public void setResultFromResultSet() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         for (Map.Entry<String,Class> entry: row.getNameAndType().entrySet()){
             Field field = classType.getDeclaredField(entry.getKey());
             field.setAccessible(true);
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(entry.getValue());
             Object fieldValue=null;
+            try{
             if(nameOfMethodInResultSetToGetValue==null){
-               fieldValue= handleCasesWhenTypeIsNotSimple(field,entry.getKey());
+                fieldValue = handleCasesWhenTypeIsNotSimple(field,entry.getKey());
             }else {
                  fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, entry.getKey());
+
+            }
+            }catch (Exception e){
 
             }
             field.set(objectToBuildFromDB,fieldValue);
         }
     }
-    protected Object handleCasesWhenTypeIsNotSimple(Field field,String nameOfFieldToGet){
+    protected Object handleCasesWhenTypeIsNotSimple(Field field,String nameOfFieldToGet) throws IllegalAccessException{
         Object fieldValue= null;
         Object foreignKeyValue = getValueFromResultSet(METHODNAMEFORINTEGER,nameOfFieldToGet);
         if(field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class) || field.isAnnotationPresent(OneToOne.class)
         || field.isAnnotationPresent(ManyToOne.class)){
             fieldValue = database.getCrud().find(field.getType(),foreignKeyValue);
         }else if(field.isAnnotationPresent(OneToMany.class)){
-            fieldValue = database.getCrud().find(field.getAnnotation(OneToMany.class).typeOfReferencedObject(),row.getIdValue(),objectToBuildFromDB,field.getAnnotation(OneToMany.class).mappedBy());
+            fieldValue = database.getCrud().findCollection(field.getAnnotation(OneToMany.class).typeOfReferencedObject(),row.getIdValue(),objectToBuildFromDB,field.getAnnotation(OneToMany.class).mappedBy());
 
-        }
+        }else return null;//todo
         return fieldValue;
     }
+
     public String constructResultSetMethodName(Class<?> typeOfresult){
         if(DeterminatorOfType.getSQLType(typeOfresult)==null){
             return null;
