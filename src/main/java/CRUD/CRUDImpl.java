@@ -5,7 +5,6 @@ import CRUD.buildingObject.ObjectBuilderWithLinks;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.*;
-import annotations.AssociatedTable;
 import annotations.OneToMany;
 import annotations.PrimaryKey;
 import connection.DataBaseImplementation;
@@ -53,13 +52,13 @@ public class CRUDImpl implements CRUD {
     private RowToDB cudBasics(Object objectToDB, QueryType queryType){
         RowToDB rowToDB = new RowConstructorToDB(objectToDB).buildRow();
         String query = new QueryBuilderFactory().createQueryBuilder(rowToDB, queryType).buildQuery();
-        dataBase.executeQuery(query);
+        dataBase.executeUpdateQuery(query);
         return rowToDB;
     }
     private ResultSet queryId(RowToDB row,QueryType queryType){
         String query = new QueryBuilderFactory().createQueryBuilder(row, queryType).buildQuery();
         return null;
-        //todo execute update  dataBase.executeQuery(query);
+        //todo execute update  dataBase.executeUpdateQuery(query);
     }
     private  String getNameOfPrimaryKey(Field fields[]){
         for(int i=0;i<fields.length;i++){
@@ -98,7 +97,7 @@ public class CRUDImpl implements CRUD {
         Statement statement = dataBase.executeQueryWithResult(queryFind);
         CachedRowSet rowset = null;
         try {
-            ResultSet resultSet = statement.getResultSet();
+            ResultSet resultSet = statement.executeQuery(queryFind);
             RowSetFactory factory = RowSetProvider.newFactory();
              rowset = factory.createCachedRowSet();
              rowset.populate(resultSet);
@@ -139,6 +138,7 @@ public class CRUDImpl implements CRUD {
                logger.info(object);
                collection.add(object);
            }
+
        }catch (Exception e){
            logger.error(e.getMessage());
        }
