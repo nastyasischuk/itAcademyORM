@@ -1,5 +1,6 @@
 package tablecreation;
 
+import exceptions.NoPrimaryKeyException;
 import exceptions.WrongSQLType;
 import org.junit.Test;
 import tablecreation.classesintesting.PersonMissedForeignKey;
@@ -35,7 +36,7 @@ ColumnConstructor columnConstructor;
 
 
     @Test(expected = WrongSQLType.class)
-    public void buildColumnTestRefernceWithoutForeignKey() throws WrongSQLType {
+    public void buildColumnTestRefernceWithoutForeignKey() throws WrongSQLType, NoPrimaryKeyException {
         try {
             columnConstructor = new ColumnConstructor(PersonMissedForeignKey.class.getDeclaredField("per"));
         } catch (NoSuchFieldException e) {
@@ -44,7 +45,7 @@ ColumnConstructor columnConstructor;
     }
 
     @Test
-    public void buildColumnTestUniqueConstraint() {
+    public void buildColumnTestUniqueConstraint() throws Exception{
         try {
             columnConstructor = new ColumnConstructor(PersonWithConstraints.class.getDeclaredField("name"));
         } catch (NoSuchFieldException | WrongSQLType e) {
@@ -54,7 +55,7 @@ ColumnConstructor columnConstructor;
     }
 
     @Test
-    public void buildColumnTestAutoIncrementConstraint() {
+    public void buildColumnTestAutoIncrementConstraint() throws Exception{
         try {
             columnConstructor = new ColumnConstructor(PersonWithConstraints.class.getDeclaredField("id"));
         } catch (NoSuchFieldException | WrongSQLType e) {
@@ -65,7 +66,7 @@ ColumnConstructor columnConstructor;
     }
 
     @Test
-    public void buildColumnTestDefaultConstraint() {
+    public void buildColumnTestDefaultConstraint()throws Exception {
         try {
             columnConstructor = new ColumnConstructor(PersonWithConstraints.class.getDeclaredField("age"));
         } catch (NoSuchFieldException | WrongSQLType e) {
@@ -76,7 +77,7 @@ ColumnConstructor columnConstructor;
     }
 
     @Test
-    public void buildColumnTestForeignKey() {
+    public void buildColumnTestForeignKey() throws Exception{
         try {
             columnConstructor = new ColumnConstructor(PersonWithSeveralForeignKeys.class.getDeclaredField("person1"));
         } catch (NoSuchFieldException | WrongSQLType e) {
@@ -85,7 +86,7 @@ ColumnConstructor columnConstructor;
         assertTrue(columnConstructor.buildColumn().isForeignKey());
     }
     @Test
-    public void buildColumnTestClassNullablePrimaryKey(){
+    public void buildColumnTestClassNullablePrimaryKey() throws Exception{
         try {
             columnConstructor = new ColumnConstructor(PersonWithSeveralForeignKeys.class.getDeclaredField("id"));
         } catch (NoSuchFieldException | WrongSQLType e) {
@@ -95,7 +96,7 @@ ColumnConstructor columnConstructor;
         assertFalse(column.isNullable());
     }
     @Test
-    public void buildColumnTestClassWithDate(){
+    public void buildColumnTestClassWithDate()throws Exception{
         try {
             columnConstructor = new ColumnConstructor(PersonWithSimpleProperColumns.class.getDeclaredField("bd"));
         } catch (NoSuchFieldException | WrongSQLType e) {
@@ -104,6 +105,15 @@ ColumnConstructor columnConstructor;
         Column column = columnConstructor.buildColumn();
         assertEquals(SQLTypes.DATE,column.getType());
     }
-
+    @Test
+    public void buildColumnTestClassWith()throws Exception{
+        try {
+            columnConstructor = new ColumnConstructor(PersonWithSimpleProperColumns.class.getDeclaredField("bd"));
+        } catch (NoSuchFieldException | WrongSQLType e) {
+            e.printStackTrace();
+        }
+        Column column = columnConstructor.buildColumn();
+        assertEquals(SQLTypes.DATE,column.getType());
+    }
 
 }

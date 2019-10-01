@@ -1,5 +1,6 @@
 package connection;
 
+import CRUD.CRUD;
 import CRUD.CRUDImpl;
 import exceptions.DatabaseException;
 import exceptions.NoPrimaryKeyException;
@@ -10,10 +11,7 @@ import tablecreation.SQLTableQueryCreator;
 import tablecreation.TableConstructorImpl;
 import transaction.TransactionsManager;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +24,7 @@ public class DataBaseImplementation implements DataBase {
     private static final String DEFAULT = "default_db";
     private final String name;
 
+
     public DataBaseImplementation(String pathToXml) {
         parseXMLConfig = new ParseXMLConfig(pathToXml);
         crud = new CRUDImpl(this);
@@ -33,8 +32,27 @@ public class DataBaseImplementation implements DataBase {
         createAllTables();
     }
 
+    public DataBaseImplementation(String pathToXml, boolean createTables) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
+        this.name = DEFAULT;
+        if (createTables)
+            createAllTables();
+    }
+
     public DataBaseImplementation(String pathToXml, String name) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
         this.name = name;
+        createAllTables();
+    }
+
+    public DataBaseImplementation(String pathToXml, String name, boolean createTables) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
+        this.name = name;
+        if (createTables)
+            createAllTables();
     }
 
     public void openConnection() {
@@ -76,6 +94,7 @@ public class DataBaseImplementation implements DataBase {
             connection.close();
             logger.debug("Closed connection: {}" + connection);
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
         } finally {
             OpenedConnection.removeConnection(this.name);
@@ -84,26 +103,37 @@ public class DataBaseImplementation implements DataBase {
 
     private void createAllTables() {
         List<String> fkQueriesToExecute = new ArrayList<>();
+        List<String> mtmQueriesToExecute = new ArrayList<>();
+
         List<Class<?>> allEntities = parseXMLConfig.getAllClasses();
         for (Class currentClass : allEntities) {
             tablecreation.Table table = null;
             try {
                 table = new TableConstructorImpl(currentClass).buildTable();
             } catch (NoPrimaryKeyException | SeveralPrimaryKeysException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
+//                e.printStackTrace();
             }
             SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
             String createPKQuery = sqlTableQueryCreator.createPKQuery();
-            fkQueriesToExecute.addAll(sqlTableQueryCreator.createFKQuery());
 
+            List<String> queriesFK = sqlTableQueryCreator.createFKQuery();
+            if (queriesFK != null && !queriesFK.isEmpty())
+                fkQueriesToExecute.addAll(queriesFK);
+            List<String> queriesMTM = sqlTableQueryCreator.createManyToManyQuery();
+            if (queriesMTM != null && !queriesMTM.isEmpty())
+                mtmQueriesToExecute.addAll(queriesMTM);
+            //TODO: organise queries
             executeQueryForCreateDB(createTableQuery);
             executeQueryForCreateDB(createPKQuery);
         }
 
-        for (String query : fkQueriesToExecute) {
+        for (String query : fkQueriesToExecute)
             executeQueryForCreateDB(query);
-        }
+
+        for (String query : mtmQueriesToExecute)
+            executeQueryForCreateDB(query);
     }
 
     private void executeQueryForCreateDB(String query){
@@ -114,6 +144,7 @@ public class DataBaseImplementation implements DataBase {
             logger.debug("Executing query " + query);
             statement.executeUpdate(query);
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
         } finally {
             try {
@@ -122,34 +153,25 @@ public class DataBaseImplementation implements DataBase {
                 }
                 this.close();
             } catch (Exception e) {
+                logger.error(e.getMessage());
                 e.printStackTrace();
             }
         }
     }
 
-    public void save(Object object) {
-        crud.save(object);
+    public CRUDImpl getCrud(){
+
+        return crud;
     }
 
-    public void delete(Object object) {
-        crud.delete(object);
-    }
-
-    public void update(Object object) {
-        crud.update(object);
-    }
-
-    public Object find(Class type, Object id) {
-        return crud.find(type, id);
-    }
-
-    public void executeQuery(String query) {
+    public void executeQuery(String query) {//todo rename because it is only for execute update not for getting result set
         Statement statement = null;
         try {
             statement = this.getConnection().createStatement();
             logger.debug("Executing query " + query);
             statement.executeUpdate(query);
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
         } finally {
             try {
@@ -157,11 +179,33 @@ public class DataBaseImplementation implements DataBase {
                     statement.close();
                 }
             } catch (Exception e) {
+                logger.error(e.getMessage());
                 e.printStackTrace();
             }
         }
     }
-
+    public Statement executeQueryWithResult(String query){//todo check ussage of result set
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = this.getConnection().createStatement();
+            logger.debug("Executing query " + query);
+            resultSet = statement.executeQuery(query);
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new DatabaseException(e.getMessage());
+        }
+        return statement;
+    }
+public void closeStatement(Statement statement){
+    try {
+        if (statement != null) {
+            statement.close();
+        }
+    } catch (Exception e) {
+        logger.error(e.getMessage());
+    }
+}
     public TransactionsManager getTransactionManager() {
         if (transactionsManager == null)
             transactionsManager = new TransactionsManager(this.getConnection());

@@ -9,6 +9,7 @@ public class Column {
     private boolean nullable;
     private boolean unique;
     private boolean autoincrement;
+    private boolean manyToMany;
     //todo add length
 
     public Column(String name, SQLTypes type) {
@@ -75,5 +76,13 @@ public class Column {
 
     public void setAutoincrement(boolean autoincrement) {
         this.autoincrement = autoincrement;
+    }
+
+    public boolean isManyToMany() {
+        return manyToMany;
+    }
+
+    public void setManyToMany(boolean manyToMany) {
+        this.manyToMany = manyToMany;
     }
 }

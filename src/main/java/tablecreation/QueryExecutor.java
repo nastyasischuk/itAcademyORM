@@ -1,11 +1,13 @@
 package tablecreation;
 
 import connection.DataBaseImplementation;
+import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class QueryExecutor {
+    private static Logger logger = Logger.getLogger(QueryExecutor.class);
     private DataBaseImplementation dataBaseImplementation;
 
     public void executeQuery(String query){
@@ -14,7 +16,7 @@ public class QueryExecutor {
             Statement statement = dataBaseImplementation.getConnection().createStatement();
             statement.execute(query);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         }finally {
             dataBaseImplementation.close();
         }

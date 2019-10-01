@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ParseXMLConfig {
-        public static final String URL = "database.connection.URL";
+        public static final String URL = "database.connection.url";
     public static final String DRIVER_CLASS = "database.connection.driver_class";
-    public static final String USERNAME = "database.connection.USERNAME";
-    public static final String PASSWORD = "database.connection.PASSWORD";
+    public static final String USERNAME = "database.connection.username";
+    public static final String PASSWORD = "database.connection.password";
     public static final String PROPERTY = "property";
     public static final String NAME = "name";
     public static final String MAPPING = "mapping";
