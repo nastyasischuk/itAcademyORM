@@ -97,21 +97,30 @@ public class SQLTableQueryCreator {
         List<String> queryMTMList = new ArrayList<>();
         StringBuilder queryAlterMTM = new StringBuilder();
         StringBuilder queryCreateTableMTMT = new StringBuilder();
+        StringBuilder querySecondCreateTableMTMT = new StringBuilder();
         for(ManyToMany mtm: table.getMtmAssociations()){
             queryCreateTableMTMT.append(SQLStatements.CREATE_TABLE.getValue()).append(mtm.getAssociatedTableName()).append('(')
-                    .append(mtm.getForeignKeyToOriginalTableName()).append(mtm.getForeignKeyToLinkedTableName())
-                    .append(SQLStatements.PK.getValue()).append('(').append(mtm.getForeignKeyToLinkedTableName()).append(", ")
+                    .append(mtm.getForeignKeyToOriginalTableName()).append(" ").append(mtm.getTypeOfPKOriginal()).append(SQLStatements.NOT_NULL.getValue())
+                    .append(mtm.getForeignKeyToLinkedTableName()).append(" ").append(mtm.getTypeOfPKLinked()).append(SQLStatements.NOT_NULL.getValue())
+                    .append(SQLStatements.PK.getValue()).append('(').append(mtm.getForeignKeyToOriginalTableName()).append(", ")
                     .append(mtm.getForeignKeyToLinkedTableName()).append(") )");
             queryMTMList.add(queryCreateTableMTMT.toString());
         }
         for (ManyToMany mtm : table.getMtmAssociations()) {
             queryAlterMTM.append(SQLStatements.ALTER_TABLE.getValue()).append(mtm.getAssociatedTableName())
-                    .append(SQLStatements.ADD.getValue()).append(SQLStatements.CONSTRAINT).append(table.getCheckConstraint())
                     .append(SQLStatements.ADD.getValue()).append(SQLStatements.FK.getValue())
                     .append('(').append(mtm.getForeignKeyToLinkedTableName()).append(')')
                     .append(SQLStatements.REFERENCE.getValue()).append(mtm.getLinkedTableName())
                     .append('(').append(mtm.getPrimaryKeyOfLinkedTableName()).append(");");
             queryMTMList.add(queryAlterMTM.toString());
+        }
+        for (ManyToMany mtm: table.getMtmAssociations()){
+            querySecondCreateTableMTMT.append(SQLStatements.ALTER_TABLE.getValue()).append(mtm.getAssociatedTableName())
+                    .append(SQLStatements.ADD).append(SQLStatements.FK.getValue())
+                    .append('(').append(mtm.getForeignKeyToOriginalTableName()).append(')')
+                    .append(SQLStatements.REFERENCE.getValue()).append(mtm.getOriginalTableName())
+                    .append('(').append(mtm.getPrimaryKeyOfOriginalTableName()).append(");");
+            queryMTMList.add(querySecondCreateTableMTMT.toString());
         }
         return queryMTMList;
     }
