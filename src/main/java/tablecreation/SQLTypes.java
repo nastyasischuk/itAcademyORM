@@ -18,5 +18,4 @@ public enum SQLTypes {
         return this.length;
     }
 
-    //todo add length to varchar;
 }
