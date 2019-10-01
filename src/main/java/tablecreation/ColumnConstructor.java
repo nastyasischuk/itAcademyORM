@@ -2,7 +2,6 @@ package tablecreation;
 
 import annotations.*;
 import annotations.ForeignKey;
-import annotations.ManyToMany;
 import annotations.PrimaryKey;
 import exceptions.WrongSQLType;
 
@@ -66,7 +65,7 @@ public class ColumnConstructor{
         return type;
     }
 
-    private void checkConstraints(){
+    private void checkConstraints() {
         if(AnnotationUtils.isColumnPresent(field)){
             if(field.getAnnotation(annotations.Column.class).unique()){
                 column.setUnique(true);
@@ -83,10 +82,10 @@ public class ColumnConstructor{
             }
         }
 
-        if(field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class)){
+        if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class)){
             column.setForeignKey(true);
         }
-        if(field.isAnnotationPresent(NotNull.class)){
+        if (field.isAnnotationPresent(NotNull.class)){
             column.setNullable(false);
         }
         if (AnnotationUtils.isManyToManyPresent(field) && AnnotationUtils.isAssociatedTablePresentAndNotEmpty(field)) {

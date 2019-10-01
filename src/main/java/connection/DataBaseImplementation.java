@@ -110,7 +110,6 @@ public class DataBaseImplementation implements DataBase {
                 table = new TableConstructorImpl(currentClass).buildTable();
             } catch (NoPrimaryKeyException | SeveralPrimaryKeysException e) {
                 logger.error(e.getMessage());
-//                e.printStackTrace();
             }
             SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
@@ -119,19 +118,27 @@ public class DataBaseImplementation implements DataBase {
             List<String> queriesFK = sqlTableQueryCreator.createFKQuery();
             if (queriesFK != null && !queriesFK.isEmpty())
                 fkQueriesToExecute.addAll(queriesFK);
+
             List<String> queriesMTM = sqlTableQueryCreator.createManyToManyQuery();
-            if (queriesMTM != null && !queriesMTM.isEmpty())
+            if (queriesMTM != null && !queriesMTM.isEmpty()) {
+                logger.debug("Add MTM query to list");
                 mtmQueriesToExecute.addAll(queriesMTM);
-            //TODO: organise queries
+            }
+
             executeQueryForCreateDB(createTableQuery);
             executeQueryForCreateDB(createPKQuery);
         }
 
-        for (String query : fkQueriesToExecute)
+        for (String query : fkQueriesToExecute) {
+            logger.debug("Executing FK " + query);
             executeQueryForCreateDB(query);
+        }
 
-        for (String query : mtmQueriesToExecute)
+        logger.debug("Size of MTM list " + mtmQueriesToExecute.size());
+        for (String query : mtmQueriesToExecute) {
+            logger.debug("Executing MTM " + query);
             executeQueryForCreateDB(query);
+        }
     }
 
     private void executeQueryForCreateDB(String query){
