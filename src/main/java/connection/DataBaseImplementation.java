@@ -1,5 +1,6 @@
 package connection;
 
+import CRUD.CRUD;
 import CRUD.CRUDImpl;
 import exceptions.DatabaseException;
 import exceptions.NoPrimaryKeyException;
@@ -22,6 +23,7 @@ public class DataBaseImplementation implements DataBase {
     private ParseXMLConfig parseXMLConfig;
     private static final String DEFAULT = "default_db";
     private final String name;
+
 
     public DataBaseImplementation(String pathToXml) {
         parseXMLConfig = new ParseXMLConfig(pathToXml);
@@ -116,8 +118,12 @@ public class DataBaseImplementation implements DataBase {
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
             String createPKQuery = sqlTableQueryCreator.createPKQuery();
 
-            fkQueriesToExecute.addAll(sqlTableQueryCreator.createFKQuery());
-            mtmQueriesToExecute.addAll(sqlTableQueryCreator.createManyToManyQuery());
+            List<String> queriesFK = sqlTableQueryCreator.createFKQuery();
+            if (queriesFK != null && !queriesFK.isEmpty())
+                fkQueriesToExecute.addAll(queriesFK);
+            List<String> queriesMTM = sqlTableQueryCreator.createManyToManyQuery();
+            if (queriesMTM != null && !queriesMTM.isEmpty())
+                mtmQueriesToExecute.addAll(queriesMTM);
             //TODO: organise queries
             executeQueryForCreateDB(createTableQuery);
             executeQueryForCreateDB(createPKQuery);
@@ -153,20 +159,9 @@ public class DataBaseImplementation implements DataBase {
         }
     }
 
-    public void save(Object object) {
-        crud.save(object);
-    }
+    public CRUDImpl getCrud(){
 
-    public void delete(Object object) {
-        crud.delete(object);
-    }
-
-    public void update(Object object) {
-        crud.update(object);
-    }
-
-    public Object find(Class type, Object id) throws SQLException{
-        return crud.find(type, id);
+        return crud;
     }
 
     public void executeQuery(String query) {//todo rename because it is only for execute update not for getting result set
@@ -189,7 +184,7 @@ public class DataBaseImplementation implements DataBase {
             }
         }
     }
-    public ResultSet executeQueryWuthResult(String query){//todo check ussage of result set
+    public ResultSet executeQueryWithResult(String query){//todo check ussage of result set
         Statement statement = null;
         ResultSet resultSet = null;
         try {

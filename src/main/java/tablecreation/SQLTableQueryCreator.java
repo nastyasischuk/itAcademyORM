@@ -14,7 +14,7 @@ public class SQLTableQueryCreator {
 
     public String createTableQuery() {
         StringBuilder query = new StringBuilder();
-        query.append(SQLStatements.CREATE_TABLE).append(table.getTableName()).append('(');
+        query.append(SQLStatements.CREATE_TABLE.getValue()).append(" ").append(table.getTableName()).append('(');
         for (Column column : table.getColumns()) {
             Column lastColumn = table.getColumns().get(table.getColumns().size() - 1);
 

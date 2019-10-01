@@ -5,6 +5,8 @@ import CRUD.buildingObject.ObjectBuilderWithLinks;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.*;
+import annotations.AssociatedTable;
+import annotations.OneToMany;
 import annotations.PrimaryKey;
 import connection.DataBaseImplementation;
 import org.apache.log4j.Logger;
@@ -44,6 +46,7 @@ public class CRUDImpl implements CRUD {
         cudBasics(objectToUpdate,QueryType.UPDATE);
     }
 
+
     @Override
     public Object find(Class<?> objectType, Object id) throws SQLException{
         RowFromDB row = new RowConstructorFromDB(objectType,id).buildRow();
@@ -69,6 +72,7 @@ public class CRUDImpl implements CRUD {
         return collection;
     }
 
+
     private RowToDB cudBasics(Object objectToDB, QueryType queryType){
         RowToDB rowToDB = new RowConstructorToDB(objectToDB).buildRow();
         String query = new QueryBuilderFactory().createQueryBuilder(rowToDB, queryType).buildQuery();
@@ -80,8 +84,27 @@ public class CRUDImpl implements CRUD {
         return null;
         //todo execute update  dataBase.executeQuery(query);
     }
-
-
+    private  String getNameOfPrimaryKey(Field fields[]){
+        for(int i=0;i<fields.length;i++){
+            if(fields[i].isAnnotationPresent(PrimaryKey.class)){
+                return fields[i].getName();
+            }
+        }
+        return null;//todo change;
+    }
+    public  void setIdToObject(Object object,Object idToObject){
+        Field fields[] = object.getClass().getDeclaredFields();
+        String nameOfId = getNameOfPrimaryKey(fields);
+        Field field = null;
+        try {
+            field = object.getClass().getDeclaredField(nameOfId);
+            field.setAccessible(true);
+            field.set(object,idToObject);
+        }catch (NoSuchFieldException | IllegalAccessException e){
+            e.printStackTrace();
+            //todo add logger exception
+        }
+    }
     private Object calculateId(ResultSet resultSet){
         try {
             return resultSet.getObject(1);
@@ -90,6 +113,26 @@ public class CRUDImpl implements CRUD {
         }
         return null; //todo handle this
     }
+
+
+
+
+
+    @Override
+    public Object find(Class<?> objectType, Object id){
+        RowFromDB row = new RowConstructorFromDB(objectType,id).buildRow();
+        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
+        ResultSet resultSet = dataBase.executeQueryWithResult(queryFind);
+        Object resultObject=null;
+        try {
+            resultSet.next();
+             resultObject = new ObjectBuilder(row, resultSet, objectType,dataBase).buildObject();
+        }catch (Exception e){
+            //todo logger check
+        }
+
+        return resultObject;
+
     public  void setIdToObject(Object object,Object idToObject){
        Field fields[] = object.getClass().getDeclaredFields();
        String nameOfId = getNameOfPrimaryKey(fields);
@@ -101,15 +144,54 @@ public class CRUDImpl implements CRUD {
        }catch (NoSuchFieldException | IllegalAccessException e){
            logger.error(e.getMessage());
        }
+
     }
-    private  String getNameOfPrimaryKey(Field fields[]){
-        for(int i=0;i<fields.length;i++){
-            if(fields[i].isAnnotationPresent(PrimaryKey.class)){
-               return fields[i].getName();
+    public Collection<Object> findCollection(Class classToFind, Object id, Object usingForeignKey, String mapping) {
+        RowFromDB row = new RowConstructorFromDBByForeignKey(classToFind,id,usingForeignKey.getClass()).buildRow();
+        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
+        ResultSet resultSet = dataBase.executeQueryWithResult(queryFind);
+        Collection<Object> collection = new HashSet<>();
+        //if(checkIfOneToMany(classToFind)){
+        //
+        //}else
+        try {
+            while (resultSet.next()) {
+                collection.add(new ObjectBuilderWithLinks(row, resultSet, classToFind, usingForeignKey, mapping,dataBase).buildObject());
             }
+        }catch (Exception e){
+            //todo handle exception
         }
-        return null;//todo change;
+        return collection;
     }
+
+
+
+
+
+    public Collection<Object> findCollection(Class classToFind, Object id, Object usingForeignKey, String mapping, AssociatedTable associatedTable) {
+        RowFromDB row = new RowConstructorFromDBByForeignKey(classToFind,id,usingForeignKey.getClass()).buildRow();
+        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
+        ResultSet resultSet = dataBase.executeQueryWithResult(queryFind);
+        Collection<Object> collection = new HashSet<>();
+        try {
+            while (resultSet.next()) {
+                collection.add(new ObjectBuilderWithLinks(row, resultSet, classToFind, usingForeignKey, mapping,dataBase).buildObject());
+            }
+        }catch (Exception e){
+            //todo handle exception
+        }
+        return collection;
+    }
+    private boolean checkIfOneToMany(Class<?> cllasToTest){
+        Field[] allFields = cllasToTest.getDeclaredFields();
+        for(Field field :allFields)
+            if(field.isAnnotationPresent(OneToMany.class))
+                return true;
+            return false;
+    }
+
+
+
 
 
 
