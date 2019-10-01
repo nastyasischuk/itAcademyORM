@@ -37,12 +37,12 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
                     fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, field.getName());
                 }
             }catch (Exception e){
-                //todo add logger
+                logger.error(e.getMessage());
             }
             field.set(objectToBuildFromDB,fieldValue);
         }
     }
-    public void setDeterminingIfCollectionOrType(Field field) throws NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
+    public void setDeterminingIfCollectionOrType(Field field) throws  NoSuchMethodException, IllegalAccessException, InvocationTargetException{
         if(field.getType() == objectToMappedBy.getClass())
             field.set(objectToBuildFromDB,objectToMappedBy);
         else{

@@ -164,7 +164,7 @@ public class DataBaseImplementation implements DataBase {
         return crud;
     }
 
-    public void executeQuery(String query) {//todo rename because it is only for execute update not for getting result set
+    public void executeUpdateQuery(String query) {
         Statement statement = null;
         try {
             statement = this.getConnection().createStatement();
@@ -184,19 +184,19 @@ public class DataBaseImplementation implements DataBase {
             }
         }
     }
-    public Statement executeQueryWithResult(String query){//todo check ussage of result set
+    public Statement executeQueryWithResult(String query){
         Statement statement = null;
-        ResultSet resultSet = null;
+
         try {
             statement = this.getConnection().createStatement();
             logger.debug("Executing query " + query);
-            resultSet = statement.executeQuery(query);
         } catch (SQLException e) {
             logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
         }
         return statement;
     }
+
 public void closeStatement(Statement statement){
     try {
         if (statement != null) {
