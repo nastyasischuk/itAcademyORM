@@ -160,7 +160,6 @@ public class DataBaseImplementation implements DataBase {
     }
 
     public CRUDImpl getCrud(){
-
         return crud;
     }
 
@@ -184,7 +183,7 @@ public class DataBaseImplementation implements DataBase {
             }
         }
     }
-    public Statement executeQueryWithResult(String query){
+    public Statement createStatementForQueryWithResult(String query){
         Statement statement = null;
 
         try {

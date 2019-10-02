@@ -16,7 +16,7 @@ public class DeleteQueryBuilder extends QueryBuilder {
         StringBuilder request = new StringBuilder();
         request.append(SQLStatements.DELETE.getValue()).append(SQLStatements.FROM.getValue())
                 .append(row.getTableName()).append(SQLStatements.WHERE.getValue());
-        row.getMap().forEach((k, v) -> request.append(k + " " + v));
+        row.getMap().forEach((k, v) -> request.append(k).append(" ").append(v));
         request.append(';');
         return request.toString();
     }

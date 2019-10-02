@@ -1,15 +1,12 @@
 package CRUD.querycreation;
 
-import CRUD.rowhandler.Row;
 import CRUD.rowhandler.RowToDB;
-import tablecreation.Column;
 import tablecreation.SQLStatements;
 
 import java.util.Iterator;
 import java.util.Map;
 
 public class InsertQueryBuilder extends QueryBuilder {
-    private RowToDB row;
 
     public InsertQueryBuilder(RowToDB row) {
         super(row);
@@ -17,6 +14,8 @@ public class InsertQueryBuilder extends QueryBuilder {
 
     @Override
     public String buildQuery() {
+        boolean isAI = row.isAutoIncrement();
+        System.out.println(row);
         StringBuilder request = new StringBuilder();
         StringBuilder columnNames = new StringBuilder();
         StringBuilder columnValues = new StringBuilder();
@@ -30,20 +29,25 @@ public class InsertQueryBuilder extends QueryBuilder {
 
         }
         for (Map.Entry<String, String> pair : row.getMap().entrySet()) {
-            if (pair.getKey().equals(row.getIdName())) {
-                break;
-            } else {
+//            if (pair.getKey().equals(row.getIdName()) && isAI) {
+//                break;
+            if (!isAI) {
+                columnNames.append(row.getIdName()).append(", ");
+                columnValues.append(row.getIdValue()).append(", ");
+            }
                 columnNames.append(pair.getKey());
                 columnValues.append(pair.getValue());
                 if (!pair.getKey().equals(lastColumnNameIterator)) {
                     columnNames.append(", ");
                     columnValues.append(", ");
                 }
-            }
+
         }
         request.append('(').append(columnNames).append(')').append(SQLStatements.VALUES.getValue()).append(" ");
         request.append('(').append(columnValues).append(')').append(';');
 
+        System.out.println(request);
         return request.toString();
     }
+
 }

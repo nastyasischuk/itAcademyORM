@@ -13,7 +13,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-class ParseXMLConfig {
+public class ParseXMLConfig {
         public static final String URL = "database.connection.url";
     public static final String DRIVER_CLASS = "database.connection.driver_class";
     public static final String USERNAME = "database.connection.username";
