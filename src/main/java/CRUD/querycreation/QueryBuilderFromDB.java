@@ -1,6 +1,5 @@
 package CRUD.querycreation;
 
-import CRUD.requests.MarkingChars;
 import CRUD.rowhandler.RowFromDB;
 import tablecreation.SQLStatements;
 
@@ -11,10 +10,9 @@ public class QueryBuilderFromDB {
         this.rowFromDB = rowFromDB;
     }
     public String buildQuery(){
-        //todo for method findCollection
         StringBuilder request = new StringBuilder();
-        request.append(SQLStatements.SELECT.getValue()).append(MarkingChars.star).append(rowFromDB.getTableName());
+        request.append(SQLStatements.SELECT.getValue()).append(" * ").append(SQLStatements.FROM.getValue()).append(rowFromDB.getTableName()).
+                append(SQLStatements.WHERE.getValue()).append(rowFromDB.getIdName()).append("=").append(rowFromDB.getIdValue());
         return request.toString();
-
     }
 }

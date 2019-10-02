@@ -164,7 +164,7 @@ public class DataBaseImplementation implements DataBase {
         return crud;
     }
 
-    public void executeQuery(String query) {//todo rename because it is only for execute update not for getting result set
+    public void executeUpdateQuery(String query) {
         Statement statement = null;
         try {
             statement = this.getConnection().createStatement();
@@ -180,33 +180,32 @@ public class DataBaseImplementation implements DataBase {
                 }
             } catch (Exception e) {
                 logger.error(e.getMessage());
-//                e.printStackTrace();
+                e.printStackTrace();
             }
         }
     }
-    public ResultSet executeQueryWithResult(String query){//todo check ussage of result set
+    public Statement executeQueryWithResult(String query){
         Statement statement = null;
-        ResultSet resultSet = null;
+
         try {
             statement = this.getConnection().createStatement();
             logger.debug("Executing query " + query);
-            resultSet = statement.executeQuery(query);
         } catch (SQLException e) {
             logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
-        } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (Exception e) {
-                logger.error(e.getMessage());
-//                e.printStackTrace();
-            }
         }
-        return resultSet;
+        return statement;
     }
 
+public void closeStatement(Statement statement){
+    try {
+        if (statement != null) {
+            statement.close();
+        }
+    } catch (Exception e) {
+        logger.error(e.getMessage());
+    }
+}
     public TransactionsManager getTransactionManager() {
         if (transactionsManager == null)
             transactionsManager = new TransactionsManager(this.getConnection());

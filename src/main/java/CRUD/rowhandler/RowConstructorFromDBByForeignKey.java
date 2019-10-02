@@ -15,11 +15,9 @@ public class RowConstructorFromDBByForeignKey extends RowConstructorFromDB{
     protected String getIdName() {
         Field[] fields = super.getTypeOfObject().getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(ForeignKey.class )||field.isAnnotationPresent(OneToMany.class )
-                    && field.getType()==typeUsesClassAsForeignkey) {
+            if (field.isAnnotationPresent(ForeignKey.class )|| field.isAnnotationPresent(OneToMany.class ) || field.isAnnotationPresent(ManyToOne.class))
                 return getNameOfField(field);
             }
-        }
         throw new RuntimeException("No pk?");//todo logger exception
     }
 }

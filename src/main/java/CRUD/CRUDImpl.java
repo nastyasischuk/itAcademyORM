@@ -5,15 +5,18 @@ import CRUD.buildingObject.ObjectBuilderWithLinks;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.*;
-import annotations.AssociatedTable;
 import annotations.OneToMany;
 import annotations.PrimaryKey;
 import connection.DataBaseImplementation;
 import org.apache.log4j.Logger;
 
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.RowSetFactory;
+import javax.sql.rowset.RowSetProvider;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -46,43 +49,16 @@ public class CRUDImpl implements CRUD {
         cudBasics(objectToUpdate,QueryType.UPDATE);
     }
 
-
-    @Override
-    public Object find(Class<?> objectType, Object id) throws SQLException{
-        RowFromDB row = new RowConstructorFromDB(objectType,id).buildRow();
-        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
-        ResultSet resultSet = dataBase.executeQueryWuthResult(queryFind);
-        resultSet.next();
-        try {
-            Object object = new ObjectBuilder(row, resultSet, objectType).buildObject();
-        }catch (Exception e){
-            logger.error(e.getMessage());
-        }
-
-        return null;
-    }
-    public Collection<Object> find(Class classToFind,Object id,Object usingForeignKey,String mapping) throws Exception{
-        RowFromDB row = new RowConstructorFromDBByForeignKey(classToFind,id,usingForeignKey.getClass()).buildRow();
-        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
-        ResultSet resultSet = dataBase.executeQueryWuthResult(queryFind);
-        Collection<Object> collection = new HashSet<>();
-        while(resultSet.next()){
-            collection.add(new ObjectBuilderWithLinks(row,resultSet,classToFind,usingForeignKey,mapping).buildObject());
-        }
-        return collection;
-    }
-
-
     private RowToDB cudBasics(Object objectToDB, QueryType queryType){
         RowToDB rowToDB = new RowConstructorToDB(objectToDB).buildRow();
         String query = new QueryBuilderFactory().createQueryBuilder(rowToDB, queryType).buildQuery();
-        dataBase.executeQuery(query);
+        dataBase.executeUpdateQuery(query);
         return rowToDB;
     }
     private ResultSet queryId(RowToDB row,QueryType queryType){
         String query = new QueryBuilderFactory().createQueryBuilder(row, queryType).buildQuery();
         return null;
-        //todo execute update  dataBase.executeQuery(query);
+        //todo execute update  dataBase.executeUpdateQuery(query);
     }
     private  String getNameOfPrimaryKey(Field fields[]){
         for(int i=0;i<fields.length;i++){
@@ -109,77 +85,64 @@ public class CRUDImpl implements CRUD {
         try {
             return resultSet.getObject(1);
         }catch (SQLException e){
-            logger.error(e.getMessage());
+            //todo handle exception
+            return null;
         }
-        return null; //todo handle this
     }
-
-
-
-
 
     @Override
     public Object find(Class<?> objectType, Object id){
         RowFromDB row = new RowConstructorFromDB(objectType,id).buildRow();
         String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
-        ResultSet resultSet = dataBase.executeQueryWithResult(queryFind);
-        Object resultObject=null;
+        Statement statement = dataBase.executeQueryWithResult(queryFind);
+        CachedRowSet rowset = null;
         try {
-            resultSet.next();
-             resultObject = new ObjectBuilder(row, resultSet, objectType,dataBase).buildObject();
+            ResultSet resultSet = statement.executeQuery(queryFind);
+            RowSetFactory factory = RowSetProvider.newFactory();
+             rowset = factory.createCachedRowSet();
+             rowset.populate(resultSet);
         }catch (Exception e){
-            //todo logger check
+            logger.error(e.getMessage());
         }
 
+
+        Object resultObject=null;
+        try {
+            rowset.next();
+             resultObject = new ObjectBuilder(row, rowset, objectType,dataBase).buildObject();
+        }catch (Exception e){
+            logger.error(e.getMessage());
+        }finally {
+            dataBase.closeStatement(statement);
+        }
         return resultObject;
-
-    public  void setIdToObject(Object object,Object idToObject){
-       Field fields[] = object.getClass().getDeclaredFields();
-       String nameOfId = getNameOfPrimaryKey(fields);
-       Field field = null;
-       try {
-          field = object.getClass().getDeclaredField(nameOfId);
-          field.setAccessible(true);
-          field.set(object,idToObject);
-       }catch (NoSuchFieldException | IllegalAccessException e){
-           logger.error(e.getMessage());
-       }
-
     }
     public Collection<Object> findCollection(Class classToFind, Object id, Object usingForeignKey, String mapping) {
         RowFromDB row = new RowConstructorFromDBByForeignKey(classToFind,id,usingForeignKey.getClass()).buildRow();
         String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
-        ResultSet resultSet = dataBase.executeQueryWithResult(queryFind);
+        Statement statement = dataBase.executeQueryWithResult(queryFind);
         Collection<Object> collection = new HashSet<>();
-        //if(checkIfOneToMany(classToFind)){
-        //
-        //}else
+        CachedRowSet rowset = null;
         try {
-            while (resultSet.next()) {
-                collection.add(new ObjectBuilderWithLinks(row, resultSet, classToFind, usingForeignKey, mapping,dataBase).buildObject());
-            }
+            ResultSet  resultSet = statement.executeQuery(queryFind);
+            RowSetFactory factory = RowSetProvider.newFactory();
+            rowset = factory.createCachedRowSet();
+            rowset.populate(resultSet);
         }catch (Exception e){
-            //todo handle exception
+            logger.error(e.getMessage());
         }
-        return collection;
-    }
 
-
-
-
-
-    public Collection<Object> findCollection(Class classToFind, Object id, Object usingForeignKey, String mapping, AssociatedTable associatedTable) {
-        RowFromDB row = new RowConstructorFromDBByForeignKey(classToFind,id,usingForeignKey.getClass()).buildRow();
-        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
-        ResultSet resultSet = dataBase.executeQueryWithResult(queryFind);
-        Collection<Object> collection = new HashSet<>();
         try {
-            while (resultSet.next()) {
-                collection.add(new ObjectBuilderWithLinks(row, resultSet, classToFind, usingForeignKey, mapping,dataBase).buildObject());
-            }
-        }catch (Exception e){
-            //todo handle exception
-        }
+           while (rowset.next()) {
+               Object object = new ObjectBuilderWithLinks(row, rowset, classToFind, usingForeignKey, mapping,dataBase).buildObject();
+               logger.info(object);
+               collection.add(object);
+           }
+
+       }catch (Exception e){
+           logger.error(e.getMessage());
+       }
+        dataBase.closeStatement(statement);
         return collection;
     }
     private boolean checkIfOneToMany(Class<?> cllasToTest){
