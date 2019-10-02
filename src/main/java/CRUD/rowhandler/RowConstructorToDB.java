@@ -21,21 +21,43 @@ public class RowConstructorToDB extends RowConstructor {
 
     private void setColumnValuesAndNames(){
         Field[] classFields = classToConvertToRow.getClass().getDeclaredFields();
-        for(int i =0;i<classFields.length;i++){
-           Field fieldToAdd = classFields[i];
-           if(fieldToAdd.isAnnotationPresent(Column.class) && fieldToAdd.isAnnotationPresent(ForeignKey.class)
-                   && fieldToAdd.isAnnotationPresent(OneToMany.class) && fieldToAdd.isAnnotationPresent(OneToOne.class))
-                    continue;
-           String name = getNameOfField(fieldToAdd);
+        for (Field fieldToAdd : classFields) {
+            if (fieldToAdd.isAnnotationPresent(ForeignKey.class)
+                    || fieldToAdd.isAnnotationPresent(OneToMany.class) || fieldToAdd.isAnnotationPresent(OneToOne.class))
+                continue;
+
+            String name = getNameOfField(fieldToAdd);
             String value = getValueOfAllFields(fieldToAdd);
             if (fieldToAdd.isAnnotationPresent(PrimaryKey.class)) {
-              row.setIdField(fieldToAdd);
-              setId(name,value);
-            } else {
+                row.setIdField(fieldToAdd);
+                setId(name, value);
+            } else if (fieldToAdd.isAnnotationPresent(ManyToOne.class)) {
+                fieldToAdd.setAccessible(true);
+                //TODO checkIfFieldInDB
+
+                row.setToMap(fieldToAdd.getName(), getValueOfPK(fieldToAdd));
+            }
+            else {
                 row.setToMap(name, value);
             }
-
         }
+    }
+
+    private String getValueOfPK(Field fieldToAdd) {
+        String valueOfPK = "";
+        try {
+            Object valueOfPrimaryKeyInOriginalTable = fieldToAdd.get(classToConvertToRow);
+            Field[] fields = valueOfPrimaryKeyInOriginalTable.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                if (AnnotationUtils.isPrimaryKeyPresent(field)) {
+                    field.setAccessible(true);
+                    valueOfPK = field.get(valueOfPrimaryKeyInOriginalTable).toString();
+                }
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return valueOfPK;
     }
 
     private void setId(String name,String value){

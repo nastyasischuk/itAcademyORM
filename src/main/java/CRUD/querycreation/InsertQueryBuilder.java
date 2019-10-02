@@ -28,15 +28,15 @@ public class InsertQueryBuilder extends QueryBuilder {
             lastColumnNameIterator = String.valueOf(columnNamesIterator.next());
 
         }
+        if (!isAI) { //TODO change a little
+            columnNames.append(row.getIdName()).append(", ");
+            columnValues.append("'").append(row.getIdValue()).append("'").append(", ");
+        }
         for (Map.Entry<String, String> pair : row.getMap().entrySet()) {
 //            if (pair.getKey().equals(row.getIdName()) && isAI) {
 //                break;
-            if (!isAI) {
-                columnNames.append(row.getIdName()).append(", ");
-                columnValues.append(row.getIdValue()).append(", ");
-            }
                 columnNames.append(pair.getKey());
-                columnValues.append(pair.getValue());
+                columnValues.append("'").append(pair.getValue()).append("'");
                 if (!pair.getKey().equals(lastColumnNameIterator)) {
                     columnNames.append(", ");
                     columnValues.append(", ");

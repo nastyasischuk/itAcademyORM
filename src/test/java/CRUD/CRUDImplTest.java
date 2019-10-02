@@ -5,10 +5,10 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import tablecreation.classesintesting.CatManyToOne;
-import tablecreation.classesintesting.PersonAI;
-import tablecreation.classesintesting.PersonOneToMany;
-import tablecreation.classesintesting.Person;
+import tablecreation.classesintesting.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -62,8 +62,57 @@ public class CRUDImplTest {
     }
 
     @Test
-    public void findCollection1() {
+    public void savePersonOTOMWithoutAI() {
+        PersonOneToMany pers = new PersonOneToMany();
+        pers.setId(14);
+        pers.setName("TestPers");
+        //dataBase.getCrud().save(pers);
+
+        CatManyToOne cat = new CatManyToOne();
+        cat.setId(12);
+        cat.setName("test cat otm");
+        cat.setPerson(pers);
+        dataBase.getCrud().save(cat);
     }
+
+    @Test
+    public void savePersonOTMWithAI() {
+        //TODO create test
+    }
+
+    @Test
+    public void saveMTMWithoutAI() {
+        StudentMTM sud1 = new StudentMTM();
+        sud1.setStudentId(1);
+        sud1.setStudentName("STUD 1");
+
+        StudentMTM stud2 = new StudentMTM();
+        stud2.setStudentId(2);
+        stud2.setStudentName("STUD 2");
+
+        CourseMTM course1 = new CourseMTM();
+        course1.setCourseId(1);
+        course1.setCourseName("MATH_TEST");
+
+        CourseMTM course2 = new CourseMTM();
+        course2.setCourseId(2);
+        course2.setCourseName("ENGLISH_TEST");
+        Set<CourseMTM> courses = new HashSet<>();
+        courses.add(course1);
+        courses.add(course2);
+
+        sud1.setCourses(courses);
+
+    }
+
+    @Test
+    public void findCollection1() {
+
+    }
+
+
+
+
     @Before
     public void setDataBase(){
         dataBase = new DataBaseImplementation("C:\\Users\\DEDUSHKA DEDULYA\\IdeaProjects\\itAcademyORM\\src\\main\\resources\\config.xml","test",false);
