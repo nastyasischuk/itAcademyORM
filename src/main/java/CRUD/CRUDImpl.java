@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
 public class CRUDImpl implements CRUD {
     private static Logger logger = Logger.getLogger(CRUDImpl.class);
@@ -92,59 +93,21 @@ public class CRUDImpl implements CRUD {
 
     @Override
     public Object find(Class<?> objectType, Object id){
-        RowFromDB row = new RowConstructorFromDB(objectType,id).buildRow();
-        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
-        Statement statement = dataBase.executeQueryWithResult(queryFind);
-        CachedRowSet rowset = null;
-        try {
-            ResultSet resultSet = statement.executeQuery(queryFind);
-            RowSetFactory factory = RowSetProvider.newFactory();
-             rowset = factory.createCachedRowSet();
-             rowset.populate(resultSet);
-        }catch (Exception e){
-            logger.error(e.getMessage());
-        }
-
-
-        Object resultObject=null;
-        try {
-            rowset.next();
-             resultObject = new ObjectBuilder(row, rowset, objectType,dataBase).buildObject();
-        }catch (Exception e){
-            logger.error(e.getMessage());
-        }finally {
-            dataBase.closeStatement(statement);
-        }
-        return resultObject;
+        FindHandler findHandler = new FindHandler(dataBase,objectType,id);
+        return getBuiltObject(findHandler);
     }
-    public Collection<Object> findCollection(Class classToFind, Object id, Object usingForeignKey, String mapping) {
-        RowFromDB row = new RowConstructorFromDBByForeignKey(classToFind,id,usingForeignKey.getClass()).buildRow();
-        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
-        Statement statement = dataBase.executeQueryWithResult(queryFind);
-        Collection<Object> collection = new HashSet<>();
-        CachedRowSet rowset = null;
-        try {
-            ResultSet  resultSet = statement.executeQuery(queryFind);
-            RowSetFactory factory = RowSetProvider.newFactory();
-            rowset = factory.createCachedRowSet();
-            rowset.populate(resultSet);
-        }catch (Exception e){
-            logger.error(e.getMessage());
-        }
-
-        try {
-           while (rowset.next()) {
-               Object object = new ObjectBuilderWithLinks(row, rowset, classToFind, usingForeignKey, mapping,dataBase).buildObject();
-               logger.info(object);
-               collection.add(object);
-           }
-
-       }catch (Exception e){
-           logger.error(e.getMessage());
-       }
-        dataBase.closeStatement(statement);
-        return collection;
+    public Object findCollection(Class classToFind, Object id, Object usingForeignKey, String mapping) {
+        FindHandler findHandler = new FindHandlerCollection(dataBase,classToFind,id,usingForeignKey,mapping);
+      return getBuiltObject(findHandler);
     }
+
+    private Object getBuiltObject(FindHandler findHandler){
+        String query = findHandler.buildQuery();
+        CachedRowSet cachedRowSet = findHandler.getResultSetFromQuery(query);
+        return findHandler.buildObject(cachedRowSet);
+    }
+
+
     private boolean checkIfOneToMany(Class<?> cllasToTest){
         Field[] allFields = cllasToTest.getDeclaredFields();
         for(Field field :allFields)

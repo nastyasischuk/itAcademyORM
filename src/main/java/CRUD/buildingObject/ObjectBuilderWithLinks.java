@@ -1,6 +1,7 @@
 package CRUD.buildingObject;
 
 import CRUD.rowhandler.RowFromDB;
+import connection.DataBase;
 import connection.DataBaseImplementation;
 
 import javax.sql.rowset.CachedRowSet;
@@ -14,7 +15,7 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
     private String mapping;
     private Object objectToMappedBy;
 
-    public ObjectBuilderWithLinks(RowFromDB rowFromDB, CachedRowSet resultSet, Class<?> classType, Object objectToMappedBy, String fieldThatMapped, DataBaseImplementation db) {
+    public ObjectBuilderWithLinks(RowFromDB rowFromDB, CachedRowSet resultSet, Class<?> classType, Object objectToMappedBy, String fieldThatMapped, DataBase db) {
         super(rowFromDB, resultSet, classType,db);
         this.mapping = fieldThatMapped;
         this.objectToMappedBy = objectToMappedBy;
