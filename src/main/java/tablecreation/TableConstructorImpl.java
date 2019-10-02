@@ -1,9 +1,7 @@
 package tablecreation;
 
-import annotations.AnnotationUtils;
-import annotations.Check;
+import annotations.*;
 import annotations.Index;
-import annotations.MapsId;
 import exceptions.NoPrimaryKeyException;
 import exceptions.SeveralPrimaryKeysException;
 import exceptions.WrongSQLType;
@@ -52,7 +50,8 @@ public class TableConstructorImpl implements TableConstructor {
             //todo check if column
             if (!classFields[i].isAnnotationPresent(annotations.Column.class) &&
                     !classFields[i].isAnnotationPresent(annotations.ForeignKey.class) &&
-                    !classFields[i].isAnnotationPresent(MapsId.class))
+                    !classFields[i].isAnnotationPresent(MapsId.class) &&
+                    !classFields[i].isAnnotationPresent(AssociatedTable.class))
                 continue; //todo wtf? why?
 
             Column builtColumn;
@@ -71,7 +70,9 @@ public class TableConstructorImpl implements TableConstructor {
                 table.setPrimaryKey(formPK(builtColumn));
             }
             if (builtColumn.isManyToMany()) {
-                table.addManyToManyAssociation(formManyToMany(classFields[i]));
+                ManyToMany mtm = formManyToMany(classFields[i]);
+                logger.debug("Added mtm " + mtm.toString());
+                table.addManyToManyAssociation(mtm);
             }
             if (classFields[i].isAnnotationPresent(Index.class)) {
                 tablecreation.Index indexToTable = generateIndex(classFields[i]);

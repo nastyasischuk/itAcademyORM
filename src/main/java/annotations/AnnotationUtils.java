@@ -52,10 +52,7 @@ public class AnnotationUtils {
     }
 
     public static boolean isAssociatedTablePresentAndNotEmpty(Field field) {
-        return field.isAnnotationPresent(AssociatedTable.class) &&
-                !StringUtils.isEmpty(field.getAnnotation(AssociatedTable.class).associatedTableName()) &&
-                !StringUtils.isEmpty(field.getAnnotation(AssociatedTable.class).inverseJoinColumns().name()) &&
-                !StringUtils.isEmpty(field.getAnnotation(AssociatedTable.class).joinColumns().name());
+        return field.isAnnotationPresent(AssociatedTable.class);
     }
 
     public static String getAssociatedTableName(Field field) {
