@@ -17,7 +17,7 @@ public class CRUDImplTest {
 DataBaseImplementation dataBase;
     private static Logger logger = Logger.getLogger(CRUDImplTest.class);
     @Test
-    public void find() {
+    public void findTestFindStartOneToMany() {
         CRUDImpl crud= dataBase.getCrud();
         PersonOneToMany object = (PersonOneToMany)crud.find(PersonOneToMany.class,1);
         for(CatManyToOne c :object.getCollectrion()){
@@ -28,7 +28,7 @@ DataBaseImplementation dataBase;
 
     }
     @Test
-    public void find2() {
+    public void findTestStartManyToOneWithNoDuplicatesInCollection() {
         CRUDImpl crud= dataBase.getCrud();
         CatManyToOne object = (CatManyToOne)crud.find(CatManyToOne.class,1);
         PersonOneToMany person = object.getPerson();

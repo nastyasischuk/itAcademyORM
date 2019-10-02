@@ -184,7 +184,7 @@ public class DataBaseImplementation implements DataBase {
             }
         }
     }
-    public Statement executeQueryWithResult(String query){
+    public Statement getStatement(String query){
         Statement statement = null;
 
         try {
