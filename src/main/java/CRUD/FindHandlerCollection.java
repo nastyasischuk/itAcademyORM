@@ -28,7 +28,6 @@ public class FindHandlerCollection extends FindHandler {
     public Object buildObject(CachedRowSet rowSet){
         Collection<Object> collection = new HashSet<>();
         try {
-
             while (rowSet.next()) {
                     Object object = new ObjectBuilderWithLinks(row, rowSet, objectType, ownerOfCollection, nameInObjectOwner, dataBase).buildObject();
             collection.add(object);

@@ -1,6 +1,8 @@
 package CRUD.buildingObject;
 
 import CRUD.rowhandler.RowFromDB;
+import annotations.ManyToMany;
+import annotations.ManyToOne;
 import connection.DataBase;
 import connection.DataBaseImplementation;
 
@@ -9,6 +11,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class ObjectBuilderWithLinks extends ObjectBuilder {
@@ -21,14 +26,17 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
         this.objectToMappedBy = objectToMappedBy;
     }
     @Override
-    public void setResultFromResultSet() throws NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public void setResultFromResultSet() throws NoSuchFieldException, IllegalAccessException {
+        List<Collection<Object>> listOfCollectionInObject = new ArrayList<>();
         for (Map.Entry<String,Class> entry: row.getNameAndType().entrySet()){
             Field field = classType.getDeclaredField(entry.getKey());
             field.setAccessible(true);
-            if(entry.getKey().equals(mapping)){
-            setDeterminingIfCollectionOrType(field);
+            if(entry.getKey().equals(mapping)){//if its oneToOne ManyTOne
+                if(field.getType() == objectToMappedBy.getClass())
+                    field.set(objectToBuildFromDB,objectToMappedBy);
                 continue;
             }
+
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(entry.getValue());
             Object fieldValue=null;
             try {
@@ -36,19 +44,16 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
                     fieldValue = handleCasesWhenTypeIsNotSimple(field, entry.getKey());
                 } else {
                     fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, field.getName());
+                    logger.info("handling  g");
                 }
             }catch (Exception e){
                 logger.error(e.getMessage());
             }
             field.set(objectToBuildFromDB,fieldValue);
+            if(field.isAnnotationPresent(ManyToOne.class)){
+                listOfCollectionInObject.add(setToCollection(fieldValue));
+            }
         }
     }
-    public void setDeterminingIfCollectionOrType(Field field) throws  NoSuchMethodException, IllegalAccessException, InvocationTargetException{
-        if(field.getType() == objectToMappedBy.getClass())
-            field.set(objectToBuildFromDB,objectToMappedBy);
-        else{
-            Method methodToInsertIntoCollection = field.getType().getMethod("add",classType);
-            methodToInsertIntoCollection.invoke(field.get(objectToBuildFromDB),objectToMappedBy);
-        }
-    }
+
 }

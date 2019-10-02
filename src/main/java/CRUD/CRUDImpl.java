@@ -5,6 +5,7 @@ import CRUD.buildingObject.ObjectBuilderWithLinks;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.*;
+import annotations.AssociatedTable;
 import annotations.OneToMany;
 import annotations.PrimaryKey;
 import connection.DataBaseImplementation;
@@ -99,6 +100,10 @@ public class CRUDImpl implements CRUD {
     public Object findCollection(Class classToFind, Object id, Object usingForeignKey, String mapping) {
         FindHandler findHandler = new FindHandlerCollection(dataBase,classToFind,id,usingForeignKey,mapping);
       return getBuiltObject(findHandler);
+    }
+    public Object findCollectionFoManyToMany(Class classToFind, Object id, String mapping, AssociatedTable associatedTable) {
+        FindHandler findHandler = new FindHandlerManyToMany(dataBase,classToFind,id,associatedTable);
+        return getBuiltObject(findHandler);
     }
 
     private Object getBuiltObject(FindHandler findHandler){

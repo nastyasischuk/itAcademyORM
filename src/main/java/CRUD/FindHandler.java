@@ -16,7 +16,7 @@ import java.sql.Statement;
 
 public class FindHandler {
     protected static org.apache.log4j.Logger logger = Logger.getLogger(FindHandler.class);
-    protected RowFromDB row;
+    protected  RowFromDB row;
     protected DataBase dataBase;
     protected Class objectType;
     protected Object idOfClassToFind;
