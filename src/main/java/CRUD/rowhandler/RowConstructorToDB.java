@@ -1,12 +1,15 @@
 package CRUD.rowhandler;
 
 import annotations.*;
+import connection.DataBaseImplementation;
+import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 
 public class RowConstructorToDB extends RowConstructor {
-   private RowToDB row;
-   private Object classToConvertToRow;
+    private static org.apache.log4j.Logger logger = Logger.getLogger(DataBaseImplementation.class);
+    private RowToDB row;
+    private Object classToConvertToRow;
 
     public RowConstructorToDB(Object initialObject) {
         this.classToConvertToRow = initialObject;
@@ -19,12 +22,10 @@ public class RowConstructorToDB extends RowConstructor {
         return row;
     }
 
-    private void setColumnValuesAndNames(){
+    private void setColumnValuesAndNames() {
         Field[] classFields = classToConvertToRow.getClass().getDeclaredFields();
         for (Field fieldToAdd : classFields) {
-            if (fieldToAdd.isAnnotationPresent(ForeignKey.class)
-                    || fieldToAdd.isAnnotationPresent(OneToMany.class) ||
-                    fieldToAdd.isAnnotationPresent(OneToOne.class))
+            if (fieldToAdd.isAnnotationPresent(OneToMany.class) || fieldToAdd.isAnnotationPresent(OneToOne.class))
                 continue;
 
             String name = getNameOfField(fieldToAdd);
@@ -34,12 +35,10 @@ public class RowConstructorToDB extends RowConstructor {
                 setId(name, value);
             } else if (fieldToAdd.isAnnotationPresent(ManyToOne.class)) {
                 fieldToAdd.setAccessible(true);
-                row.setToMap(fieldToAdd.getName(), value);
-               // row.setToMap(fieldToAdd.getName(), getValueOfPK(fieldToAdd));
+                row.setToMap(fieldToAdd.getName(), getValueOfPK(fieldToAdd));
             } else if (fieldToAdd.isAnnotationPresent(ManyToMany.class)) {
                 continue;
-            }
-            else {
+            } else {
                 row.setToMap(name, value);
             }
         }
@@ -57,38 +56,39 @@ public class RowConstructorToDB extends RowConstructor {
                 }
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            logger.debug(e.getMessage());
+            logger.debug(e.getCause().getMessage());
         }
         return valueOfPK;
     }
 
-    private void setId(String name,String value){
+    private void setId(String name, String value) {
         row.setIdValue(value);
         row.setIdName(name);
     }
 
-    private Object getValueOfSimpleField(Field field) throws IllegalAccessException{
+    private Object getValueOfSimpleField(Field field) throws IllegalAccessException {
         return field.get(classToConvertToRow);
     }
-    public String getValueOfAllFields(Field field){
+
+    public String getValueOfAllFields(Field field) {
         field.setAccessible(true);
         try {
-            if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(ManyToOne.class)) {
+            if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(OneToMany.class)) {
                 return determineValueOfForeignKey(field).toString();
-            }else
-                if(getValueOfSimpleField(field)!=null)
+            } else if (getValueOfSimpleField(field) != null)
                 return getValueOfSimpleField(field).toString();
-        }catch (Exception e){
-            e.printStackTrace();
-
+        } catch (IllegalAccessException e) {
+            logger.debug(e.getMessage());
         }
         return null;
     }
-    private Object determineValueOfForeignKey(Field field) throws IllegalAccessException{
+
+    private Object determineValueOfForeignKey(Field field) throws IllegalAccessException {
         Object object = field.get(classToConvertToRow);
         Field[] fieldsOfReferencedClass = object.getClass().getDeclaredFields();
-        for(Field fieldInArray:fieldsOfReferencedClass){
-            if(fieldInArray.isAnnotationPresent(PrimaryKey.class)){
+        for (Field fieldInArray : fieldsOfReferencedClass) {
+            if (fieldInArray.isAnnotationPresent(PrimaryKey.class)) {
                 fieldInArray.setAccessible(true);
                 return fieldInArray.get(object);
             }

@@ -32,35 +32,20 @@ public class InsertQueryBuilder extends QueryBuilder {
         }
         if (!isAI) { //TODO change a little
             columnNames.append(row.getIdName()).append(", ");
-            columnValues.append("'").append(row.getIdValue()).append("'").append(", ");
+            columnValues.append("'").append(row.getIdValue()).append("'").append(MarkingChars.comma);
         }
         for (Map.Entry<String, String> pair : row.getMap().entrySet()) {
-                columnNames.append(pair.getKey());
-                columnValues.append("'").append(pair.getValue()).append("'");
-                if (!pair.getKey().equals(lastColumnNameIterator)) {
-                    columnNames.append(", ");
-                    columnValues.append(", ");
-                }
+            columnNames.append(pair.getKey());
+            columnValues.append("'").append(pair.getValue()).append("'");
+            if (!pair.getKey().equals(lastColumnNameIterator)) {
+                columnNames.append(MarkingChars.comma);
+                columnValues.append(MarkingChars.comma);
+            }
         }
 
-        request.append(MarkingChars.openBracket).
-
-                append(columnNames).
-
-                append(MarkingChars.closedBracket).
-
-                append(SQLStatements.VALUES.getValue()).
-
-                append(MarkingChars.space);
-        request.append(MarkingChars.openBracket).
-
-                append(columnValues).
-
-                append(MarkingChars.closedBracket).
-
-                append(MarkingChars.semicolon);
-
+        request.append(MarkingChars.openBracket).append(columnNames).append(MarkingChars.closedBracket).
+                append(SQLStatements.VALUES.getValue()).append(MarkingChars.space).append(MarkingChars.openBracket)
+                .append(columnValues).append(MarkingChars.closedBracket).append(MarkingChars.semicolon);
         return request.toString();
     }
-
 }

@@ -2,6 +2,13 @@ package connection;
 
 import annotations.Entity;
 import exceptions.ConfigFileException;
+import org.apache.log4j.Logger;
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -11,25 +18,26 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class ParseXMLConfig {
-        public static final String URL = "database.connection.url";
-    public static final String DRIVER_CLASS = "database.connection.driver_class";
-    public static final String USERNAME = "database.connection.username";
-    public static final String PASSWORD = "database.connection.password";
-    public static final String PROPERTY = "property";
-    public static final String NAME = "name";
-    public static final String MAPPING = "mapping";
-    public static final String CLASS = "class";
-
+    private static Logger logger = Logger.getLogger(ParseXMLConfig.class);
+    private static final String URL = "database.connection.url";
+    private static final String DRIVER_CLASS = "database.connection.driver_class";
+    private static final String USERNAME = "database.connection.username";
+    private static final String PASSWORD = "database.connection.password";
+    private static final String PROPERTY = "property";
+    private static final String NAME = "name";
+    private static final String PACKAGE = "scan.package";
 
     private File xmlConfigFile;
 
-    ParseXMLConfig(String pathToXmlConfigFile) {
+    public ParseXMLConfig(String pathToXmlConfigFile) {
         this.xmlConfigFile = new File(pathToXmlConfigFile);
     }
-// TODO move strings to constants
+
     String getUrl() {
         return getProperty(URL).trim();
     }
@@ -44,6 +52,10 @@ public class ParseXMLConfig {
 
     String getPassword() {
         return getProperty(PASSWORD).trim();
+    }
+
+    private String getPackage() {
+        return getProperty(PACKAGE).trim();
     }
 
     private String getProperty(String propertyName) {
@@ -79,32 +91,42 @@ public class ParseXMLConfig {
 
     List<Class<?>> getAllClasses() {
         List<Class<?>> configuredClassList = new ArrayList<>();
-        NodeList properties = getNode(MAPPING);
 
-        for (int counter = 0; counter < properties.getLength(); counter++) {
-            Node currentProperty = properties.item(counter);
-            if (currentProperty.getNodeType() == Node.ELEMENT_NODE) {
-                Element element = (Element) currentProperty;
-                Class currentClass = loadClass(element);
-                if (currentClass.isAnnotationPresent(Entity.class)) {
-                    configuredClassList.add(currentClass);
-                }
+        Set<Class<?>> classes = findAllClassesInPackages(getPackage());
+
+        for (Class<?> c : classes) {
+            if (c.isAnnotationPresent(Entity.class)) {
+                logger.debug("try to load class " + c.getName());
+                Class currentClass = loadClass(c);
+                logger.debug("Found and loaded class " + currentClass.getName());
+                configuredClassList.add(currentClass);
             }
         }
         return configuredClassList;
     }
 
-    private Class loadClass(Element element) {
-        Class currentClass = null;
-        String className = element.getAttribute(CLASS).trim();
+    private static Set<Class<?>> findAllClassesInPackages(String packageToScan) {
+        List<ClassLoader> classLoadersList = new LinkedList<>();
+        classLoadersList.add(ClasspathHelper.contextClassLoader());
+        classLoadersList.add(ClasspathHelper.staticClassLoader());
+
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .setScanners(new SubTypesScanner(false), new ResourcesScanner())
+                .setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
+                .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(packageToScan))));
+
+        return reflections.getSubTypesOf(Object.class);
+    }
+
+    private Class loadClass(Class currentClass) {
+        String className = currentClass.getName();
         try {
-            //todo System.out.println("Try to load " + className );
+            logger.debug("Try to load " + className);
             currentClass = Class.forName(className);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            e.getCause().printStackTrace();
+            logger.error(e.getException() + " " + e.getMessage());
+            logger.error(e.getCause().getMessage());
         }
         return currentClass;
     }
-
 }
