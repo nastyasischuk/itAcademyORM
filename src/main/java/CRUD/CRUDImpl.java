@@ -1,7 +1,5 @@
 package CRUD;
 
-import CRUD.buildingObject.ObjectBuilder;
-import CRUD.buildingObject.ObjectBuilderWithLinks;
 import CRUD.exceptions.QueryExecutionException;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
@@ -12,14 +10,12 @@ import annotations.*;
 
 import connection.DataBaseImplementation;
 import exceptions.NoPrimaryKeyException;
-import javafx.scene.SceneAntialiasing;
 import org.apache.log4j.Logger;
 import tablecreation.ManyToManyConstructor;
 import tablecreation.SQLStatements;
 
 import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.RowSetFactory;
-import javax.sql.rowset.RowSetProvider;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -54,6 +50,20 @@ public class CRUDImpl implements CRUD {
                 logger.error("Primary key is not found");
             }
         }
+
+        try {
+            List<Object> objectsOTOToSave = getAllObjects(objectToDB, OneToOne.class);
+            logger.debug("GET ALL OBJECTS WITH OTO");
+            for (Object o : objectsOTOToSave) {
+                setIdToObject(o, getValueOfPK(objectToDB));
+                logger.debug("GOT ID OF ORIGINAL " + getValueOfPK(objectToDB).toString());
+                logger.debug("Found object oto " + o.toString());
+                save(o);
+            }
+        } catch (IllegalAccessException | NoPrimaryKeyException e) {
+            logger.error(e.getMessage());
+        }
+
 
         Object idMain = getValueOfPK(objectToDB);
         Field[] fields = objectToDB.getClass().getDeclaredFields();
@@ -95,7 +105,7 @@ public class CRUDImpl implements CRUD {
             logger.debug("GET ALL OBJECTS WITH MTO");
             for (Object o : objectsToSaveBefore) {
                 logger.debug(o.toString());
-                if (!checkIfAlreadyInDB(o, getValueOfPK(o)))
+                if (checkIfNotInDB(o, getValueOfPK(o)))
                     save(o);
             }
 
@@ -108,7 +118,7 @@ public class CRUDImpl implements CRUD {
                         Object o = items.next();
                         ids.add(getValueOfPK(o));
                         logger.debug("PK OF THIS" + getValueOfPK(o));
-                        if (!checkIfAlreadyInDB(o, getValueOfPK(o))) {
+                        if (checkIfNotInDB(o, getValueOfPK(o))) {
                             logger.debug("SAVING THIS SHIT -> " + o.toString());
                             save(o);
                         }
@@ -210,30 +220,37 @@ public class CRUDImpl implements CRUD {
     }
 
 
-    private List<Object> getAllObjects(Object original, Class annotation) throws IllegalAccessException {
+    private List<Object> getAllObjects(Object original, Class<? extends Annotation> annotation) throws IllegalAccessException {
         List<Object> allObjects = new ArrayList<>();
         Field[] fields = original.getClass().getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(annotation)) {
+            if (annotation.isAssignableFrom(OneToOne.class)) {
+                if (field.isAnnotationPresent(annotation) && !field.isAnnotationPresent(MapsId.class)) {
+                    field.setAccessible(true);
+                    logger.debug("FOUND OBJECT " + field.get(original).toString());
+                    allObjects.add(field.get(original));
+                }
+            } else if (field.isAnnotationPresent(annotation)) {
                 field.setAccessible(true);
+                logger.debug("FOUND OBJECT " + field.get(original).toString());
                 allObjects.add(field.get(original));
             }
         }
         return allObjects;
     }
 
-    private boolean checkIfAlreadyInDB(Object someObject, Object id) {
-        return find(someObject.getClass(), id) != null;
+    private boolean checkIfNotInDB(Object someObject, Object id) {
+        return find(someObject.getClass(), id) == null;
     }
 
-    private String getValueOfPK(Object insideOriginal) {
-        String valueOfPK = "";
+    private Object getValueOfPK(Object insideOriginal) {
+        Object valueOfPK = "";
         try {
             Field[] fields = insideOriginal.getClass().getDeclaredFields();
             for (Field field : fields) {
                 if (AnnotationUtils.isPrimaryKeyPresent(field)) {
                     field.setAccessible(true);
-                    valueOfPK = field.get(insideOriginal).toString();
+                    valueOfPK = field.get(insideOriginal);
                 }
             }
         } catch (IllegalAccessException e) {
