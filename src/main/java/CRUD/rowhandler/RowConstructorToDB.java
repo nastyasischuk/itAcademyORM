@@ -23,7 +23,8 @@ public class RowConstructorToDB extends RowConstructor {
         Field[] classFields = classToConvertToRow.getClass().getDeclaredFields();
         for (Field fieldToAdd : classFields) {
             if (fieldToAdd.isAnnotationPresent(ForeignKey.class)
-                    || fieldToAdd.isAnnotationPresent(OneToMany.class) || fieldToAdd.isAnnotationPresent(OneToOne.class))
+                    || fieldToAdd.isAnnotationPresent(OneToMany.class) ||
+                    fieldToAdd.isAnnotationPresent(OneToOne.class))
                 continue;
 
             String name = getNameOfField(fieldToAdd);
@@ -33,7 +34,8 @@ public class RowConstructorToDB extends RowConstructor {
                 setId(name, value);
             } else if (fieldToAdd.isAnnotationPresent(ManyToOne.class)) {
                 fieldToAdd.setAccessible(true);
-                row.setToMap(fieldToAdd.getName(), getValueOfPK(fieldToAdd));
+                row.setToMap(fieldToAdd.getName(), value);
+               // row.setToMap(fieldToAdd.getName(), getValueOfPK(fieldToAdd));
             } else if (fieldToAdd.isAnnotationPresent(ManyToMany.class)) {
                 continue;
             }
@@ -71,7 +73,7 @@ public class RowConstructorToDB extends RowConstructor {
     public String getValueOfAllFields(Field field){
         field.setAccessible(true);
         try {
-            if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(OneToMany.class)) {
+            if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(ManyToOne.class)) {
                 return determineValueOfForeignKey(field).toString();
             }else
                 if(getValueOfSimpleField(field)!=null)
