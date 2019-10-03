@@ -80,8 +80,7 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
         }
         return fieldValue;
     }
-
-    protected Class determinePrimaryKeyType(Field field) {
+  protected Class determinePrimaryKeyType(Field field) {
         Class classOfForeignKey = field.getType();
         Field[] fields = classOfForeignKey.getDeclaredFields();
         for(Field elOfFields:fields){

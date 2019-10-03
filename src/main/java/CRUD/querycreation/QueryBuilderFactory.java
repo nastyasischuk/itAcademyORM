@@ -6,12 +6,12 @@ import CRUD.rowhandler.RowFromDBManyToMany;
 import CRUD.rowhandler.RowToDB;
 
 public class QueryBuilderFactory {
-    public QueryBuilder createQueryBuilder(RowToDB row,QueryType queryType){
+    public QueryBuilder createQueryBuilder(RowToDB row, QueryType queryType){
         switch (queryType){
             case INSERT:
-                return new DeleteQueryBuilder(row);
-            case DELETE:
                 return new InsertQueryBuilder(row);
+            case DELETE:
+                return new DeleteQueryBuilder(row);
             case UPDATE:
                 return new UpdateQueryBuilder(row);
             case SELECTID:

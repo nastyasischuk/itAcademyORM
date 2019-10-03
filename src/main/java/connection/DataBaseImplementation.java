@@ -160,7 +160,6 @@ public class DataBaseImplementation implements DataBase {
     }
 
     public CRUDImpl getCrud(){
-
         return crud;
     }
 
@@ -184,9 +183,9 @@ public class DataBaseImplementation implements DataBase {
             }
         }
     }
+
     public Statement getStatement(String query){
         Statement statement = null;
-
         try {
             statement = this.getConnection().createStatement();
             logger.debug("Executing query " + query);
