@@ -131,11 +131,17 @@ public class DataBaseImplementation implements DataBase {
             executeQueryForCreateDB(createPKQuery);
         }
 
-        for (String query : fkQueriesToExecute)
+        logger.debug("Size og fks = " + fkQueriesToExecute.size());
+        for (String query : fkQueriesToExecute) {
+            logger.debug("Executing query for FK " + query);
             executeQueryForCreateDB(query);
+        }
 
-        for (String query : mtmQueriesToExecute)
+        logger.debug("Size og mtms = " + mtmQueriesToExecute.size());
+        for (String query : mtmQueriesToExecute) {
+            logger.debug("Executing query for MTM " + query);
             executeQueryForCreateDB(query);
+        }
     }
 
     private void executeQueryForCreateDB(String query) {
@@ -164,7 +170,7 @@ public class DataBaseImplementation implements DataBase {
         return crud;
     }
 
-    public void executeUpdateQuery(String query) {
+    public void executeUpdateQuery(String query) throws SQLException {
         Statement statement = null;
         try {
             statement = this.getConnection().createStatement();
@@ -174,12 +180,8 @@ public class DataBaseImplementation implements DataBase {
             logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
         } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (Exception e) {
-                logger.error(e.getMessage());
+            if (statement != null) {
+                statement.close();
             }
         }
     }

@@ -1,9 +1,7 @@
 package tablecreation;
 
-import annotations.AnnotationUtils;
-import annotations.Check;
+import annotations.*;
 import annotations.Index;
-import annotations.MapsId;
 import exceptions.NoPrimaryKeyException;
 import exceptions.SeveralPrimaryKeysException;
 import exceptions.WrongSQLType;
@@ -52,8 +50,9 @@ public class TableConstructorImpl implements TableConstructor {
             //todo check if column
             if (!classFields[i].isAnnotationPresent(annotations.Column.class) &&
                     !classFields[i].isAnnotationPresent(annotations.ForeignKey.class) &&
-                    !classFields[i].isAnnotationPresent(MapsId.class))
-                continue; //todo wtf? why?
+                    !classFields[i].isAnnotationPresent(MapsId.class) &&
+                    !classFields[i].isAnnotationPresent(AssociatedTable.class))
+                continue; //
 
             Column builtColumn;
             try {
