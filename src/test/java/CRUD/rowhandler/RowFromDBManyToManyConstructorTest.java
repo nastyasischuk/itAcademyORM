@@ -23,14 +23,16 @@ public class RowFromDBManyToManyConstructorTest {
         RowFromDBManyToMany row = new RowFromDBManyToManyConstructor(CatTestManyToMany.class,1,person.getClass().getDeclaredField("cats").getAnnotation(AssociatedTable.class)).buildRow();
 
         assertEquals("1",row.getIdValue());
-        assertEquals("id",row.getIdName());
+        assertEquals("id",row.getIdName());//id name from second table
+        assertEquals("p_id",row.getJoin_coulmn());
+        assertEquals("c_id",row.getInverse_column());
     }
     @Test
     public void buildRowTestProperColumnsInTable() throws Exception{
         PersonTestManyToMany person = new PersonTestManyToMany(1,"Kate",20);
         RowFromDBManyToMany row = new RowFromDBManyToManyConstructor(CatTestManyToMany.class,1,person.getClass().getDeclaredField("cats").getAnnotation(AssociatedTable.class)).buildRow();
 
-        assertTrue(row.getNameAndType().containsKey("nameCat"));
+        assertTrue(row.getNameAndType().containsKey("name"));
         assertTrue(row.getNameAndType().containsKey("person"));
         assertTrue(row.getNameAndType().containsKey("id"));
     }

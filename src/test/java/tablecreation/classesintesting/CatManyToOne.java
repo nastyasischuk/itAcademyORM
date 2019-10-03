@@ -35,6 +35,10 @@ public class CatManyToOne {
                 '}';
     }
 
+    public int getId() {
+        return id;
+    }
+
     public PersonOneToMany getPerson() {
         return person;
     }

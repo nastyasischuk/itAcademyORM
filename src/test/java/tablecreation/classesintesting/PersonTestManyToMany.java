@@ -3,16 +3,16 @@ package tablecreation.classesintesting;
 import annotations.*;
 
 import java.util.Collection;
-
+@Entity
+@Table(name ="person")
 public class PersonTestManyToMany {
     @PrimaryKey
+
     private int id;
     @Column
     private String name;
-    @Column
-    private int age;
-    @ManyToMany(mappedBy = "person")
-            @AssociatedTable(associatedTableName = "person_cat",
+    @ManyToMany(mappedBy = "person",typeOfReferencedObject = CatTestManyToMany.class)
+            @AssociatedTable(associatedTableName = "cat_person",
             joinColumns =@ForeignKey(name = "p_id"),
             inverseJoinColumns = @ForeignKey(name = "c_id"))
     Collection<CatTestManyToMany> cats;
@@ -20,9 +20,10 @@ public class PersonTestManyToMany {
     public PersonTestManyToMany(int id, String name, int age) {
         this.id = id;
         this.name = name;
-        this.age = age;
     }
+    public PersonTestManyToMany(){
 
+    }
     public int getId() {
         return id;
     }
@@ -39,13 +40,6 @@ public class PersonTestManyToMany {
         this.name = name;
     }
 
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
 
     public Collection<CatTestManyToMany> getCats() {
         return cats;
@@ -53,5 +47,14 @@ public class PersonTestManyToMany {
 
     public void setCats(Collection<CatTestManyToMany> cats) {
         this.cats = cats;
+    }
+
+    @Override
+    public String toString() {
+        return "PersonTestManyToMany{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", cats=" + cats +
+                '}';
     }
 }

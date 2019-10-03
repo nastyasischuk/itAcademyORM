@@ -1,19 +1,27 @@
 package CRUD.querycreation;
 
+import CRUD.requests.MarkingChars;
 import CRUD.rowhandler.RowFromDB;
+import CRUD.rowhandler.RowFromDBManyToMany;
+import CRUD.rowhandler.RowToDB;
+import tablecreation.SQLStatements;
 
-public class QueryBuilderFromDBManyToMany {
-    RowFromDB rowFromDB;
-    String nameJoinTable;
+public class QueryBuilderFromDBManyToMany extends QueryBuilderFromDB{
+    private RowFromDBManyToMany row;
 
-    public QueryBuilderFromDBManyToMany(RowFromDB rowFromDB,String nameJoinTable) {
-        this.rowFromDB = rowFromDB;
-        this.nameJoinTable = nameJoinTable;
+
+    public QueryBuilderFromDBManyToMany(RowFromDB rowFromDB) {
+        super(rowFromDB);
+        this.row = (RowFromDBManyToMany) rowFromDB;
+
     }
     public String buildQuery(){
-        return null;//example of query to build
-        // select * from tablename from row
-       // join nameJoinTable p on cat.id = p.c_id
-        //where nameJoinTable.id_name =id_value;
+        StringBuilder query = new StringBuilder();
+      query.append(SQLStatements.SELECT.getValue()).append(row.getInverse_column())
+              .append(SQLStatements.FROM.getValue()).append(row.getManyToManyTableName()).
+              append(SQLStatements.WHERE.getValue())
+              .append(row.getJoin_coulmn()).append(MarkingChars.equally).append(row.getIdValue()).append(MarkingChars.semicolon);
+        return query.toString();
+
     }
 }
