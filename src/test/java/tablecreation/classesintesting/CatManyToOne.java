@@ -13,6 +13,7 @@ public class CatManyToOne {
     private int id;
     @Column
     private String name;
+
     @ManyToOne
     private PersonOneToMany person;
 
@@ -30,7 +31,7 @@ public class CatManyToOne {
         return "CatManyToOne{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", person=" + person.getName() +"id "+person.getId()+
+//                ", person=" + person.getName() +"id "+person.getId()+
                 '}';
     }
 

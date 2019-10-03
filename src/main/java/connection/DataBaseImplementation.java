@@ -185,7 +185,6 @@ public class DataBaseImplementation implements DataBase {
     }
     public Statement createStatementForQueryWithResult(String query){
         Statement statement = null;
-
         try {
             statement = this.getConnection().createStatement();
             logger.debug("Executing query " + query);

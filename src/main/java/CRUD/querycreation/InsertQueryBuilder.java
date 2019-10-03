@@ -15,7 +15,6 @@ public class InsertQueryBuilder extends QueryBuilder {
     @Override
     public String buildQuery() {
         boolean isAI = row.isAutoIncrement();
-        System.out.println(row);
         StringBuilder request = new StringBuilder();
         StringBuilder columnNames = new StringBuilder();
         StringBuilder columnValues = new StringBuilder();

@@ -33,9 +33,9 @@ public class RowConstructorToDB extends RowConstructor {
                 setId(name, value);
             } else if (fieldToAdd.isAnnotationPresent(ManyToOne.class)) {
                 fieldToAdd.setAccessible(true);
-                //TODO checkIfFieldInDB
-
                 row.setToMap(fieldToAdd.getName(), getValueOfPK(fieldToAdd));
+            } else if (fieldToAdd.isAnnotationPresent(ManyToMany.class)) {
+                continue;
             }
             else {
                 row.setToMap(name, value);

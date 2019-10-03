@@ -5,6 +5,10 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class AnnotationUtils {
 
@@ -68,5 +72,28 @@ public class AnnotationUtils {
 
     public static String getInverseJoinColumn(Field field) {
         return field.getAnnotation(AssociatedTable.class).inverseJoinColumns().name();
+    }
+
+    public static Class<?> classGetTypeOfCollectionField(Field field) {
+        ParameterizedType collectionType = (ParameterizedType) field.getGenericType();
+        if (Collection.class.isAssignableFrom(field.getType())) {
+            return (Class<?>) collectionType.getActualTypeArguments()[0];
+        }
+        throw new RuntimeException("Field is not Collection");
+    }
+
+    public static List<AssociatedTable> getAssociatedTable(Object object) throws NoSuchFieldException {
+        List<AssociatedTable> tables = new ArrayList<>();
+        Class objectClass = object.getClass().getDeclaringClass();
+        Field[] fields = objectClass.getDeclaredFields();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(ManyToMany.class) && !field.getAnnotation(ManyToMany.class).mappedBy().equals("")) {
+                String mappedBy = field.getAnnotation(ManyToMany.class).mappedBy();
+                Class classOfCollection = classGetTypeOfCollectionField(field);
+                Field associatedTableField = classOfCollection.getDeclaredField(mappedBy);
+                tables.add(associatedTableField.getAnnotation(AssociatedTable.class));
+            }
+        }
+        return tables;
     }
 }
