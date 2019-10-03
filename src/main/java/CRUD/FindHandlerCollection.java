@@ -3,6 +3,7 @@ package CRUD;
 import CRUD.buildingObject.ObjectBuilder;
 import CRUD.buildingObject.ObjectBuilderWithLinks;
 import CRUD.querycreation.QueryBuilderFactory;
+import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.RowConstructorFromDBByForeignKey;
 import connection.DataBase;
 
@@ -21,7 +22,7 @@ public class FindHandlerCollection extends FindHandler {
     @Override
     public  String buildQuery(){
          row = new RowConstructorFromDBByForeignKey(objectType,idOfClassToFind,ownerOfCollection.getClass()).buildRow();
-        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
+        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row, QueryType.SELECT_OBJECT).buildQuery();
         return queryFind;
     }
     @Override

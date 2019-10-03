@@ -1,6 +1,7 @@
 package CRUD;
 import CRUD.buildingObject.ObjectSimpleBuilding;
 import CRUD.querycreation.QueryBuilderFactory;
+import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.RowFromDBManyToManyConstructor;
 import annotations.AssociatedTable;
 import connection.DataBase;
@@ -19,7 +20,7 @@ public class FindHandlerManyToMany extends FindHandler {
     @Override
     public String buildQuery() {
         row = new RowFromDBManyToManyConstructor(objectType,idOfClassToFind, associatedTable).buildRow();
-        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
+        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row, QueryType.SELECT_MANYTOMANY).buildQuery();
         return queryFind;
     }
 

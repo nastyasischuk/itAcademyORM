@@ -23,12 +23,12 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
         this.database = db;
         this.row = rowFromDB;
     }
-    public Object buildObject() throws NoSuchFieldException,IllegalAccessException,NoSuchMethodException,InvocationTargetException{
+    public Object buildObject() throws NoSuchFieldException,IllegalAccessException{
         setResultFromResultSet();
         return objectToBuildFromDB;
     }
 
-    public void setResultFromResultSet() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public void setResultFromResultSet() throws NoSuchFieldException, IllegalAccessException {
         List<Collection<Object>> listOfCollectionInObject = new ArrayList<>();
         for (Map.Entry<String,Class> entry: row.getNameAndType().entrySet()){
             Field field = classType.getDeclaredField(entry.getKey());
@@ -57,22 +57,21 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
         if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class) || field.isAnnotationPresent(OneToOne.class)
                 || field.isAnnotationPresent(ManyToOne.class)) {
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(determinePrimaryKeyType(field));
-            Object foreignKeyValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, nameOfFieldToGet);//todo determine type of foreign key
+            Object foreignKeyValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, nameOfFieldToGet);
             fieldValue = database.getCrud().find(field.getType(), foreignKeyValue);
 
         } else if (field.isAnnotationPresent(OneToMany.class)) {
             try {
-                Collection<Object> col = (Collection<Object>) database.getCrud().findCollection(field.getAnnotation(OneToMany.class).
+                Collection<Object> col = database.getCrud().findCollection(field.getAnnotation(OneToMany.class).
                         typeOfReferencedObject(), row.getIdValue(), objectToBuildFromDB, field.getAnnotation(OneToMany.class).mappedBy());
                 fieldValue = col;
             } catch (Exception e) {
                 logger.info(e.getMessage());
             }
         } else if (field.isAnnotationPresent(ManyToMany.class)) {
-            logger.info("manyToMany");
             try {
-                Collection<Object> col = (Collection<Object>) database.getCrud().
-                        findCollectionFoManyToMany(field.getAnnotation(ManyToMany.class).typeOfReferencedObject(),row.getIdValue(),field.getAnnotation(AssociatedTable.class));
+                Collection<Object> col = database.getCrud().
+                        findCollectionFoManyToMany(AnnotationUtils.classGetTypeOfCollectionField(field),row.getIdValue(),field.getAnnotation(AssociatedTable.class));
                 fieldValue = col;
             } catch (Exception e) {
                 logger.info(e.getMessage());

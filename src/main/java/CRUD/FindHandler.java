@@ -2,6 +2,7 @@ package CRUD;
 
 import CRUD.buildingObject.ObjectBuilder;
 import CRUD.querycreation.QueryBuilderFactory;
+import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.RowConstructorFromDB;
 import CRUD.rowhandler.RowFromDB;
 import connection.DataBase;
@@ -45,8 +46,7 @@ public class FindHandler {
 
     public String buildQuery(){
         row = new RowConstructorFromDB(objectType,idOfClassToFind).buildRow();
-        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
-
+        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row, QueryType.SELECT_OBJECT).buildQuery();
         return queryFind;
     }
 
