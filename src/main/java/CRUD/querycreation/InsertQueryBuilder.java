@@ -1,5 +1,6 @@
 package CRUD.querycreation;
 
+
 import CRUD.requests.MarkingChars;
 import CRUD.rowhandler.RowToDB;
 import tablecreation.SQLStatements;
@@ -9,13 +10,13 @@ import java.util.Map;
 
 public class InsertQueryBuilder extends QueryBuilder {
 
-
     public InsertQueryBuilder(RowToDB row) {
         super(row);
     }
 
     @Override
     public String buildQuery() {
+        boolean isAI = row.isAutoIncrement();
         StringBuilder request = new StringBuilder();
         StringBuilder columnNames = new StringBuilder();
         StringBuilder columnValues = new StringBuilder();
@@ -29,13 +30,17 @@ public class InsertQueryBuilder extends QueryBuilder {
             lastColumnNameIterator = String.valueOf(columnNamesIterator.next());
 
         }
+        if (!isAI) { //TODO change a little
+            columnNames.append(row.getIdName()).append(", ");
+            columnValues.append("'").append(row.getIdValue()).append("'").append(", ");
+        }
         for (Map.Entry<String, String> pair : row.getMap().entrySet()) {
-            columnNames.append(pair.getKey());
-            columnValues.append(pair.getValue());
-            if (!pair.getKey().equals(lastColumnNameIterator)) {
-                columnNames.append(MarkingChars.comma);
-                columnValues.append(MarkingChars.comma);
-            }
+                columnNames.append(pair.getKey());
+                columnValues.append("'").append(pair.getValue()).append("'");
+                if (!pair.getKey().equals(lastColumnNameIterator)) {
+                    columnNames.append(", ");
+                    columnValues.append(", ");
+                }
         }
 
         request.append(MarkingChars.openBracket).
@@ -57,4 +62,5 @@ public class InsertQueryBuilder extends QueryBuilder {
 
         return request.toString();
     }
+
 }

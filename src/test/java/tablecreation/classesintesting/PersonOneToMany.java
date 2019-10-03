@@ -13,6 +13,7 @@ public class PersonOneToMany {
     private int id;
     @Column
     private String name;
+
     @OneToMany(mappedBy = "person",typeOfReferencedObject = CatManyToOne.class)
     private Collection<CatManyToOne> cats;
 
@@ -64,5 +65,9 @@ public class PersonOneToMany {
     }
     public Collection<CatManyToOne> getCollectrion(){
         return cats;
+    }
+
+    public void setCats(Collection<CatManyToOne> cats) {
+        this.cats = cats;
     }
 }

@@ -13,6 +13,7 @@ public class CatManyToOne {
     private int id;
     @Column
     private String name;
+
     @ManyToOne
     private PersonOneToMany person;
 
@@ -30,7 +31,7 @@ public class CatManyToOne {
         return "CatManyToOne{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", person=" + person.getName() +"id "+person.getId()+
+//                ", person=" + person.getName() +"id "+person.getId()+
                 '}';
     }
 
@@ -40,5 +41,25 @@ public class CatManyToOne {
 
     public PersonOneToMany getPerson() {
         return person;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPerson(PersonOneToMany person) {
+        this.person = person;
     }
 }

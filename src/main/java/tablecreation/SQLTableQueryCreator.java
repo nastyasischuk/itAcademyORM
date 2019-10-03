@@ -123,6 +123,7 @@ public class SQLTableQueryCreator {
         for (ManyToMany mtm: table.getMtmAssociations()){
             querySecondCreateTableMTMT.append(SQLStatements.ALTER_TABLE.getValue()).append(mtm.getAssociatedTableName())
                     .append(SQLStatements.ADD).append(SQLStatements.FK.getValue())
+
                         .append(MarkingChars.openBracket).append(mtm.getForeignKeyToOriginalTableName()).append(MarkingChars.closedBracket)
                     .append(SQLStatements.REFERENCE.getValue()).append(mtm.getOriginalTableName())
                     .append(MarkingChars.openBracket).append(mtm.getPrimaryKeyOfOriginalTableName()).append(MarkingChars.closedBracket)
