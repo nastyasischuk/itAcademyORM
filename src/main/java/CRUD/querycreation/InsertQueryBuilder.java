@@ -1,5 +1,7 @@
 package CRUD.querycreation;
 
+
+import CRUD.requests.MarkingChars;
 import CRUD.rowhandler.RowToDB;
 import tablecreation.SQLStatements;
 
@@ -21,7 +23,8 @@ public class InsertQueryBuilder extends QueryBuilder {
         Iterator columnNamesIterator = row.getMap().keySet().iterator();
         String lastColumnNameIterator = null;
 
-        request.append(SQLStatements.INSERT.getValue()).append(SQLStatements.INTO.getValue()).append(row.getTableName()).append(" ");
+        request.append(SQLStatements.INSERT.getValue()).append(SQLStatements.INTO.getValue())
+                .append(row.getTableName()).append(MarkingChars.space);
 
         while (columnNamesIterator.hasNext()) {
             lastColumnNameIterator = String.valueOf(columnNamesIterator.next());
@@ -32,20 +35,31 @@ public class InsertQueryBuilder extends QueryBuilder {
             columnValues.append("'").append(row.getIdValue()).append("'").append(", ");
         }
         for (Map.Entry<String, String> pair : row.getMap().entrySet()) {
-//            if (pair.getKey().equals(row.getIdName()) && isAI) {
-//                break;
                 columnNames.append(pair.getKey());
                 columnValues.append("'").append(pair.getValue()).append("'");
                 if (!pair.getKey().equals(lastColumnNameIterator)) {
                     columnNames.append(", ");
                     columnValues.append(", ");
                 }
-
         }
-        request.append('(').append(columnNames).append(')').append(SQLStatements.VALUES.getValue()).append(" ");
-        request.append('(').append(columnValues).append(')').append(';');
 
-        System.out.println(request);
+        request.append(MarkingChars.openBracket).
+
+                append(columnNames).
+
+                append(MarkingChars.closedBracket).
+
+                append(SQLStatements.VALUES.getValue()).
+
+                append(MarkingChars.space);
+        request.append(MarkingChars.openBracket).
+
+                append(columnValues).
+
+                append(MarkingChars.closedBracket).
+
+                append(MarkingChars.semicolon);
+
         return request.toString();
     }
 

@@ -183,7 +183,8 @@ public class DataBaseImplementation implements DataBase {
             }
         }
     }
-    public Statement createStatementForQueryWithResult(String query){
+
+    public Statement getStatement(String query){
         Statement statement = null;
         try {
             statement = this.getConnection().createStatement();

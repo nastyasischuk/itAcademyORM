@@ -9,7 +9,6 @@ import tablecreation.classesintesting.*;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import static org.junit.Assert.*;
 
 public class CRUDImplTest {
@@ -17,7 +16,7 @@ public class CRUDImplTest {
 
     private static Logger logger = Logger.getLogger(CRUDImplTest.class);
     @Test
-    public void find() {
+    public void findTestFindStartOneToMany() {
         CRUDImpl crud= dataBase.getCrud();
         PersonOneToMany object = (PersonOneToMany)crud.find(PersonOneToMany.class,1);
         for(CatManyToOne c :object.getCollectrion()){
@@ -28,7 +27,7 @@ public class CRUDImplTest {
 
     }
     @Test
-    public void find2() {
+    public void findTestStartManyToOneWithNoDuplicatesInCollection() {
         CRUDImpl crud= dataBase.getCrud();
         CatManyToOne object = (CatManyToOne)crud.find(CatManyToOne.class,1);
         PersonOneToMany person = object.getPerson();
@@ -75,38 +74,6 @@ public class CRUDImplTest {
         dataBase.getCrud().save(cat);
     }
 
-
-    // NOT TODO это дичь
-//    @Test
-//    public void savePersonOTMWithoutAI() {
-//        PersonOneToMany pers = new PersonOneToMany();
-//        pers.setId(15);
-//        pers.setName("TestPers");
-//
-//        CatManyToOne cat = new CatManyToOne();
-//        cat.setId(12);
-//        cat.setName("test cat otm");
-//        cat.setPerson(pers);
-//
-//        CatManyToOne cat2 = new CatManyToOne();
-//        cat2.setId(13);
-//        cat2.setName("test 2 cat otm");
-//        cat2.setPerson(pers);
-//
-//        CatManyToOne cat3 = new CatManyToOne();
-//        cat3.setId(14);
-//        cat3.setName("test 3 cat otm");
-//        cat3.setPerson(pers);
-//
-//        Set<CatManyToOne> cats = new HashSet<>();
-//        cats.add(cat);
-//        cats.add(cat2);
-//        cats.add(cat3);
-//
-//        pers.setCats(cats);
-//        dataBase.getCrud().save(pers);
-//    }
-
     @Test
     public void saveMTMWithoutAI() {
         StudentMTM sud1 = new StudentMTM();
@@ -148,6 +115,12 @@ public class CRUDImplTest {
 
     }
 
+    @Test
+    public void findWithManyToMany(){
+        PersonTestManyToMany person  = new PersonTestManyToMany(1,"Kate",20);
+        person =(PersonTestManyToMany) dataBase.getCrud().find(person.getClass(),1);
+        System.out.println(person);
+    }
 
     @Before
     public void setDataBase(){

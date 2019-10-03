@@ -4,7 +4,7 @@ import CRUD.rowhandler.RowFromDB;
 import tablecreation.SQLStatements;
 
 public class QueryBuilderFromDB {
-    RowFromDB rowFromDB;
+   private RowFromDB rowFromDB;
 
     public QueryBuilderFromDB(RowFromDB rowFromDB) {
         this.rowFromDB = rowFromDB;

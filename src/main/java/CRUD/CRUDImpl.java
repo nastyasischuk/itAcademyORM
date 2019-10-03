@@ -5,7 +5,10 @@ import CRUD.buildingObject.ObjectBuilderWithLinks;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.*;
+
 import annotations.*;
+
+
 import connection.DataBaseImplementation;
 import exceptions.NoPrimaryKeyException;
 import javafx.scene.SceneAntialiasing;
@@ -20,7 +23,9 @@ import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import java.util.*;
+
 
 public class CRUDImpl implements CRUD {
     private static Logger logger = Logger.getLogger(CRUDImpl.class);
@@ -174,65 +179,31 @@ public class CRUDImpl implements CRUD {
         }
     }
 
+  
+    public Object find(Class<?> objectType, Object id){
+        FindHandler findHandler = new FindHandler(dataBase,objectType,id);
+        return getBuiltObject(findHandler);
+    }
     @Override
-    public Object find(Class<?> objectType, Object id) {
-        RowFromDB row = new RowConstructorFromDB(objectType, id).buildRow();
-        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
-        Statement statement = dataBase.createStatementForQueryWithResult(queryFind);
-        CachedRowSet rowset = null;
-        try {
-            ResultSet resultSet = statement.executeQuery(queryFind);
-            RowSetFactory factory = RowSetProvider.newFactory();
-            rowset = factory.createCachedRowSet();
-            rowset.populate(resultSet);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-
-
-        Object resultObject = null;
-        try {
-            rowset.next();
-            resultObject = new ObjectBuilder(row, rowset, objectType, dataBase).buildObject();
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        } finally {
-            dataBase.closeStatement(statement);
-        }
-
-        return resultObject;
+    public Object findCollection(Class classToFind, Object id, Object usingForeignKey, String mapping) {
+        FindHandler findHandler = new FindHandlerCollection(dataBase,classToFind,id,usingForeignKey,mapping);
+      return getBuiltObject(findHandler);
+    }
+    @Override
+    public Object findCollectionFoManyToMany(Class classToFind, Object id, AssociatedTable associatedTable) {
+        FindHandler findHandler = new FindHandlerManyToMany(dataBase,classToFind,id,associatedTable);
+        return getBuiltObject(findHandler);
     }
 
-    public Collection<Object> findCollection(Class classToFind, Object id, Object usingForeignKey, String mapping) {
-        RowFromDB row = new RowConstructorFromDBByForeignKey(classToFind, id, usingForeignKey.getClass()).buildRow();
-        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row).buildQuery();
-        Statement statement = dataBase.createStatementForQueryWithResult(queryFind);
-        Collection<Object> collection = new HashSet<>();
-        CachedRowSet rowset = null;
-        try {
-            ResultSet resultSet = statement.executeQuery(queryFind);
-            RowSetFactory factory = RowSetProvider.newFactory();
-            rowset = factory.createCachedRowSet();
-            rowset.populate(resultSet);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-
-        try {
-            while (rowset.next()) {
-                Object object = new ObjectBuilderWithLinks(row, rowset, classToFind, usingForeignKey, mapping, dataBase).buildObject();
-                logger.info(object);
-                collection.add(object);
-            }
-
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-        dataBase.closeStatement(statement);
-        return collection;
+    private Object getBuiltObject(FindHandler findHandler){
+        String query = findHandler.buildQuery();
+        CachedRowSet cachedRowSet = findHandler.getResultSetFromQuery(query);
+        return findHandler.buildObject(cachedRowSet);
     }
 
-    private boolean checkIfOneToMany(Class<?> cllasToTest) {
+
+    private boolean checkIfOneToMany(Class<?> cllasToTest){
+
         Field[] allFields = cllasToTest.getDeclaredFields();
         for (Field field : allFields)
             if (field.isAnnotationPresent(OneToMany.class))
@@ -245,18 +216,6 @@ public class CRUDImpl implements CRUD {
         Field[] fields = original.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(annotation)) {
-                field.setAccessible(true);
-                allObjects.add(field.get(original));
-            }
-        }
-        return allObjects;
-    }
-
-    private List<Object> getAllObjectsMTM(Object original) throws IllegalAccessException {
-        List<Object> allObjects = new ArrayList<>();
-        Field[] fields = original.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(ManyToMany.class) /*&& field.isAnnotationPresent(AssociatedTable.class)*/) {
                 field.setAccessible(true);
                 allObjects.add(field.get(original));
             }
