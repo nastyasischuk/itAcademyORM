@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class InsertQueryBuilder extends QueryBuilder {
-    private RowToDB row;
+
 
     public InsertQueryBuilder(RowToDB row) {
         super(row);

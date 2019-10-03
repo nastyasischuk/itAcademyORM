@@ -5,6 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
 
 public class AnnotationUtils {
 
@@ -68,5 +70,12 @@ public class AnnotationUtils {
 
     public static String getInverseJoinColumn(Field field) {
         return field.getAnnotation(AssociatedTable.class).inverseJoinColumns().name();
+    }
+    public static Class<?> classGetTypeOfCollectionField(Field field) {
+        ParameterizedType collectionType = (ParameterizedType) field.getGenericType();
+        if (Collection.class.isAssignableFrom(field.getType())) {
+            return (Class<?>) collectionType.getActualTypeArguments()[0];
+        }
+        throw new RuntimeException("Field is not Collection");
     }
 }

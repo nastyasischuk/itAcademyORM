@@ -17,12 +17,14 @@ public class QueryBuilderFactory {
             case SELECTID:
                 return new SelectLatestIdQueryBuilder(row);
         }
-        return null;//todo change
+        return null;
     }
-    public QueryBuilderFromDB createQueryBuilderFromDB(RowFromDB row){
-        if(row instanceof RowFromDBManyToMany)
-            return new QueryBuilderFromDBManyToMany(row);
+    public QueryBuilderFromDB createQueryBuilderFromDB(RowFromDB row,QueryType queryType){
+        if(queryType==QueryType.SELECT_OBJECT)
         return new QueryBuilderFromDB(row);
+        if(queryType==QueryType.SELECT_MANYTOMANY)
+            return new QueryBuilderFromDBManyToMany(row);
+        return null;
     }
 
 
