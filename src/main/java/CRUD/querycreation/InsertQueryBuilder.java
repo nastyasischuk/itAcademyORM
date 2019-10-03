@@ -1,8 +1,7 @@
 package CRUD.querycreation;
 
-import CRUD.rowhandler.Row;
+import CRUD.requests.MarkingChars;
 import CRUD.rowhandler.RowToDB;
-import tablecreation.Column;
 import tablecreation.SQLStatements;
 
 import java.util.Iterator;
@@ -23,26 +22,38 @@ public class InsertQueryBuilder extends QueryBuilder {
         Iterator columnNamesIterator = row.getMap().keySet().iterator();
         String lastColumnNameIterator = null;
 
-        request.append(SQLStatements.INSERT.getValue()).append(SQLStatements.INTO.getValue()).append(row.getTableName()).append(" ");
+        request.append(SQLStatements.INSERT.getValue()).append(SQLStatements.INTO.getValue())
+                .append(row.getTableName()).append(MarkingChars.space);
 
         while (columnNamesIterator.hasNext()) {
             lastColumnNameIterator = String.valueOf(columnNamesIterator.next());
 
         }
         for (Map.Entry<String, String> pair : row.getMap().entrySet()) {
-            if (pair.getKey().equals(row.getIdName())) {
-                break;
-            } else {
-                columnNames.append(pair.getKey());
-                columnValues.append(pair.getValue());
-                if (!pair.getKey().equals(lastColumnNameIterator)) {
-                    columnNames.append(", ");
-                    columnValues.append(", ");
-                }
+            columnNames.append(pair.getKey());
+            columnValues.append(pair.getValue());
+            if (!pair.getKey().equals(lastColumnNameIterator)) {
+                columnNames.append(MarkingChars.comma);
+                columnValues.append(MarkingChars.comma);
             }
         }
-        request.append('(').append(columnNames).append(')').append(SQLStatements.VALUES.getValue()).append(" ");
-        request.append('(').append(columnValues).append(')').append(';');
+
+        request.append(MarkingChars.openBracket).
+
+                append(columnNames).
+
+                append(MarkingChars.closedBracket).
+
+                append(SQLStatements.VALUES.getValue()).
+
+                append(MarkingChars.space);
+        request.append(MarkingChars.openBracket).
+
+                append(columnValues).
+
+                append(MarkingChars.closedBracket).
+
+                append(MarkingChars.semicolon);
 
         return request.toString();
     }
