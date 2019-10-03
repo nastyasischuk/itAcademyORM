@@ -6,10 +6,12 @@ import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+
+import java.util.Collection;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 public class AnnotationUtils {
 
     public static boolean isTablePresentAndNotEmpty(Class<?> annotatedClass){
@@ -96,4 +98,5 @@ public class AnnotationUtils {
         }
         return tables;
     }
+
 }

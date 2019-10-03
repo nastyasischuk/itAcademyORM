@@ -5,7 +5,6 @@ import CRUD.rowhandler.RowToDB;
 import tablecreation.SQLStatements;
 
 public class DeleteQueryBuilder extends QueryBuilder {
-    private RowToDB row;
 
     public DeleteQueryBuilder(RowToDB row) {
         super(row);

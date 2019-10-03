@@ -27,12 +27,11 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
     }
     @Override
     public void setResultFromResultSet() throws NoSuchFieldException, IllegalAccessException {
-        List<Collection<Object>> listOfCollectionInObject = new ArrayList<>();
         for (Map.Entry<String,Class> entry: row.getNameAndType().entrySet()){
             Field field = classType.getDeclaredField(entry.getKey());
             field.setAccessible(true);
-            if(entry.getKey().equals(mapping)){//if its oneToOne ManyTOne
-                if(field.getType() == objectToMappedBy.getClass())
+            if(entry.getKey().equals(mapping)){
+                if(field.getType() == objectToMappedBy.getClass())//if its oneToOne ManyTOne, for other associations skips because of recursion
                     field.set(objectToBuildFromDB,objectToMappedBy);
                 continue;
             }
@@ -49,9 +48,6 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
                 logger.error(e.getMessage());
             }
             field.set(objectToBuildFromDB,fieldValue);
-            if(field.isAnnotationPresent(ManyToOne.class)){
-                listOfCollectionInObject.add(setToCollection(fieldValue));
-            }
         }
     }
 

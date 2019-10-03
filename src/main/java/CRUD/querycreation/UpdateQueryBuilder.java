@@ -9,8 +9,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class UpdateQueryBuilder extends QueryBuilder {
-    private RowToDB row;
-
     public UpdateQueryBuilder(RowToDB row) {
         super(row);
     }

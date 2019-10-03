@@ -163,9 +163,11 @@ public class CRUDImpl implements CRUD {
         try {
             field = object.getClass().getDeclaredField(nameOfId);
             field.setAccessible(true);
-            field.set(object, idToObject);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            logger.error(e.getMessage() + " " + e.getCause().getMessage());
+
+            field.set(object,idToObject);
+        }catch (NoSuchFieldException | IllegalAccessException e){
+           logger.error(e);
+
         }
     }
 
@@ -185,14 +187,14 @@ public class CRUDImpl implements CRUD {
         return getBuiltObject(findHandler);
     }
     @Override
-    public Object findCollection(Class classToFind, Object id, Object usingForeignKey, String mapping) {
+    public Collection<Object> findCollection(Class classToFind, Object id, Object usingForeignKey, String mapping) {
         FindHandler findHandler = new FindHandlerCollection(dataBase,classToFind,id,usingForeignKey,mapping);
-      return getBuiltObject(findHandler);
+      return (Collection<Object>) getBuiltObject(findHandler);
     }
     @Override
-    public Object findCollectionFoManyToMany(Class classToFind, Object id, AssociatedTable associatedTable) {
+    public Collection<Object> findCollectionFoManyToMany(Class classToFind, Object id, AssociatedTable associatedTable) {
         FindHandler findHandler = new FindHandlerManyToMany(dataBase,classToFind,id,associatedTable);
-        return getBuiltObject(findHandler);
+        return (Collection<Object>) getBuiltObject(findHandler);
     }
 
     private Object getBuiltObject(FindHandler findHandler){
@@ -200,6 +202,7 @@ public class CRUDImpl implements CRUD {
         CachedRowSet cachedRowSet = findHandler.getResultSetFromQuery(query);
         return findHandler.buildObject(cachedRowSet);
     }
+
 
 
     private boolean checkIfOneToMany(Class<?> cllasToTest){
@@ -242,4 +245,5 @@ public class CRUDImpl implements CRUD {
         }
         return valueOfPK;
     }
+
 }

@@ -39,6 +39,7 @@ public class CatTestManyToMany {
     }
 
     public Collection<PersonTestManyToMany> getPerson() {
+
         return person;
     }
 
@@ -53,4 +54,5 @@ public class CatTestManyToMany {
                 ", nameCat='" + nameCat + '\'';
 
     }
+
 }

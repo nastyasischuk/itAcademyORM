@@ -3,7 +3,6 @@ package CRUD.querycreation;
 import CRUD.requests.MarkingChars;
 import CRUD.rowhandler.RowFromDB;
 import CRUD.rowhandler.RowFromDBManyToMany;
-import CRUD.rowhandler.RowToDB;
 import tablecreation.SQLStatements;
 
 public class QueryBuilderFromDBManyToMany extends QueryBuilderFromDB{
