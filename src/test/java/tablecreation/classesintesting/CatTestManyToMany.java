@@ -12,7 +12,7 @@ public class CatTestManyToMany {
     private int id;
     @Column(name = "name")
     private String nameCat;
-    @ManyToMany(mappedBy = "",typeOfReferencedObject = PersonTestManyToMany.class)
+    @ManyToMany(mappedBy = "")
     Collection<PersonTestManyToMany> person;
     public CatTestManyToMany(){
 

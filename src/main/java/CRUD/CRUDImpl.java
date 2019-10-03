@@ -2,6 +2,7 @@ package CRUD;
 
 import CRUD.buildingObject.ObjectBuilder;
 import CRUD.buildingObject.ObjectBuilderWithLinks;
+import CRUD.exceptions.QueryExecutionException;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.*;
@@ -39,7 +40,12 @@ public class CRUDImpl implements CRUD {
     public void save(Object objectToDB) {
 
         List<Object> ids = checkAndSaveInnerEntities(objectToDB);
-        RowToDB rowToDB = cudBasics(objectToDB, QueryType.INSERT);
+        RowToDB rowToDB = null;
+        try {
+            rowToDB = cudBasics(objectToDB, QueryType.INSERT);
+        } catch (SQLException e) {
+            //todo change
+        }
         if (rowToDB.isAutoIncrement()) {
             Object calculatedId = queryId(rowToDB, QueryType.SELECTID);
             try {
@@ -63,6 +69,9 @@ public class CRUDImpl implements CRUD {
                     }
                 } catch (NoPrimaryKeyException e) {
                     logger.error("No primary key");
+                } catch (SQLException e) {
+                    logger.error(e,e.getCause());
+                    throw new QueryExecutionException("Could not update existing rows",e);
                 }
             }
 
@@ -114,15 +123,23 @@ public class CRUDImpl implements CRUD {
 
     @Override
     public void delete(Object objectToDelete) {
-        cudBasics(objectToDelete, QueryType.DELETE);
+        try {
+            cudBasics(objectToDelete, QueryType.DELETE);
+        }catch (SQLException e){
+            throw new QueryExecutionException("Could not delete ",e);
+        }
     }
 
     @Override
     public void update(Object objectToUpdate) {
-        cudBasics(objectToUpdate, QueryType.UPDATE);
+        try {
+            cudBasics(objectToUpdate, QueryType.UPDATE);
+        }catch (SQLException e){
+            throw new QueryExecutionException("Could not update ",e);
+        }
     }
 
-    private RowToDB cudBasics(Object objectToDB, QueryType queryType) {
+    private RowToDB cudBasics(Object objectToDB, QueryType queryType) throws SQLException{
         RowToDB rowToDB = new RowConstructorToDB(objectToDB).buildRow();
         String query = new QueryBuilderFactory().createQueryBuilder(rowToDB, queryType).buildQuery();
         dataBase.executeUpdateQuery(query);
@@ -131,7 +148,7 @@ public class CRUDImpl implements CRUD {
 
     private Object queryId(RowToDB row, QueryType queryType) {
         String query = new QueryBuilderFactory().createQueryBuilder(row, queryType).buildQuery();
-        try (Statement statement = dataBase.createStatementForQueryWithResult(query)) {
+        try (Statement statement = dataBase.getStatement(query)) {
             ResultSet resultSet;
             resultSet = statement.executeQuery(query);
             Object ob = null;
@@ -142,9 +159,9 @@ public class CRUDImpl implements CRUD {
             statement.close();
             return ob;
         } catch (SQLException e) {
-            logger.error("We are fucked with Result Set while getting latest id");
+            logger.error(e,e.getCause());
         }
-        return null; //TODO Change mb later?
+        return null;
     }
 
     private String getNameOfPrimaryKey(Field[] fields) throws NoPrimaryKeyException {
@@ -170,17 +187,6 @@ public class CRUDImpl implements CRUD {
 
         }
     }
-
-    private Object calculateId(ResultSet resultSet) {
-        try {
-            logger.debug("ResultSet is " + resultSet.toString());
-            return resultSet.getObject(1);
-        } catch (SQLException e) {
-            logger.error(e.getMessage() + " " + e.getCause().getMessage());
-            return null;
-        }
-    }
-
   
     public Object find(Class<?> objectType, Object id){
         FindHandler findHandler = new FindHandler(dataBase,objectType,id);
@@ -203,16 +209,6 @@ public class CRUDImpl implements CRUD {
         return findHandler.buildObject(cachedRowSet);
     }
 
-
-
-    private boolean checkIfOneToMany(Class<?> cllasToTest){
-
-        Field[] allFields = cllasToTest.getDeclaredFields();
-        for (Field field : allFields)
-            if (field.isAnnotationPresent(OneToMany.class))
-                return true;
-        return false;
-    }
 
     private List<Object> getAllObjects(Object original, Class annotation) throws IllegalAccessException {
         List<Object> allObjects = new ArrayList<>();

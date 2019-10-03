@@ -11,7 +11,7 @@ public class PersonTestManyToMany {
     private int id;
     @Column
     private String name;
-    @ManyToMany(mappedBy = "person",typeOfReferencedObject = CatTestManyToMany.class)
+    @ManyToMany(mappedBy = "person")
             @AssociatedTable(associatedTableName = "cat_person",
             joinColumns =@ForeignKey(name = "p_id"),
             inverseJoinColumns = @ForeignKey(name = "c_id"))

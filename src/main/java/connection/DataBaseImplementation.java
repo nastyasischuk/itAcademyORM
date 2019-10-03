@@ -163,7 +163,7 @@ public class DataBaseImplementation implements DataBase {
         return crud;
     }
 
-    public void executeUpdateQuery(String query) {
+    public void executeUpdateQuery(String query) throws SQLException{
         Statement statement = null;
         try {
             statement = this.getConnection().createStatement();
@@ -173,14 +173,9 @@ public class DataBaseImplementation implements DataBase {
             logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
         } finally {
-            try {
                 if (statement != null) {
                     statement.close();
                 }
-            } catch (Exception e) {
-                logger.error(e.getMessage());
-                e.printStackTrace();
-            }
         }
     }
 
