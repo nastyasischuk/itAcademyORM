@@ -27,18 +27,17 @@ public class ObjectSimpleBuilding {
         this.objectToBuildFromDB = instantiateObject();
     }
     public Object buildObject() throws NoSuchFieldException,IllegalAccessException,NoSuchMethodException,InvocationTargetException{
-        String namePK =getPKName();
         Field pkField = primaryKeyField();
-        setPK(pkField,getPKValueFromResultSet(namePK,pkField.getType()));
+        setPK(pkField,getPKValueFromResultSet(pkField.getType()));
         return objectToBuildFromDB;
     }
+
     protected Object instantiateObject(){
         Object toInst =null;
         try{
-            Class aClass = Class.forName(classType.getName());
-            toInst = aClass.newInstance();
+            toInst = classType.newInstance();
         }catch (Exception e){
-            logger.error(e.getMessage());
+            logger.error(e,e.getCause());
         }
         return toInst;
     }
@@ -55,14 +54,17 @@ public class ObjectSimpleBuilding {
         return STARTOFMETHODRESULTSETTOGETVALUE+nameCapitalized;
     }
 
-    protected Object getValueFromResultSet(String nameOfMethod,String nameOfAttributeToGet){
+    protected Object getValueFromResultSet(String nameOfMethod){
         Method method;
         Object valueOfObject = null;
+        logger.info(nameOfMethod);
         try {
-            method = CachedRowSet.class.getMethod(nameOfMethod,String.class);
-            valueOfObject =  method.invoke(resultSet,nameOfAttributeToGet);
-        }catch(NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
-            logger.error(e);
+            method = CachedRowSet.class.getMethod(nameOfMethod,int.class);
+            valueOfObject =  method.invoke(resultSet,1);
+        }catch(NoSuchMethodException | IllegalAccessException  e){
+            logger.error(e,e.getCause());
+        }catch(InvocationTargetException e){
+            logger.error(nameOfMethod);
         }
         return valueOfObject;
     }
@@ -78,23 +80,9 @@ public class ObjectSimpleBuilding {
         }
         return primaryKeyField;
     }
-    private String getPKName(){
-        Field primaryKeyField = null;
-        Field[] fields = classType.getDeclaredFields();
-        for(Field field:fields) {
-            if (field.isAnnotationPresent(PrimaryKey.class)) {
-                primaryKeyField = field;
-            }
-        }
-        String name;
-        if(AnnotationUtils.isColumnPresentAndNotEmpty(primaryKeyField)){
-            name = AnnotationUtils.getColumnName(primaryKeyField);
-        }else name = primaryKeyField.getName();
-        return name;
-    }
-    private Object getPKValueFromResultSet(String name, Class<?> pkType){
-        String methodName= constructResultSetMethodName(Integer.class);
-        return getValueFromResultSet(methodName,name);
+    private Object getPKValueFromResultSet( Class<?> pkType){
+        String methodName= constructResultSetMethodName(pkType);
+        return getValueFromResultSet(methodName);
     }
     private void setPK(Field pkField,Object pkValue){
         pkField.setAccessible(true);

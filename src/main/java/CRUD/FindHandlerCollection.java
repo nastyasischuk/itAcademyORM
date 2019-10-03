@@ -25,7 +25,7 @@ public class FindHandlerCollection extends FindHandler {
         return queryFind;
     }
     @Override
-    public Object buildObject(CachedRowSet rowSet){
+    public Collection<Object> buildObject(CachedRowSet rowSet){
         Collection<Object> collection = new HashSet<>();
         try {
             while (rowSet.next()) {

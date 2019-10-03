@@ -3,6 +3,7 @@ package CRUD.buildingObject;
 import CRUD.rowhandler.RowFromDB;
 import annotations.*;
 import connection.DataBase;
+import org.apache.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.lang.reflect.Field;
@@ -11,6 +12,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public class ObjectBuilder extends ObjectSimpleBuilding {
+    public static Logger logger = Logger.getLogger(ObjectBuilder.class);
     protected RowFromDB row;
     protected DataBase database;
     public ObjectBuilder(){
@@ -47,7 +49,6 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
                 listOfCollectionInObject.add(setToCollection(fieldValue));
             }
         }
-        logger.info(listOfCollectionInObject.size());
         removeAllDuplecates(listOfCollectionInObject);
     }
     protected Object handleCasesWhenTypeIsNotSimple(Field field,String nameOfFieldToGet) {
@@ -61,15 +62,18 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
 
         } else if (field.isAnnotationPresent(OneToMany.class)) {
             try {
-                Collection<Object> col = (Collection<Object>) database.getCrud().findCollection(field.getAnnotation(OneToMany.class).typeOfReferencedObject(), row.getIdValue(), objectToBuildFromDB, field.getAnnotation(OneToMany.class).mappedBy());
+                Collection<Object> col = (Collection<Object>) database.getCrud().findCollection(field.getAnnotation(OneToMany.class).
+                        typeOfReferencedObject(), row.getIdValue(), objectToBuildFromDB, field.getAnnotation(OneToMany.class).mappedBy());
                 fieldValue = col;
             } catch (Exception e) {
                 logger.info(e.getMessage());
             }
         } else if (field.isAnnotationPresent(ManyToMany.class)) {
-            try {//todo
-               // Collection<Object> col = (Collection<Object>) database.getCrud().findCollectionFoManyToMany();
-               // fieldValue = col;
+            logger.info("manyToMany");
+            try {
+                Collection<Object> col = (Collection<Object>) database.getCrud().
+                        findCollectionFoManyToMany(field.getAnnotation(ManyToMany.class).typeOfReferencedObject(),row.getIdValue(),field.getAnnotation(AssociatedTable.class));
+                fieldValue = col;
             } catch (Exception e) {
                 logger.info(e.getMessage());
             }
@@ -86,6 +90,21 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
             }
         }
         return null;
+    }
+    protected Object getValueFromResultSet(String nameOfMethod,String nameOfAttributeToGet){
+        Method method;
+        Object valueOfObject = null;
+        logger.info(nameOfMethod);
+        logger.info(nameOfAttributeToGet);
+        try {
+            method = CachedRowSet.class.getMethod(nameOfMethod,String.class);
+            valueOfObject =  method.invoke(resultSet,nameOfAttributeToGet);
+        }catch(NoSuchMethodException | IllegalAccessException  e){
+            logger.error(e,e.getCause());
+        }catch(InvocationTargetException e){
+            logger.error(nameOfMethod);
+        }
+        return valueOfObject;
     }
 
     protected Collection<Object> setToCollection(Object fieldValue) {

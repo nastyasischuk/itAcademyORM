@@ -24,12 +24,12 @@ public class FindHandlerManyToMany extends FindHandler {
     }
 
     @Override
-    public Object buildObject(CachedRowSet rowSet){
+    public Collection<Object> buildObject(CachedRowSet rowSet){
         Collection<Object> collection = new HashSet<>();
         try {
 
             while (rowSet.next()) {
-                Object object = new ObjectSimpleBuilding(rowSet,objectType);
+                Object object = new ObjectSimpleBuilding(rowSet,objectType).buildObject();
                 collection.add(object);
             }
         }catch (Exception e){

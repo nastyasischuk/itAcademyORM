@@ -10,6 +10,7 @@ import tablecreation.TableConstructorImpl;
 import tablecreation.classesintesting.CatManyToOne;
 import tablecreation.classesintesting.CatTestManyToMany;
 import tablecreation.classesintesting.PersonOneToMany;
+import tablecreation.classesintesting.PersonTestManyToMany;
 
 import static org.junit.Assert.*;
 
@@ -44,6 +45,12 @@ DataBaseImplementation dataBase;
 
     @Test
     public void findCollection1() {
+    }
+    @Test
+    public void findWithManyToMany(){
+        PersonTestManyToMany person  = new PersonTestManyToMany(1,"Kate",20);
+        person =(PersonTestManyToMany) dataBase.getCrud().find(person.getClass(),1);
+        System.out.println(person);
     }
     @Before
     public void setDataBase(){

@@ -44,7 +44,6 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
                     fieldValue = handleCasesWhenTypeIsNotSimple(field, entry.getKey());
                 } else {
                     fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, field.getName());
-                    logger.info("handling  g");
                 }
             }catch (Exception e){
                 logger.error(e.getMessage());

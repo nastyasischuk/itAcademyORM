@@ -56,7 +56,7 @@ public class FindHandler {
             rowSet.next();
             resultObject = new ObjectBuilder(row, rowSet, objectType,dataBase).buildObject();
         }catch (Exception e){
-            logger.error(e.getMessage());
+            logger.error(e,e.getCause());
         }
         dataBase.closeStatement(statement);
         return resultObject;

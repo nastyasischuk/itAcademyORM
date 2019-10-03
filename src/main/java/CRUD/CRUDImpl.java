@@ -97,11 +97,13 @@ public class CRUDImpl implements CRUD {
         FindHandler findHandler = new FindHandler(dataBase,objectType,id);
         return getBuiltObject(findHandler);
     }
+    @Override
     public Object findCollection(Class classToFind, Object id, Object usingForeignKey, String mapping) {
         FindHandler findHandler = new FindHandlerCollection(dataBase,classToFind,id,usingForeignKey,mapping);
       return getBuiltObject(findHandler);
     }
-    public Object findCollectionFoManyToMany(Class classToFind, Object id, String mapping, AssociatedTable associatedTable) {
+    @Override
+    public Object findCollectionFoManyToMany(Class classToFind, Object id, AssociatedTable associatedTable) {
         FindHandler findHandler = new FindHandlerManyToMany(dataBase,classToFind,id,associatedTable);
         return getBuiltObject(findHandler);
     }
