@@ -1,4 +1,4 @@
-package CRUD.exceptions;
+package exceptions;
 
 public class QueryExecutionException extends RuntimeException {
     public QueryExecutionException(String message, Throwable cause) {

@@ -9,7 +9,10 @@ import javax.sql.rowset.CachedRowSet;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class ObjectBuilder extends ObjectSimpleBuilding {
     public static Logger logger = Logger.getLogger(ObjectBuilder.class);
@@ -17,7 +20,6 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
     protected DataBase database;
 
     public ObjectBuilder() {
-
     }
 
     public ObjectBuilder(RowFromDB rowFromDB, CachedRowSet resultSet, Class<?> classType, DataBase db) {
@@ -48,18 +50,19 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
                 logger.info(e.getMessage());
             }
             field.set(objectToBuildFromDB, fieldValue);
-            if (field.isAnnotationPresent(ManyToOne.class)) {
+            if (AnnotationUtils.isManyToOnePresent(field)) {
                 listOfCollectionInObject.add(setToCollection(fieldValue));
             }
         }
         removeAllDuplecates(listOfCollectionInObject);
     }
 
-    protected Object handleCasesWhenTypeIsNotSimple(Field field, String nameOfFieldToGet) {
+    Object handleCasesWhenTypeIsNotSimple(Field field, String nameOfFieldToGet) {
         Object fieldValue = null;
 
-        if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class) || field.isAnnotationPresent(OneToOne.class)
-                || field.isAnnotationPresent(ManyToOne.class)) {
+//        if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class) || field.isAnnotationPresent(OneToOne.class)
+//                || field.isAnnotationPresent(ManyToOne.class))
+        if (AnnotationUtils.isAnyOfAnnotationIsPresent(field, ForeignKey.class, MapsId.class, OneToOne.class, ManyToOne.class)) {
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(determinePrimaryKeyType(field));
             Object foreignKeyValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, nameOfFieldToGet);
             fieldValue = database.getCrud().find(field.getType(), foreignKeyValue);
@@ -84,18 +87,18 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
         return fieldValue;
     }
 
-    protected Class determinePrimaryKeyType(Field field) {
+    private Class determinePrimaryKeyType(Field field) {
         Class classOfForeignKey = field.getType();
         Field[] fields = classOfForeignKey.getDeclaredFields();
         for (Field elOfFields : fields) {
-            if (elOfFields.isAnnotationPresent(PrimaryKey.class)) {
+            if (AnnotationUtils.isPrimaryKeyPresent(elOfFields)) {
                 return elOfFields.getType();
             }
         }
         return null;
     }
 
-    protected Object getValueFromResultSet(String nameOfMethod, String nameOfAttributeToGet) {
+    Object getValueFromResultSet(String nameOfMethod, String nameOfAttributeToGet) {
         Method method;
         Object valueOfObject = null;
         logger.info(nameOfMethod);
@@ -111,12 +114,11 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
         return valueOfObject;
     }
 
-    protected Collection<Object> setToCollection(Object fieldValue) {
+    private Collection<Object> setToCollection(Object fieldValue) {
         Field field = null;
         Collection collectionInManyToOne = null;
         for (Field personField : fieldValue.getClass().getDeclaredFields()) {
-            if (personField.isAnnotationPresent(OneToMany.class)
-            )
+            if (personField.isAnnotationPresent(OneToMany.class))
                 field = personField;
         }
         try {

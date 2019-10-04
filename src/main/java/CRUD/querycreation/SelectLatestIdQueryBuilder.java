@@ -5,7 +5,7 @@ import CRUD.rowhandler.RowToDB;
 import tablecreation.SQLStatements;
 
 public class SelectLatestIdQueryBuilder extends QueryBuilder {
-    public SelectLatestIdQueryBuilder(RowToDB row) {
+    SelectLatestIdQueryBuilder(RowToDB row) {
         super(row);
     }
 

@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class InsertQueryBuilder extends QueryBuilder {
 
-    public InsertQueryBuilder(RowToDB row) {
+    InsertQueryBuilder(RowToDB row) {
         super(row);
     }
 

@@ -9,5 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Index {
     String name();
+
     boolean unique() default false;
 }

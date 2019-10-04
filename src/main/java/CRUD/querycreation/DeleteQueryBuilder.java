@@ -6,7 +6,7 @@ import tablecreation.SQLStatements;
 
 public class DeleteQueryBuilder extends QueryBuilder {
 
-    public DeleteQueryBuilder(RowToDB row) {
+    DeleteQueryBuilder(RowToDB row) {
         super(row);
     }
 
