@@ -4,9 +4,9 @@ public enum QueryType {
     UPDATE,
     DELETE,
     INSERT,
-    SELECTID,
+    SELECT_ID,
     SELECT_OBJECT,
-    SELECT_MANYTOMANY,
+    SELECT_MANY_TO_MANY,
 }
 
 

@@ -35,7 +35,8 @@ public class UpdateQueryBuilder extends QueryBuilder {
             }
         }
         request.append(columnNamesAndColumnValues);
-        request.append(SQLStatements.WHERE.getValue()).append(row.getIdName()).append(MarkingChars.equally).append(row.getIdValue()).append(MarkingChars.semicolon);
+        request.append(SQLStatements.WHERE.getValue()).append(row.getIdName()).append(MarkingChars.equally)
+                .append(row.getIdValue()).append(MarkingChars.semicolon);
 
         return request.toString();
     }

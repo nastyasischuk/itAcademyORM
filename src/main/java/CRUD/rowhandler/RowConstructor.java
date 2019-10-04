@@ -4,7 +4,7 @@ import annotations.*;
 
 import java.lang.reflect.Field;
 
-public abstract class RowConstructor  {
+public abstract class RowConstructor {
     public abstract Row buildRow();
 
     protected String getTableName(Class<?> classToConvertTorow) {
@@ -13,28 +13,32 @@ public abstract class RowConstructor  {
         } else {
             return classToConvertTorow.getSimpleName();
         }
-
     }
-    String getNameOfField(Field field){
-        if(AnnotationUtils.isColumnPresentAndNotEmpty(field)){
+
+    String getNameOfField(Field field) {
+        if (AnnotationUtils.isColumnPresentAndNotEmpty(field)) {
             return AnnotationUtils.getColumnName(field);
-        }else if(AnnotationUtils.isForeignKeyPresentAndNotEmpty(field)){
+        } else if (AnnotationUtils.isForeignKeyPresentAndNotEmpty(field)) {
             return AnnotationUtils.getFKName(field);
-        }else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {
-            Class currentClass = field.getDeclaringClass();
-            Field[] fields = currentClass.getDeclaredFields();
-            for (Field fieldOfEntity : fields) {
-                if (fieldOfEntity.isAnnotationPresent(PrimaryKey.class)) {
-                    if (AnnotationUtils.isColumnPresentAndNotEmpty(fieldOfEntity)) {
-                        return AnnotationUtils.getColumnName(fieldOfEntity);
-                    } else {
-                        return fieldOfEntity.getName();
-                    }
-                }
-            }
-            return field.getName();
-        }else{
+        } else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {
+            return getNameIfOneToOne(field);
+        } else {
             return field.getName();
         }
+    }
+
+    private String getNameIfOneToOne(Field field) {
+        Class currentClass = field.getDeclaringClass();
+        Field[] fields = currentClass.getDeclaredFields();
+        for (Field fieldOfEntity : fields) {
+            if (AnnotationUtils.isPrimaryKeyPresent(fieldOfEntity)) {
+                if (AnnotationUtils.isColumnPresentAndNotEmpty(fieldOfEntity)) {
+                    return AnnotationUtils.getColumnName(fieldOfEntity);
+                } else {
+                    return fieldOfEntity.getName();
+                }
+            }
+        }
+        return field.getName();
     }
 }

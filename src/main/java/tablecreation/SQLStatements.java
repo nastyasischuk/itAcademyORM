@@ -46,7 +46,7 @@ public enum SQLStatements {
     EXISTS(" EXISTS "),
     ANY(" ANY "),
     ALL(" ALL "),
-    ON_DELETE_CASCADE(" ON DELETE CASCADE");//TODO Create few more requests
+    ON_DELETE_CASCADE(" ON DELETE CASCADE ");//TODO Create few more requests
 
     private String value;
 

@@ -22,7 +22,7 @@ public class FindHandlerManyToMany extends FindHandler {
     @Override
     public String buildQuery() {
         row = new RowFromDBManyToManyConstructor(objectType, idOfClassToFind, associatedTable).buildRow();
-        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row, QueryType.SELECT_MANYTOMANY).buildQuery();
+        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row, QueryType.SELECT_MANY_TO_MANY).buildQuery();
         return queryFind;
     }
 
@@ -41,6 +41,4 @@ public class FindHandlerManyToMany extends FindHandler {
         dataBase.closeStatement(statement);
         return collection;
     }
-
-
 }

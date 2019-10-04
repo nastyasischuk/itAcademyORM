@@ -4,18 +4,13 @@ import exceptions.QueryExecutionException;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.*;
-
 import annotations.*;
-
-
 import connection.DataBaseImplementation;
 import org.apache.log4j.Logger;
-
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 
 import java.util.*;
-
 
 public class CRUDImpl implements CRUD {
     private static Logger logger = Logger.getLogger(CRUDImpl.class);

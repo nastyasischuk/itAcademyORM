@@ -32,6 +32,7 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
             Field field = classType.getDeclaredField(entry.getKey());
             field.setAccessible(true);
             if (entry.getKey().equals(mapping)) {
+                //todo extract private method with speaking name
                 if (field.getType() == objectToMappedBy.getClass())//if its oneToOne ManyTOne, for other associations skips because of recursion
                     field.set(objectToBuildFromDB, objectToMappedBy);
                 continue;
@@ -51,5 +52,4 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
             field.set(objectToBuildFromDB, fieldValue);
         }
     }
-
 }
