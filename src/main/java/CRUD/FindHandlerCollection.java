@@ -6,12 +6,14 @@ import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.RowConstructorFromDBByForeignKey;
 import connection.DataBase;
+import org.apache.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.util.Collection;
 import java.util.HashSet;
 
 public class FindHandlerCollection extends FindHandler {
+    protected static org.apache.log4j.Logger logger = Logger.getLogger(FindHandlerCollection.class);
     private Object ownerOfCollection;
     private String nameInObjectOwner;
 

@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import tablecreation.classesintesting.*;
+import transaction.TransactionsManager;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -67,10 +68,17 @@ public class CRUDImplTest {
 
     @Test
     public void deleteTestSimple() {
-        PersonOneToMany oneToMany = new PersonOneToMany(14, "TestPers");
+        CatManyToOne oneToMany = new CatManyToOne(12,"",new PersonOneToMany(14,"per"));
         CRUD crud = dataBase.getCrud();
+        TransactionsManager tr = dataBase.getTransactionManager();
+        tr.begin();
         crud.delete(oneToMany);
-        assertNull(crud.find(PersonOneToMany.class, 14));
+        CatManyToOne cat = (CatManyToOne) dataBase.getCrud().find(CatManyToOne.class,12);
+        assertNull(cat);
+        tr.rollback();
+        CatManyToOne cat1 = (CatManyToOne) dataBase.getCrud().find(CatManyToOne.class,12);
+        assertNull(cat);
+
     }
 
     @Test

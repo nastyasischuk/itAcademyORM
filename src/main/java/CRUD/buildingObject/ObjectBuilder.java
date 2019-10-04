@@ -45,7 +45,7 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
                     fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, entry.getKey());
                 }
             } catch (Exception e) {
-                logger.info(e.getMessage());
+                logger.info(e,e.getCause());
             }
             field.set(objectToBuildFromDB, fieldValue);
             if (field.isAnnotationPresent(ManyToOne.class)) {

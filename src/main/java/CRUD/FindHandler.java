@@ -56,7 +56,9 @@ public class FindHandler {
         try {
             rowSet.next();
             resultObject = new ObjectBuilder(row, rowSet, objectType, dataBase).buildObject();
-        } catch (Exception e) {
+        }catch (NullPointerException e){
+            logger.error("Could not find object");
+        }catch (Exception e) {
             logger.error(e, e.getCause());
         }
         dataBase.closeStatement(statement);
