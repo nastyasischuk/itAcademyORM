@@ -10,6 +10,7 @@ import annotations.*;
 
 import connection.DataBaseImplementation;
 import exceptions.NoPrimaryKeyException;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import tablecreation.ManyToManyConstructor;
 import tablecreation.SQLStatements;
@@ -67,27 +68,46 @@ public class CRUDImpl implements CRUD {
 
         Object idMain = getValueOfPK(objectToDB);
         Field[] fields = objectToDB.getClass().getDeclaredFields();
-        for (Field field : fields)
+        List<Field> listFields = AnnotationUtils.getAssociatedTableFields(objectToDB);
+        Field[] fieldsFromList = listFields.toArray(new Field[listFields.size()]);;
+        for (Field field : fields) {
             if (field.isAnnotationPresent(ManyToMany.class) && field.isAnnotationPresent(AssociatedTable.class)) {
                 try {
                     tablecreation.ManyToMany manyToMany = new ManyToManyConstructor(field).build();
                     for (Object id : ids) {
                         logger.debug("ID = " + id + " ID MAIN = " + idMain);
-                        String query = createQuery(id, idMain, manyToMany);
+                        String query = createQueryToAssociatedTable(id, idMain, manyToMany);
                         logger.debug("Executing query " + query);
                         dataBase.executeUpdateQuery(query);
                     }
                 } catch (NoPrimaryKeyException e) {
                     logger.error("No primary key");
                 } catch (SQLException e) {
-                    logger.error(e,e.getCause());
-                    throw new QueryExecutionException("Could not update existing rows",e);
+                    logger.error(e, e.getCause());
+                    throw new QueryExecutionException("Could not update existing rows", e);
                 }
             }
+        }
 
+        for (Field field : fieldsFromList) {
+            try {
+                tablecreation.ManyToMany manyToMany = new ManyToManyConstructor(field).build();
+                for (Object id : ids) {
+                    logger.debug("ID = " + id + " ID MAIN = " + idMain);
+                    String query = createQueryToAssociatedTable(idMain, id, manyToMany);
+                    logger.debug("Executing query " + query);
+                    dataBase.executeUpdateQuery(query);
+                }
+            } catch (NoPrimaryKeyException e) {
+                logger.error("No primary key");
+            } catch (SQLException e) {
+                logger.error(e, e.getCause());
+                throw new QueryExecutionException("Could not update existing rows", e);
+            }
+        }
     }
 
-    private String createQuery(Object idSide, Object idMain, tablecreation.ManyToMany mtm) {
+    private String createQueryToAssociatedTable(Object idSide, Object idMain, tablecreation.ManyToMany mtm) {
         StringBuilder query = new StringBuilder();
         query.append(SQLStatements.INSERT.getValue()).append(SQLStatements.INTO.getValue())
                 .append(mtm.getAssociatedTableName()).append(" ");
@@ -111,6 +131,7 @@ public class CRUDImpl implements CRUD {
 
             List<Object> collectionsToSaveBefore = getAllObjects(objectToDB, ManyToMany.class);
             ids = new ArrayList<>();
+            logger.debug("GET ALL OBJECTS WITH MTM");
             for (Object currentCollection : collectionsToSaveBefore) {
                 if (currentCollection instanceof Collection) {
                     Iterator items = ((Collection) currentCollection).iterator();
@@ -118,10 +139,10 @@ public class CRUDImpl implements CRUD {
                         Object o = items.next();
                         ids.add(getValueOfPK(o));
                         logger.debug("PK OF THIS" + getValueOfPK(o));
-                        if (checkIfNotInDB(o, getValueOfPK(o))) {
+                        //if (checkIfNotInDB(o, getValueOfPK(o))) { //TODO прикрутить проверку на сущестоввание в бд; пока не существует по умолчанию
                             logger.debug("SAVING THIS SHIT -> " + o.toString());
                             save(o);
-                        }
+                        //}
                     }
                 }
             }

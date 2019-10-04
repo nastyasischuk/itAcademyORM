@@ -1,6 +1,7 @@
 package annotations;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 public class AnnotationUtils {
+    private static Logger logger = Logger.getLogger(AnnotationUtils.class);
 
     public static boolean isTablePresentAndNotEmpty(Class<?> annotatedClass){
         return annotatedClass.isAnnotationPresent(Table.class)
@@ -84,16 +86,23 @@ public class AnnotationUtils {
         throw new RuntimeException("Field is not Collection");
     }
 
-    public static List<AssociatedTable> getAssociatedTable(Object object) throws NoSuchFieldException {
-        List<AssociatedTable> tables = new ArrayList<>();
-        Class objectClass = object.getClass().getDeclaringClass();
+    public static List<Field> getAssociatedTableFields(Object object) {
+        List<Field> tables = new ArrayList<>();
+        logger.debug("GOT OBJECT " + object.toString());
+        Class objectClass = object.getClass();
+        logger.debug("OBJECT CLASS IS " + objectClass.getTypeName());
         Field[] fields = objectClass.getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(ManyToMany.class) && !field.getAnnotation(ManyToMany.class).mappedBy().equals("")) {
                 String mappedBy = field.getAnnotation(ManyToMany.class).mappedBy();
                 Class classOfCollection = classGetTypeOfCollectionField(field);
-                Field associatedTableField = classOfCollection.getDeclaredField(mappedBy);
-                tables.add(associatedTableField.getAnnotation(AssociatedTable.class));
+                Field associatedTableField;
+                try {
+                    associatedTableField = classOfCollection.getDeclaredField(mappedBy);
+                    tables.add(associatedTableField);
+                } catch (NoSuchFieldException e) {
+                    throw new RuntimeException("ANNOTATIONS DEFINITIONS FAILS, CHECK attribute mappedBy=\"\" in @ManyToMany");
+                }
             }
         }
         return tables;
