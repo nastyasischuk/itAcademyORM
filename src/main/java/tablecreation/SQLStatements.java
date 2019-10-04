@@ -25,9 +25,9 @@ public enum SQLStatements {
     UPDATE(" UPDATE "),
     DELETE(" DELETE "),
     INSERT(" INSERT "),
-    SELECT(" SELECT "),
-    MIN(" MIN "),
-    MAX(" MAX "),
+    SELECT("SELECT "),
+    MIN("MIN"),
+    MAX("MAX"),
     IN(" IN "),
     NOT(" NOT "),
     BETWEEN(" BETWEEN "),
@@ -35,17 +35,18 @@ public enum SQLStatements {
     OR(" OR "),
     ORDER_BY(" ORDER BY "),
     GROUP_BY(" GROUP BY "),
-    ASC(" ASC "),
-    DESC(" DESC "),
+    ASC(" ASC"),
+    DESC(" DESC"),
     IS(" IS "),
     NULL(" NULL "),
     HAVING(" HAVING "),
     COUNT(" COUNT "),
-    AVG(" AVG "),
-    SUM(" SUM "),
+    AVG("AVG"),
+    SUM("SUM"),
     EXISTS(" EXISTS "),
-    ANY(" ANY "),
-    ALL(" ALL ");//TODO Create few more requests
+    JOIN(" JOIN "),
+    INNER(" INNER "),
+    LIKE(" LIKE ");
 
 
     private String value;
