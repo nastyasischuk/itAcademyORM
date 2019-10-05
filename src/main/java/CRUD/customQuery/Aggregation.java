@@ -14,7 +14,7 @@ public class Aggregation {
     private StringBuilder query = new StringBuilder();
     private Class classType;
 
-    public Aggregation(Class classType) {
+    Aggregation(Class classType) {
         this.classType = classType;
     }
 
@@ -72,7 +72,7 @@ public class Aggregation {
         return column;
     }
 
-    public String build(){
+    String build(){
         return query.toString();
     }
 

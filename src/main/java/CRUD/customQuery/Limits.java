@@ -9,30 +9,38 @@ import tablecreation.ColumnConstructor;
 import tablecreation.SQLStatements;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Limits  {
+public class Limits {
     private Logger logger = Logger.getLogger(Limits.class);
     private StringBuilder query;
     private Class classType;
 
-    public Limits(Class<?> classType) {
+    Limits(Class<?> classType) {
         this.classType = classType;
         query = new StringBuilder();
     }
+
     public StringBuilder getQuery() {
         return query;
     }
 
 
     public Limits equals(String name, String value) {
-        query.append(createColumn(name)).append(MarkingChars.equally)
+        query.append(getColumnName(name)).append(MarkingChars.equally)
                 .append(MarkingChars.quote).append(value).append(MarkingChars.quote);
         return this;
     }
 
     public Limits equals(String name) {
+        query.append(getColumnName(name));
+        return this;
+    }
 
-        query.append(createColumn(name));
+    public Limits equals(String name, QueryImpl queryImpl) {
+        query.append(getColumnName(name)).append(MarkingChars.equally).append(MarkingChars.openBracket).append(queryImpl)
+                .append(MarkingChars.closedBracket);
         return this;
     }
 
@@ -52,10 +60,10 @@ public class Limits  {
         return this;
     }
 
-    public Limits inSubQuery(SubQuery subQuery, Limits limits) {
-         query.append(SQLStatements.IN.getValue()).append(MarkingChars.openBracket)
-                .append(subQuery.build()).append(limits.build()).append(MarkingChars.closedBracket);
-            return this;
+    public Limits inSubQuery(QueryImpl subQuery) {
+        query.append(SQLStatements.IN.getValue()).append(MarkingChars.openBracket)
+                .append(subQuery).append(MarkingChars.closedBracket);
+        return this;
     }
 
     public Limits like(String command, String value) {
@@ -77,7 +85,7 @@ public class Limits  {
             }
         }
         return this;
-}
+    }
 
     public Limits like(String command, String position, String secondValue) {
         StringBuilder underscore = new StringBuilder();
@@ -106,6 +114,11 @@ public class Limits  {
                         .append(underscore).append(MarkingChars.percent).append(MarkingChars.quote);
                 break;
         }
+        return this;
+    }
+
+    public Limits equals(String columnNameFrom,Class fromClassType , String columnNameTo,Class toClassType){
+        query.append(getColumnName(columnNameFrom, fromClassType)).append(MarkingChars.equally).append(getColumnName(columnNameTo, toClassType));
         return this;
     }
 
@@ -174,7 +187,7 @@ public class Limits  {
         return this;
     }
 
-    protected String createColumn(String name) {
+    protected String getColumnName(String name) {
         tablecreation.Column column = null;
         Field[] fields = classType.getDeclaredFields();
         for (Field field : fields) {
@@ -188,19 +201,50 @@ public class Limits  {
                 }
             }
         }
-        return column.getName();
+        return column != null ? column.getName() : null;
     }
 
-    @Override
-    public String toString() {
+    protected List<String> getAllColumnNames(Class typeOfClass){
+        List<String> allColumnNames = new ArrayList<>();
+        tablecreation.Column column;
+        Field[] fields = typeOfClass.getDeclaredFields();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(Column.class)) {
+                    try {
+                        column = new ColumnConstructor(field).buildColumn();
+                        allColumnNames.add(column.getName());
+                    } catch (NoPrimaryKeyException | WrongSQLType | WrongColumnNameException e) {
+                        logger.error(e.getMessage());
+                    }
+                }
+            }
+        return allColumnNames;
+    }
+
+    protected String getColumnName(String name, Class classType) {
+        StringBuilder lane = new StringBuilder();
+        tablecreation.Column column = null;
+        Field[] fields = classType.getDeclaredFields();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(Column.class)) {
+                if (field.getName().equals(name)) {
+                    try {
+                        column = new ColumnConstructor(field).buildColumn();
+                    } catch (NoPrimaryKeyException | WrongSQLType | WrongColumnNameException e) {
+                        logger.error(e.getMessage());
+                    }
+                }
+            }
+        }
+        assert column != null;
+        return lane.append(classType.getSimpleName()).append(MarkingChars.dot).append(column.getName()).toString();
+    }
+
+    String build() {
         return query.toString();
     }
 
-    public String build() {
-        return query.toString();
-    }
-
-    public Limits builder(){
+    public Limits builder() {
         return new Limits(classType);
     }
 

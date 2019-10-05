@@ -25,7 +25,7 @@ public enum SQLStatements {
     UPDATE(" UPDATE "),
     DELETE(" DELETE "),
     INSERT(" INSERT "),
-    SELECT("SELECT "),
+    SELECT(" SELECT "),
     MIN("MIN"),
     MAX("MAX"),
     IN(" IN "),
@@ -43,10 +43,14 @@ public enum SQLStatements {
     COUNT(" COUNT "),
     AVG("AVG"),
     SUM("SUM"),
-    EXISTS(" EXISTS "),
+    LEFT(" LEFT "),
+    RIGHT(" RIGHT "),
+    FULL(" FULL "),
+    OUTER( " OUTER "),
     JOIN(" JOIN "),
     INNER(" INNER "),
     LIKE(" LIKE ");
+
 
 
     private String value;
