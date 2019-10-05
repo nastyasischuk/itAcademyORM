@@ -1,7 +1,6 @@
 package connection;
 
-import CRUD.CRUD;
-import CRUD.CRUDImpl;
+import CRUDdb.CRUDImpl;
 import exceptions.DatabaseException;
 import exceptions.NoPrimaryKeyException;
 import exceptions.OpenConnectionException;
@@ -65,7 +64,7 @@ public class DataBaseImplementation implements DataBase {
             logger.debug("Connection has opened " + connection);
             OpenedConnection.addConnection(this.name, connection);
         } catch (SQLException | ClassNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.error(e,e.getCause());
             throw new OpenConnectionException(e.getMessage());
         }
     }

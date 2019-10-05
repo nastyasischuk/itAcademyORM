@@ -1,5 +1,7 @@
 package CRUD;
 
+import CRUDdb.CRUD;
+import CRUDdb.CRUDImpl;
 import connection.DataBaseImplementation;
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -7,9 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import tablecreation.classesintesting.*;
 import transaction.TransactionsManager;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.junit.Assert.*;
 

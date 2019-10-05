@@ -1,6 +1,6 @@
 package connection;
 
-import CRUD.CRUD;
+import CRUDdb.CRUD;
 
 import java.sql.Connection;
 import java.sql.Statement;

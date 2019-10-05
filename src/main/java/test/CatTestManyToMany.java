@@ -1,25 +1,24 @@
-package tablecreation.classesintesting;
+package test;
 
-import annotations.Column;
-import annotations.ManyToMany;
-import annotations.PrimaryKey;
-import annotations.Table;
+import annotations.*;
 
 import java.util.Collection;
-@Table(name ="cat")
+@Table(name="cat")
+@Entity
 public class CatTestManyToMany {
     @PrimaryKey
     private int id;
-    @Column(name = "name")
-    private String nameCat;
+    @Column
+    private String name;
     @ManyToMany(mappedBy = "cats")
     Collection<PersonTestManyToMany> person;
-    public CatTestManyToMany(){
 
+    public CatTestManyToMany() {
     }
+
     public CatTestManyToMany(int id, String nameCat) {
         this.id = id;
-        this.nameCat = nameCat;
+        this.name = nameCat;
     }
 
     public int getId() {
@@ -31,15 +30,14 @@ public class CatTestManyToMany {
     }
 
     public String getNameCat() {
-        return nameCat;
+        return name;
     }
 
     public void setNameCat(String nameCat) {
-        this.nameCat = nameCat;
+        this.name = nameCat;
     }
 
     public Collection<PersonTestManyToMany> getPerson() {
-
         return person;
     }
 
@@ -51,8 +49,6 @@ public class CatTestManyToMany {
     public String toString() {
         return "CatTestManyToMany{" +
                 "id=" + id +
-                ", nameCat='" + nameCat + '\'';
-
+                ", nameCat='" + name + "\'}]";
     }
-
 }

@@ -1,9 +1,9 @@
 package CRUD.rowhandler;
 
+import CRUDdb.rowhandler.RowConstructorFromDB;
+import CRUDdb.rowhandler.RowFromDB;
 import org.junit.Test;
 import tablecreation.classesintesting.PersonOneFieldWithoutColumnAnnotation;
-
-import java.util.Collection;
 
 import static org.junit.Assert.*;
 
