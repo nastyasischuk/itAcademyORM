@@ -5,9 +5,8 @@ import CRUD.rowhandler.RowToDB;
 import tablecreation.SQLStatements;
 
 public class DeleteQueryBuilder extends QueryBuilder {
-    private RowToDB row;
 
-    public DeleteQueryBuilder(RowToDB row) {
+    DeleteQueryBuilder(RowToDB row) {
         super(row);
     }
 
@@ -15,8 +14,7 @@ public class DeleteQueryBuilder extends QueryBuilder {
     public String buildQuery() {
         StringBuilder request = new StringBuilder();
         request.append(SQLStatements.DELETE.getValue()).append(SQLStatements.FROM.getValue())
-                .append(row.getTableName()).append(SQLStatements.WHERE.getValue());
-        row.getMap().forEach((k, v) -> request.append(k + MarkingChars.space + v));
+                .append(row.getTableName()).append(SQLStatements.WHERE.getValue()).append(row.getIdName()).append(" = ").append(row.getIdValue());
         request.append(MarkingChars.semicolon);
         return request.toString();
     }

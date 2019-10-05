@@ -36,8 +36,4 @@ public class OpenedConnection {
     static void removeConnection(String name) {
         getConnectionMap().remove(name);
     }
-
-    static ArrayList<Connection> getAllConnections() {
-        return new ArrayList<>(getConnectionMap().values());
-    }
 }

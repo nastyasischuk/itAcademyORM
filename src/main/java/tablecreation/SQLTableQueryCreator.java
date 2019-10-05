@@ -90,7 +90,8 @@ public class SQLTableQueryCreator {
                         .append(SQLStatements.ADD.getValue()).append(SQLStatements.CONSTRAINT.getValue()).append(fk.getConstructionName())
                         .append(SQLStatements.FK.getValue()).append(MarkingChars.openBracket).append(fk.getForeignKeyName()).append(MarkingChars.closedBracket)
                         .append(SQLStatements.REFERENCE.getValue()).append(fk.getReferenceTableName())
-                        .append(MarkingChars.openBracket).append(fk.getReferencePKName()).append(MarkingChars.closedBracket).append(MarkingChars.semicolon);
+                        .append(MarkingChars.openBracket).append(fk.getReferencePKName()).append(MarkingChars.closedBracket)
+                        .append(SQLStatements.ON_DELETE_CASCADE.getValue()).append(MarkingChars.semicolon);
                 queryFKList.add(request.toString());
             }
         return queryFKList;
@@ -101,34 +102,37 @@ public class SQLTableQueryCreator {
         StringBuilder queryAlterMTM = new StringBuilder();
         StringBuilder queryCreateTableMTMT = new StringBuilder();
         StringBuilder querySecondCreateTableMTMT = new StringBuilder();
-        for(ManyToMany mtm: table.getMtmAssociations()){
+        for (ManyToMany mtm : table.getMtmAssociations()) {
             queryCreateTableMTMT.append(SQLStatements.CREATE_TABLE.getValue()).append(mtm.getAssociatedTableName())
                     .append(MarkingChars.openBracket).append(mtm.getForeignKeyToOriginalTableName())
                     .append(MarkingChars.space).append(mtm.getTypeOfPKOriginal()).append(SQLStatements.NOT_NULL.getValue())
+                    .append(MarkingChars.comma)
                     .append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.space).append(mtm.getTypeOfPKLinked())
-                    .append(SQLStatements.NOT_NULL.getValue()).append(SQLStatements.PK.getValue()).append(MarkingChars.openBracket)
+                    .append(SQLStatements.NOT_NULL.getValue())
+                    .append(MarkingChars.comma).append(SQLStatements.PK.getValue()).append(MarkingChars.openBracket)
                     .append(mtm.getForeignKeyToOriginalTableName()).append(MarkingChars.comma)
                     .append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.closedBracket).append(MarkingChars.closedBracket);
             queryMTMList.add(queryCreateTableMTMT.toString());
         }
         for (ManyToMany mtm : table.getMtmAssociations()) {
-            queryAlterMTM.append(SQLStatements.ALTER_TABLE.getValue()).append(mtm.getAssociatedTableName())
+            queryAlterMTM.append(SQLStatements.ALTER_TABLE.getValue()).append(mtm.getAssociatedTableName()).append(MarkingChars.space)
                     .append(SQLStatements.ADD.getValue()).append(SQLStatements.FK.getValue())
                     .append(MarkingChars.openBracket).append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.closedBracket)
                     .append(SQLStatements.REFERENCE.getValue()).append(mtm.getLinkedTableName())
                     .append(MarkingChars.openBracket).append(mtm.getPrimaryKeyOfLinkedTableName()).append(MarkingChars.closedBracket)
-                    .append(MarkingChars.semicolon);
+                    .append(SQLStatements.ON_DELETE_CASCADE.getValue()).append(MarkingChars.semicolon);
             queryMTMList.add(queryAlterMTM.toString());
         }
-        for (ManyToMany mtm: table.getMtmAssociations()){
-            querySecondCreateTableMTMT.append(SQLStatements.ALTER_TABLE.getValue()).append(mtm.getAssociatedTableName())
+        for (ManyToMany mtm : table.getMtmAssociations()) {
+            querySecondCreateTableMTMT.append(SQLStatements.ALTER_TABLE.getValue()).append(mtm.getAssociatedTableName()).append(MarkingChars.space)
                     .append(SQLStatements.ADD).append(SQLStatements.FK.getValue())
-                        .append(MarkingChars.openBracket).append(mtm.getForeignKeyToOriginalTableName()).append(MarkingChars.closedBracket)
+                    .append(MarkingChars.openBracket).append(mtm.getForeignKeyToOriginalTableName()).append(MarkingChars.closedBracket)
                     .append(SQLStatements.REFERENCE.getValue()).append(mtm.getOriginalTableName())
                     .append(MarkingChars.openBracket).append(mtm.getPrimaryKeyOfOriginalTableName()).append(MarkingChars.closedBracket)
-                    .append(MarkingChars.semicolon);
+                    .append(SQLStatements.ON_DELETE_CASCADE.getValue()).append(MarkingChars.semicolon);
             queryMTMList.add(querySecondCreateTableMTMT.toString());
         }
+
         return queryMTMList;
     }
 

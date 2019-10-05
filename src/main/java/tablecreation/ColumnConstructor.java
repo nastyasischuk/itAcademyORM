@@ -31,7 +31,7 @@ public class ColumnConstructor{
             return AnnotationUtils.getColumnName(field);
         }else if(AnnotationUtils.isForeignKeyPresentAndNotEmpty(field)){
            return AnnotationUtils.getFKName(field);
-        }else if (AnnotationUtils.isOneToOneAndMapsIdPresent(field)) {
+        }else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {
             return getNameIfOneToOne();
         } else{
             return field.getName();
@@ -42,9 +42,9 @@ public class ColumnConstructor{
         Class currentClass = field.getDeclaringClass();
         Field[] fields = currentClass.getDeclaredFields();
         for (Field currentField : fields) {
-            if (AnnotationUtils.isPrimaryKeyPresent(field)) {
+            if (AnnotationUtils.isPrimaryKeyPresent(currentField)) {
                 if (AnnotationUtils.isColumnPresentAndNotEmpty(currentField)) {
-                    return AnnotationUtils.getColumnName(field);
+                    return AnnotationUtils.getColumnName(currentField);
                 } else {
                     return currentField.getName();
                 }
