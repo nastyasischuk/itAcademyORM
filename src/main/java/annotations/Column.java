@@ -10,7 +10,5 @@ import java.lang.annotation.Target;
 public @interface Column {
     String name() default "";
 
-    boolean autoincrement() default false;
-
     boolean unique() default false;
 }

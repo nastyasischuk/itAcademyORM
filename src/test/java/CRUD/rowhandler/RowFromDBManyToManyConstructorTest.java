@@ -14,8 +14,8 @@ public class RowFromDBManyToManyConstructorTest {
         PersonTestManyToMany person = new PersonTestManyToMany(1,"Kate",20);
         RowFromDBManyToMany row = new RowFromDBManyToManyConstructor(CatTestManyToMany.class,1,person.getClass().getDeclaredField("cats").getAnnotation(AssociatedTable.class)).buildRow();
         assertNotEquals(row.getTableName(),"PersonTestManyToMany");
-        assertEquals("c_id",row.getInverse_column());
-        assertEquals("p_id",row.getJoin_coulmn());
+        assertEquals("c_id",row.getInverseColumn());
+        assertEquals("p_id",row.getJoinCoulmn());
     }
     @Test
     public void buildRowTestProperNameAndVlueOfId() throws Exception{
@@ -24,8 +24,8 @@ public class RowFromDBManyToManyConstructorTest {
 
         assertEquals("1",row.getIdValue());
         assertEquals("id",row.getIdName());//id name from second table
-        assertEquals("p_id",row.getJoin_coulmn());
-        assertEquals("c_id",row.getInverse_column());
+        assertEquals("p_id",row.getJoinCoulmn());
+        assertEquals("c_id",row.getInverseColumn());
     }
     @Test
     public void buildRowTestProperColumnsInTable() throws Exception{

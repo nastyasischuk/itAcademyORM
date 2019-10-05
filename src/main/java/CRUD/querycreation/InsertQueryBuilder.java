@@ -16,7 +16,6 @@ public class InsertQueryBuilder extends QueryBuilder {
 
     @Override
     public String buildQuery() {
-        boolean isAI = row.isAutoIncrement();
         StringBuilder request = new StringBuilder();
         StringBuilder columnNames = new StringBuilder();
         StringBuilder columnValues = new StringBuilder();
@@ -30,8 +29,8 @@ public class InsertQueryBuilder extends QueryBuilder {
             lastColumnNameIterator = String.valueOf(columnNamesIterator.next());
 
         }
-        if (!isAI) { //TODO change a little
-            columnNames.append(row.getIdName()).append(", ");
+        if (!row.isAutoIncrement()) {
+            columnNames.append(row.getIdName()).append(MarkingChars.comma);
             columnValues.append("'").append(row.getIdValue()).append("'").append(MarkingChars.comma);
         }
         for (Map.Entry<String, String> pair : row.getMap().entrySet()) {

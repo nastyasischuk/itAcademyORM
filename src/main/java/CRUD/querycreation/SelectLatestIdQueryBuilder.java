@@ -11,10 +11,10 @@ public class SelectLatestIdQueryBuilder extends QueryBuilder {
 
     @Override
     public String buildQuery() {
-        StringBuilder request = new StringBuilder();
-        request.append(SQLStatements.SELECT.getValue()).append(SQLStatements.MAX)
-                .append(MarkingChars.openBracket).append(row.getIdName()).append(MarkingChars.closedBracket)
-                .append(SQLStatements.FROM.getValue()).append(row.getTableName());
-        return request.toString();
+        StringBuilder query = new StringBuilder();
+        query.append(SQLStatements.SELECT.getValue()).append(SQLStatements.MAX).append(MarkingChars.openBracket)
+                .append(row.getIdName()).append(MarkingChars.closedBracket).append(SQLStatements.FROM.getValue())
+                .append(row.getTableName());
+        return query.toString();
     }
 }

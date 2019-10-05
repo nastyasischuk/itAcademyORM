@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import java.lang.reflect.Field;
 
 public class RowConstructorToDB extends RowConstructor {
-    private static org.apache.log4j.Logger logger = Logger.getLogger(DataBaseImplementation.class);
+    private static Logger logger = Logger.getLogger(DataBaseImplementation.class);
     private RowToDB row;
     private Object classToConvertToRow;
 
@@ -30,13 +30,13 @@ public class RowConstructorToDB extends RowConstructor {
 
             String name = getNameOfField(fieldToAdd);
             String value = getValueOfAllFields(fieldToAdd);
-            if (fieldToAdd.isAnnotationPresent(PrimaryKey.class)) {
+            if (AnnotationUtils.isPrimaryKeyPresent(fieldToAdd)) {
                 row.setIdField(fieldToAdd);
                 setId(name, value);
-            } else if (fieldToAdd.isAnnotationPresent(ManyToOne.class)) {
+            } else if (AnnotationUtils.isManyToOnePresent(fieldToAdd)) {
                 fieldToAdd.setAccessible(true);
                 row.setToMap(fieldToAdd.getName(), getValueOfPK(fieldToAdd));
-            } else if (fieldToAdd.isAnnotationPresent(ManyToMany.class)) {
+            } else if (AnnotationUtils.isManyToManyPresent(fieldToAdd)) {
                 continue;
             } else {
                 row.setToMap(name, value);
@@ -71,7 +71,7 @@ public class RowConstructorToDB extends RowConstructor {
         return field.get(classToConvertToRow);
     }
 
-    public String getValueOfAllFields(Field field) {
+    private String getValueOfAllFields(Field field) {
         field.setAccessible(true);
         try {
             if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(OneToMany.class)) {
@@ -88,11 +88,11 @@ public class RowConstructorToDB extends RowConstructor {
         Object object = field.get(classToConvertToRow);
         Field[] fieldsOfReferencedClass = object.getClass().getDeclaredFields();
         for (Field fieldInArray : fieldsOfReferencedClass) {
-            if (fieldInArray.isAnnotationPresent(PrimaryKey.class)) {
+            if (AnnotationUtils.isPrimaryKeyPresent(fieldInArray)) {
                 fieldInArray.setAccessible(true);
                 return fieldInArray.get(object);
             }
         }
-        throw new RuntimeException();//todo create an exception
+        throw new RuntimeException("Primary key is not found!");
     }
 }

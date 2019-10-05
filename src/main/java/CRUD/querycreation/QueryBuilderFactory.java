@@ -1,6 +1,5 @@
 package CRUD.querycreation;
 
-
 import CRUD.rowhandler.RowFromDB;
 import CRUD.rowhandler.RowToDB;
 
@@ -13,7 +12,7 @@ public class QueryBuilderFactory {
                 return new DeleteQueryBuilder(row);
             case UPDATE:
                 return new UpdateQueryBuilder(row);
-            case SELECTID:
+            case SELECT_ID:
                 return new SelectLatestIdQueryBuilder(row);
         }
         return null;
@@ -22,7 +21,7 @@ public class QueryBuilderFactory {
     public QueryBuilderFromDB createQueryBuilderFromDB(RowFromDB row, QueryType queryType) {
         if (queryType == QueryType.SELECT_OBJECT)
             return new QueryBuilderFromDB(row);
-        if (queryType == QueryType.SELECT_MANYTOMANY)
+        if (queryType == QueryType.SELECT_MANY_TO_MANY)
             return new QueryBuilderFromDBManyToMany(row);
         return null;
     }

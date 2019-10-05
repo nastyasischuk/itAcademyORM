@@ -9,8 +9,8 @@ import annotations.Table;
 @Table(name = "personAI")
 public class PersonAI {
 
-    @PrimaryKey
-    @Column(name = "personAI_id", autoincrement = true)
+    @PrimaryKey(autoincrement = true)
+    @Column(name = "personAI_id")
     private int id_person;
 
     @Column(name = "salaryAI")

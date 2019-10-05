@@ -121,7 +121,7 @@ public class SaveDelegate {
 
     private void setIdIfAutoIncrement(RowToDB rowToDB) {
         if (rowToDB != null && rowToDB.isAutoIncrement()) {
-            Object calculatedId = queryId(rowToDB, QueryType.SELECTID);
+            Object calculatedId = queryId(rowToDB, QueryType.SELECT_ID);
             try {
                 setIdToObject(objectToDB, calculatedId);
             } catch (NoPrimaryKeyException e) {

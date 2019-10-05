@@ -35,14 +35,15 @@ public enum SQLStatements {
     OR(" OR "),
     ORDER_BY(" ORDER BY "),
     GROUP_BY(" GROUP BY "),
-    ASC(" ASC"),
-    DESC(" DESC"),
+    ASC(" ASC "),
+    DESC(" DESC "),
     IS(" IS "),
     NULL(" NULL "),
     HAVING(" HAVING "),
     COUNT(" COUNT "),
-    AVG("AVG"),
-    SUM("SUM"),
+    AVG(" AVG "),
+    SUM(" SUM "),
+    ON_DELETE_CASCADE(" ON DELETE CASCADE"),//TODO Create few more requests
     LEFT(" LEFT "),
     RIGHT(" RIGHT "),
     FULL(" FULL "),
@@ -50,9 +51,6 @@ public enum SQLStatements {
     JOIN(" JOIN "),
     INNER(" INNER "),
     LIKE(" LIKE ");
-
-
-
     private String value;
 
     SQLStatements(String value) {

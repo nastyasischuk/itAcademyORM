@@ -118,7 +118,7 @@ public class DataBaseImplementation implements DataBase {
             }
             SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
-            String createPKQuery = sqlTableQueryCreator.createPKQuery();
+            //String createPKQuery = sqlTableQueryCreator.createPKQuery(); //todo remove this
 
             List<String> queriesFK = sqlTableQueryCreator.createFKQuery();
             if (queriesFK != null && !queriesFK.isEmpty())
@@ -128,7 +128,7 @@ public class DataBaseImplementation implements DataBase {
                 mtmQueriesToExecute.addAll(queriesMTM);
 
             executeQueryForCreateDB(createTableQuery);
-            executeQueryForCreateDB(createPKQuery);
+            //executeQueryForCreateDB(createPKQuery); //todo remove this later
         }
 
         logger.debug("Size og fks = " + fkQueriesToExecute.size());

@@ -60,22 +60,20 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
     Object handleCasesWhenTypeIsNotSimple(Field field, String nameOfFieldToGet) {
         Object fieldValue = null;
 
-//        if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class) || field.isAnnotationPresent(OneToOne.class)
-//                || field.isAnnotationPresent(ManyToOne.class))
         if (AnnotationUtils.isAnyOfAnnotationIsPresent(field, ForeignKey.class, MapsId.class, OneToOne.class, ManyToOne.class)) {
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(determinePrimaryKeyType(field));
             Object foreignKeyValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, nameOfFieldToGet);
             fieldValue = database.getCrud().find(field.getType(), foreignKeyValue);
 
-        } else if (field.isAnnotationPresent(OneToMany.class)) {
+        } else if (AnnotationUtils.isOneToManyPresent(field)) {
             try {
                 Collection<Object> col = database.getCrud().findCollection(field.getAnnotation(OneToMany.class).
-                        typeOfReferencedObject(), row.getIdValue(), objectToBuildFromDB, field.getAnnotation(OneToMany.class).mappedBy());
+                        typeOfReferencedObject(), row.getIdValue(), objectToBuildFromDB, AnnotationUtils.getMappedByInOneToMany(field));
                 fieldValue = col;
             } catch (Exception e) {
                 logger.info(e.getMessage());
             }
-        } else if (field.isAnnotationPresent(ManyToMany.class)) {
+        } else if (AnnotationUtils.isManyToManyPresent(field)) {
             try {
                 Collection<Object> col = database.getCrud().
                         findCollectionFoManyToMany(AnnotationUtils.classGetTypeOfCollectionField(field), row.getIdValue(), field.getAnnotation(AssociatedTable.class));
@@ -132,13 +130,13 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
         return collectionInManyToOne;
     }
 
-    public void removeAllDuplecates(List<Collection<Object>> toRemoveDublicates) {
+    private void removeAllDuplecates(List<Collection<Object>> toRemoveDublicates) {
         for (Collection<Object> collection : toRemoveDublicates) {
             removeDuplicateInCollection(collection);
         }
     }
 
-    public void removeDuplicateInCollection(Collection<Object> collection) {
+    private void removeDuplicateInCollection(Collection<Object> collection) {
         Object objectToRemove = null;
         for (Object element : collection) {
             try {
@@ -153,10 +151,10 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
         collection.remove(objectToRemove);
     }
 
-    protected Object determinePrimaryKeyValue(Object objectInCollection) throws IllegalAccessException {
+    private Object determinePrimaryKeyValue(Object objectInCollection) throws IllegalAccessException {
         Field[] fields = objectInCollection.getClass().getDeclaredFields();
         for (Field elOfFields : fields) {
-            if (elOfFields.isAnnotationPresent(PrimaryKey.class)) {
+            if (AnnotationUtils.isPrimaryKeyPresent(elOfFields)) {
                 elOfFields.setAccessible(true);
                 return elOfFields.get(objectInCollection);
             }

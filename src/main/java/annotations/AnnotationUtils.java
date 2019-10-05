@@ -1,5 +1,6 @@
 package annotations;
 
+import exceptions.FieldIsNotCollectionException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.annotation.Annotation;
@@ -65,6 +66,14 @@ public class AnnotationUtils {
         return field.isAnnotationPresent(ManyToMany.class);
     }
 
+    public static boolean isOneToManyPresent(Field field) {
+        return field.isAnnotationPresent(OneToMany.class);
+    }
+
+    public static String getMappedByInOneToMany(Field field) {
+        return field.getAnnotation(OneToMany.class).mappedBy();
+    }
+
     public static boolean isManyToManyPresentAndMappedByNotEmpty(Field field) {
         return field.isAnnotationPresent(ManyToMany.class) &&
                 !StringUtils.isEmpty(field.getAnnotation(ManyToMany.class).mappedBy());
@@ -98,6 +107,6 @@ public class AnnotationUtils {
         if (Collection.class.isAssignableFrom(field.getType())) {
             return (Class<?>) collectionType.getActualTypeArguments()[0];
         }
-        throw new RuntimeException("Field is not Collection");
+        throw new FieldIsNotCollectionException("Field is not Collection");
     }
 }
