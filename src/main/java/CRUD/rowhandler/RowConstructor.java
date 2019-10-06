@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 public abstract class RowConstructor {
     public abstract Row buildRow();
 
-    protected String getTableName(Class<?> classToConvertTorow) {
+    public String getTableName(Class<?> classToConvertTorow) {
         if (AnnotationUtils.isTablePresentAndNotEmpty(classToConvertTorow)) {
             return AnnotationUtils.getTableName(classToConvertTorow);
         } else {
@@ -38,6 +38,7 @@ public abstract class RowConstructor {
                     return fieldOfEntity.getName();
                 }
             }
+
         }
         return field.getName();
     }

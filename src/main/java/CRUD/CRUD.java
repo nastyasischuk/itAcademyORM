@@ -1,6 +1,6 @@
 package CRUD;
 
-import annotations.AssociatedTable;
+import annotations.AssociatedClass;
 
 import java.util.Collection;
 
@@ -15,6 +15,7 @@ public interface CRUD {
 
     void update(Object objectToUpdate);
 
-    Collection<Object> findCollectionFoManyToMany(Class classToFind, Object id, AssociatedTable associatedTable);
+    Collection<Object> findCollectionFoManyToMany(Class classToFind, Object id,  AssociatedClass associatedClass);
+
 
 }

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ObjectBuilder extends ObjectSimpleBuilding {
-    public static Logger logger = Logger.getLogger(ObjectBuilder.class);
+    private static Logger logger = Logger.getLogger(ObjectBuilder.class);
     protected RowFromDB row;
     protected DataBase database;
 
@@ -47,42 +47,54 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
                     fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, entry.getKey());
                 }
             } catch (Exception e) {
-                logger.info(e.getMessage());
+                logger.error(e,e.getCause());
             }
             field.set(objectToBuildFromDB, fieldValue);
             if (AnnotationUtils.isManyToOnePresent(field)) {
                 listOfCollectionInObject.add(setToCollection(fieldValue));
             }
         }
-        removeAllDuplecates(listOfCollectionInObject);
+        removeAllDuplicates(listOfCollectionInObject);
     }
 
     Object handleCasesWhenTypeIsNotSimple(Field field, String nameOfFieldToGet) {
         Object fieldValue = null;
-
         if (AnnotationUtils.isAnyOfAnnotationIsPresent(field, ForeignKey.class, MapsId.class, OneToOne.class, ManyToOne.class)) {
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(determinePrimaryKeyType(field));
             Object foreignKeyValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, nameOfFieldToGet);
             fieldValue = database.getCrud().find(field.getType(), foreignKeyValue);
 
         } else if (AnnotationUtils.isOneToManyPresent(field)) {
-            try {
-                Collection<Object> col = database.getCrud().findCollection(field.getAnnotation(OneToMany.class).
-                        typeOfReferencedObject(), row.getIdValue(), objectToBuildFromDB, AnnotationUtils.getMappedByInOneToMany(field));
-                fieldValue = col;
-            } catch (Exception e) {
-                logger.info(e.getMessage());
-            }
+          fieldValue = handleOneTOMany(field);
         } else if (AnnotationUtils.isManyToManyPresent(field)) {
-            try {
-                Collection<Object> col = database.getCrud().
-                        findCollectionFoManyToMany(AnnotationUtils.classGetTypeOfCollectionField(field), row.getIdValue(), field.getAnnotation(AssociatedTable.class));
-                fieldValue = col;
-            } catch (Exception e) {
-                logger.info(e.getMessage());
-            }
+             fieldValue = handleManyTOMany(field);
+
         }
         return fieldValue;
+    }
+    private Collection<Object> handleOneTOMany(Field field){
+        Collection<Object> foundObjectCollection = null;
+        try {
+            foundObjectCollection = database.getCrud().findCollection(field.getAnnotation(OneToMany.class).
+                    typeOfReferencedObject(), row.getIdValue(), objectToBuildFromDB, field.getAnnotation(OneToMany.class).mappedBy());
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
+        }
+        return foundObjectCollection;
+    }
+    private Collection<Object> handleManyTOMany(Field field){
+        Collection<Object> foundObjectCollection = null;
+        try {
+            foundObjectCollection = database.getCrud().
+                    findCollectionFoManyToMany(AnnotationUtils.classGetTypeOfCollectionField(field),
+                            row.getIdValue(),
+                            AnnotationUtils.getAssociatedTable(field));
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
+        }
+        return foundObjectCollection;
     }
 
     private Class determinePrimaryKeyType(Field field) {
@@ -99,15 +111,11 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
     Object getValueFromResultSet(String nameOfMethod, String nameOfAttributeToGet) {
         Method method;
         Object valueOfObject = null;
-        logger.info(nameOfMethod);
-        logger.info(nameOfAttributeToGet);
         try {
             method = CachedRowSet.class.getMethod(nameOfMethod, String.class);
             valueOfObject = method.invoke(resultSet, nameOfAttributeToGet);
-        } catch (NoSuchMethodException | IllegalAccessException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             logger.error(e, e.getCause());
-        } catch (InvocationTargetException e) {
-            logger.error(nameOfMethod);
         }
         return valueOfObject;
     }
@@ -130,7 +138,11 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
         return collectionInManyToOne;
     }
 
+
+    public void removeAllDuplicates(List<Collection<Object>> toRemoveDublicates) {
+
     private void removeAllDuplecates(List<Collection<Object>> toRemoveDublicates) {
+
         for (Collection<Object> collection : toRemoveDublicates) {
             removeDuplicateInCollection(collection);
         }
@@ -141,9 +153,7 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
         for (Object element : collection) {
             try {
                 if (determinePrimaryKeyValue(element).equals(determinePrimaryKeyValue(this.objectToBuildFromDB)) && this.objectToBuildFromDB != element) {
-                    objectToRemove = element;
-                    logger.info("To remove " + objectToRemove);
-                }
+                    objectToRemove = element; }
             } catch (IllegalAccessException e) {
                 logger.error(e);
             }

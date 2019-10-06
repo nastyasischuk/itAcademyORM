@@ -2,7 +2,6 @@ package CRUD.rowhandler;
 
 import org.junit.Test;
 import tablecreation.classesintesting.PersonWithConstraints;
-import tablecreation.classesintesting.PersonWithIndexes;
 import tablecreation.classesintesting.PersonWithSeveralForeignKeys;
 
 import static org.junit.Assert.*;

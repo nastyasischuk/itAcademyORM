@@ -18,11 +18,12 @@ public class RowFromDBManyToMany extends RowFromDB {
     }
 
     public String getJoinCoulmn() {
-        return joinColumn;
+        return joinCoulmn;
     }
 
     public void setJoinCoulmn(String joinCoulmn) {
-        this.joinColumn = joinCoulmn;
+        this.joinCoulmn = joinCoulmn;
+
     }
 
     public String getInverseColumn() {

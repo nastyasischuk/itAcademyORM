@@ -2,13 +2,18 @@ package annotations;
 
 import exceptions.FieldIsNotCollectionException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AnnotationUtils {
+    private static Logger logger = Logger.getLogger(AnnotationUtils.class);
 
     public static boolean isTablePresentAndNotEmpty(Class<?> annotatedClass) {
         return annotatedClass.isAnnotationPresent(Table.class)
@@ -109,4 +114,30 @@ public class AnnotationUtils {
         }
         throw new FieldIsNotCollectionException("Field is not Collection");
     }
+
+    public static AssociatedClass getAssociatedTable(Field field){
+        if(field.isAnnotationPresent(AssociatedTable.class)){
+            AssociatedTable associatedTable = field.getAnnotation(AssociatedTable.class);
+            return new AssociatedClass(associatedTable.associatedTableName(),
+                    associatedTable.joinColumns().name(),associatedTable.inverseJoinColumns().name());
+        }else{
+            AssociatedTable associatedTable = findAssociatedTable(field);
+            return new AssociatedClass(associatedTable.associatedTableName(),
+                    associatedTable.inverseJoinColumns().name(),associatedTable.joinColumns().name());
+    }
+    }
+
+    private static AssociatedTable findAssociatedTable(Field field){
+        String mappedBy = field.getAnnotation(ManyToMany.class).mappedBy();
+        Class classWithAssociatedTable = classGetTypeOfCollectionField(field);
+        AssociatedTable foundAssociatedTable = null;
+        try {
+            Field fieldOfAssociatedTable = classWithAssociatedTable.getDeclaredField(mappedBy);
+            foundAssociatedTable = fieldOfAssociatedTable.getAnnotation(AssociatedTable.class);
+        } catch (NoSuchFieldException e) {
+            logger.error(e,e.getCause());
+        }
+        return foundAssociatedTable;
+    }
+
 }
