@@ -19,7 +19,7 @@ public class SubQuery extends QueryImpl {
 
     public SubQuery select(String columnName) {
         query.append(SQLStatements.SELECT.getValue()).append(getLimits().getColumnName(columnName)).append(SQLStatements.FROM.getValue())
-                .append(getClassType().getSimpleName());
+                .append(getFromClassTableName(getClassType()));
         return this;
     }
 
