@@ -6,7 +6,7 @@ import CRUD.rowhandler.RowToDB;
 public abstract class QueryBuilder {
     RowToDB row;
 
-    public QueryBuilder(RowToDB row){
+    QueryBuilder(RowToDB row) {
         this.row = row;
     }
 

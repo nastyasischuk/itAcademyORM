@@ -1,13 +1,11 @@
 package CRUD.rowhandler;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class RowFromDB extends Row {
 
     private Map<String, Class> nameAndType;
-
 
     public RowFromDB() {
         super();
@@ -18,7 +16,7 @@ public class RowFromDB extends Row {
         return nameAndType;
     }
 
-    public void setNameAndType(Map<String, Class> nameAndType) {
+    void setNameAndType(Map<String, Class> nameAndType) {
         this.nameAndType = nameAndType;
     }
 }

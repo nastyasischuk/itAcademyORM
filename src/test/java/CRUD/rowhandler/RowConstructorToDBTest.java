@@ -1,6 +1,8 @@
 package CRUD.rowhandler;
 
 import org.junit.Test;
+import tablecreation.classesintesting.CatManyToOne;
+import tablecreation.classesintesting.PersonOneToMany;
 import tablecreation.classesintesting.PersonWithSimpleProperColumns;
 
 import java.sql.Date;
@@ -33,6 +35,12 @@ public class RowConstructorToDBTest {
         RowConstructorToDB rowConstructor = new RowConstructorToDB(person);
         RowToDB row = rowConstructor.buildRow();
         assertTrue(row.getMap().containsKey("bd"));
-
+    }
+    @Test
+    public void buildRowTestNullValuesManyTOOne() {
+        CatManyToOne oneToMany = new CatManyToOne(14, "new Name", new PersonOneToMany(14, ""));
+        RowConstructorToDB rowConstructor = new RowConstructorToDB(oneToMany);
+        RowToDB row = rowConstructor.buildRow();
+        assertEquals(row.getMap().get("person"),"14");
     }
 }

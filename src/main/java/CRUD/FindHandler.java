@@ -17,20 +17,21 @@ import java.sql.Statement;
 
 public class FindHandler {
     protected static org.apache.log4j.Logger logger = Logger.getLogger(FindHandler.class);
-    protected  RowFromDB row;
+    protected RowFromDB row;
     protected DataBase dataBase;
     protected Class objectType;
     protected Object idOfClassToFind;
     protected Statement statement;
-    public FindHandler(DataBase dataBase,Class<?> objectType, Object id){
+
+    public FindHandler(DataBase dataBase, Class<?> objectType, Object id) {
         this.dataBase = dataBase;
         this.objectType = objectType;
         this.idOfClassToFind = id;
 
     }
 
-    public CachedRowSet getResultSetFromQuery(String queryFind){
-         statement = dataBase.getStatement(queryFind);
+    public CachedRowSet getResultSetFromQuery(String queryFind) {
+        statement = dataBase.getStatement(queryFind);
         CachedRowSet rowset = null;
         try {
             ResultSet resultSet = statement.executeQuery(queryFind);
@@ -38,25 +39,25 @@ public class FindHandler {
             rowset = factory.createCachedRowSet();
             rowset.populate(resultSet);
 
-        }catch (SQLException e){
-            logger.info(e,e.getCause());
+        } catch (SQLException e) {
+            logger.info(e, e.getCause());
         }
         return rowset;
     }
 
-    public String buildQuery(){
-        row = new RowConstructorFromDB(objectType,idOfClassToFind).buildRow();
+    public String buildQuery() {
+        row = new RowConstructorFromDB(objectType, idOfClassToFind).buildRow();
         String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row, QueryType.SELECT_OBJECT).buildQuery();
         return queryFind;
     }
 
-    public Object buildObject(CachedRowSet rowSet){
-        Object resultObject=null;
+    public Object buildObject(CachedRowSet rowSet) {
+        Object resultObject = null;
         try {
             rowSet.next();
-            resultObject = new ObjectBuilder(row, rowSet, objectType,dataBase).buildObject();
-        }catch (Exception e){
-            logger.error(e,e.getCause());
+            resultObject = new ObjectBuilder(row, rowSet, objectType, dataBase).buildObject();
+        } catch (Exception e) {
+            logger.error(e, e.getCause());
         }
         dataBase.closeStatement(statement);
         return resultObject;

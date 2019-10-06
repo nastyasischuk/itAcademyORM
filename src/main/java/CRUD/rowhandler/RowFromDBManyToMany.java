@@ -1,10 +1,9 @@
 package CRUD.rowhandler;
 
-
 public class RowFromDBManyToMany extends RowFromDB {
     private String manyToManyTableName;
-    private String join_coulmn;
-    private String inverse_column;
+    private String joinColumn;
+    private String inverseColumn;
 
     public RowFromDBManyToMany(){
         super();
@@ -18,19 +17,19 @@ public class RowFromDBManyToMany extends RowFromDB {
         this.manyToManyTableName = manyToManyTableName;
     }
 
-    public String getJoin_coulmn() {
-        return join_coulmn;
+    public String getJoinCoulmn() {
+        return joinColumn;
     }
 
-    public void setJoin_coulmn(String join_coulmn) {
-        this.join_coulmn = join_coulmn;
+    public void setJoinCoulmn(String joinCoulmn) {
+        this.joinColumn = joinCoulmn;
     }
 
-    public String getInverse_column() {
-        return inverse_column;
+    public String getInverseColumn() {
+        return inverseColumn;
     }
 
-    public void setInverse_column(String inverse_column) {
-        this.inverse_column = inverse_column;
+    public void setInverseColumn(String inverseColumn) {
+        this.inverseColumn = inverseColumn;
     }
 }

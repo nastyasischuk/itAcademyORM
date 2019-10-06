@@ -6,17 +6,16 @@ import tablecreation.SQLStatements;
 
 public class DeleteQueryBuilder extends QueryBuilder {
 
-    public DeleteQueryBuilder(RowToDB row) {
+    DeleteQueryBuilder(RowToDB row) {
         super(row);
     }
 
     @Override
     public String buildQuery() {
-        StringBuilder request = new StringBuilder();
-        request.append(SQLStatements.DELETE.getValue()).append(SQLStatements.FROM.getValue())
-                .append(row.getTableName()).append(SQLStatements.WHERE.getValue());
-        row.getMap().forEach((k, v) -> request.append(k + MarkingChars.space + v));
-        request.append(MarkingChars.semicolon);
-        return request.toString();
+        StringBuilder query = new StringBuilder();
+        query.append(SQLStatements.DELETE.getValue()).append(SQLStatements.FROM.getValue()).append(row.getTableName())
+                .append(SQLStatements.WHERE.getValue()).append(row.getIdName()).append(" = ").append(row.getIdValue());
+        query.append(MarkingChars.semicolon);
+        return query.toString();
     }
 }

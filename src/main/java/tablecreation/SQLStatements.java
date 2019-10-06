@@ -45,8 +45,8 @@ public enum SQLStatements {
     SUM(" SUM "),
     EXISTS(" EXISTS "),
     ANY(" ANY "),
-    ALL(" ALL ");//TODO Create few more requests
-
+    ALL(" ALL "),
+    ON_DELETE_CASCADE(" ON DELETE CASCADE ");//TODO Create few more requests
 
     private String value;
 

@@ -1,20 +1,16 @@
 package annotations;
 
+import exceptions.FieldIsNotCollectionException;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-
 import java.util.Collection;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 public class AnnotationUtils {
 
-    public static boolean isTablePresentAndNotEmpty(Class<?> annotatedClass){
+    public static boolean isTablePresentAndNotEmpty(Class<?> annotatedClass) {
         return annotatedClass.isAnnotationPresent(Table.class)
                 && !StringUtils.isEmpty(annotatedClass.getAnnotation(Table.class).name());
     }
@@ -41,6 +37,19 @@ public class AnnotationUtils {
         return field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class);
     }
 
+    public static boolean isManyToOnePresent(Field field) {
+        return field.isAnnotationPresent(ManyToOne.class);
+    }
+
+    @SafeVarargs
+    public static boolean isAnyOfAnnotationIsPresent(Field field, Class<? extends Annotation> ... annotations) {
+        for (Class<? extends Annotation> annotation : annotations) {
+            if (field.isAnnotationPresent(annotation))
+                return true;
+        }
+        return false;
+    }
+
     public static String getTableName(Class toBuildClass) {
         return ((annotations.Table) toBuildClass.getAnnotation(annotations.Table.class)).name();
     }
@@ -55,6 +64,23 @@ public class AnnotationUtils {
 
     public static boolean isManyToManyPresent(Field field) {
         return field.isAnnotationPresent(ManyToMany.class);
+    }
+
+    public static boolean isOneToManyPresent(Field field) {
+        return field.isAnnotationPresent(OneToMany.class);
+    }
+
+    public static String getMappedByInOneToMany(Field field) {
+        return field.getAnnotation(OneToMany.class).mappedBy();
+    }
+
+    public static boolean isManyToManyPresentAndMappedByNotEmpty(Field field) {
+        return field.isAnnotationPresent(ManyToMany.class) &&
+                !StringUtils.isEmpty(field.getAnnotation(ManyToMany.class).mappedBy());
+    }
+
+    public static String getMappedByInManyToMany(Field field) {
+        return field.getAnnotation(ManyToMany.class).mappedBy();
     }
 
     public static boolean isAssociatedTablePresentAndNotEmpty(Field field) {
@@ -81,22 +107,6 @@ public class AnnotationUtils {
         if (Collection.class.isAssignableFrom(field.getType())) {
             return (Class<?>) collectionType.getActualTypeArguments()[0];
         }
-        throw new RuntimeException("Field is not Collection");
+        throw new FieldIsNotCollectionException("Field is not Collection");
     }
-
-    public static List<AssociatedTable> getAssociatedTable(Object object) throws NoSuchFieldException {
-        List<AssociatedTable> tables = new ArrayList<>();
-        Class objectClass = object.getClass().getDeclaringClass();
-        Field[] fields = objectClass.getDeclaredFields();
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(ManyToMany.class) && !field.getAnnotation(ManyToMany.class).mappedBy().equals("")) {
-                String mappedBy = field.getAnnotation(ManyToMany.class).mappedBy();
-                Class classOfCollection = classGetTypeOfCollectionField(field);
-                Field associatedTableField = classOfCollection.getDeclaredField(mappedBy);
-                tables.add(associatedTableField.getAnnotation(AssociatedTable.class));
-            }
-        }
-        return tables;
-    }
-
 }
