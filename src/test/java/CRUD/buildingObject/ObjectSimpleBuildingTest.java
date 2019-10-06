@@ -1,6 +1,5 @@
 package CRUD.buildingObject;
 
-import CRUDdb.buildingObject.ObjectSimpleBuilding;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import tablecreation.classesintesting.CatManyToOne;

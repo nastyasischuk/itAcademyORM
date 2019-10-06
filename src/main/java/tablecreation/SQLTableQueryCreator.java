@@ -1,6 +1,6 @@
 package tablecreation;
 
-import CRUDdb.requests.MarkingChars;
+import CRUD.requests.MarkingChars;
 
 import java.lang.String;
 

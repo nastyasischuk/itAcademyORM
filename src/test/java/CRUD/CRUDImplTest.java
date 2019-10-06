@@ -1,7 +1,5 @@
 package CRUD;
 
-import CRUDdb.CRUD;
-import CRUDdb.CRUDImpl;
 import connection.DataBaseImplementation;
 import org.apache.log4j.Logger;
 import org.junit.After;

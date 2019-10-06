@@ -1,10 +1,8 @@
 package CRUD.querycreation;
 
-import CRUDdb.querycreation.QueryBuilderFromDBManyToMany;
-import CRUDdb.rowhandler.RowFromDBManyToMany;
-import CRUDdb.rowhandler.RowFromDBManyToManyConstructor;
+import CRUD.rowhandler.RowFromDBManyToMany;
+import CRUD.rowhandler.RowFromDBManyToManyConstructor;
 import annotations.AnnotationUtils;
-import annotations.AssociatedTable;
 import org.junit.Test;
 import tablecreation.classesintesting.CatTestManyToMany;
 import tablecreation.classesintesting.PersonTestManyToMany;

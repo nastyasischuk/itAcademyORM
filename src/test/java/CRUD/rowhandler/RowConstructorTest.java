@@ -1,6 +1,5 @@
 package CRUD.rowhandler;
 
-import CRUDdb.rowhandler.RowConstructorToDB;
 import org.junit.Test;
 import tablecreation.classesintesting.PersonWithIndexes;
 import tablecreation.classesintesting.PersonWithSeveralIndexes;

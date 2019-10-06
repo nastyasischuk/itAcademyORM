@@ -1,7 +1,5 @@
 package CRUD.rowhandler;
 
-import CRUDdb.rowhandler.RowConstructorFromDBByForeignKey;
-import CRUDdb.rowhandler.RowFromDB;
 import org.junit.Test;
 import tablecreation.classesintesting.PersonWithConstraints;
 import tablecreation.classesintesting.PersonWithSeveralForeignKeys;

@@ -1,8 +1,6 @@
 package CRUD.rowhandler;
 
 
-import CRUDdb.rowhandler.RowConstructorToDB;
-import CRUDdb.rowhandler.RowToDB;
 import org.junit.Test;
 import tablecreation.classesintesting.PersonWithConstraints;
 

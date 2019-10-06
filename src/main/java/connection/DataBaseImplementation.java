@@ -1,6 +1,6 @@
 package connection;
 
-import CRUDdb.CRUDImpl;
+import CRUD.CRUDImpl;
 import exceptions.DatabaseException;
 import exceptions.NoPrimaryKeyException;
 import exceptions.OpenConnectionException;

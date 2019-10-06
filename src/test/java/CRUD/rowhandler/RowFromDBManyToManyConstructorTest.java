@@ -1,7 +1,5 @@
 package CRUD.rowhandler;
 
-import CRUDdb.rowhandler.RowFromDBManyToMany;
-import CRUDdb.rowhandler.RowFromDBManyToManyConstructor;
 import annotations.AnnotationUtils;
 import org.junit.Test;
 import tablecreation.classesintesting.CatTestManyToMany;

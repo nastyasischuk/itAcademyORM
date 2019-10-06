@@ -1,7 +1,7 @@
 package test;
 
 
-import CRUDdb.aspects.ManyToManyAspect;
+import CRUD.aspects.ManyToManyAspect;
 import connection.DataBase;
 import connection.DataBaseImplementation;
 import org.apache.log4j.Logger;

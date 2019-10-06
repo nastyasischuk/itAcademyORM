@@ -1,8 +1,5 @@
 package CRUD.rowhandler;
 
-import CRUDdb.rowhandler.Row;
-import CRUDdb.rowhandler.RowConstructorToDB;
-import CRUDdb.rowhandler.RowToDB;
 import org.junit.Test;
 import tablecreation.classesintesting.CatManyToOne;
 import tablecreation.classesintesting.PersonOneToMany;
