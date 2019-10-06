@@ -141,8 +141,6 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
 
     public void removeAllDuplicates(List<Collection<Object>> toRemoveDublicates) {
 
-    private void removeAllDuplecates(List<Collection<Object>> toRemoveDublicates) {
-
         for (Collection<Object> collection : toRemoveDublicates) {
             removeDuplicateInCollection(collection);
         }

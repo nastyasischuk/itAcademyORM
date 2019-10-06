@@ -46,7 +46,7 @@ public enum SQLStatements {
     EXISTS(" EXISTS "),
     JOIN(" JOIN "),
     INNER(" INNER "),
-    LIKE(" LIKE ");
+    LIKE(" LIKE "),
     ANY(" ANY "),
     ALL(" ALL "),
     ON_DELETE_CASCADE(" ON DELETE CASCADE ");//TODO Create few more requests
