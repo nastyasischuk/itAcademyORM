@@ -67,7 +67,7 @@ public class DataBaseImplementation implements DataBase {
             logger.debug("Connection has opened " + connection);
             OpenedConnection.addConnection(this.name, connection);
         } catch (SQLException | ClassNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.error(e,e.getCause());
             throw new OpenConnectionException(e.getMessage());
         }
     }

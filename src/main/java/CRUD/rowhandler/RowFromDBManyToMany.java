@@ -23,6 +23,7 @@ public class RowFromDBManyToMany extends RowFromDB {
 
     public void setJoinCoulmn(String joinCoulmn) {
         this.joinColumn = joinCoulmn;
+
     }
 
     public String getInverseColumn() {

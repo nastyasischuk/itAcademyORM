@@ -10,7 +10,7 @@ public class Column {
     private boolean unique;
     private boolean autoincrement;
     private boolean manyToMany;
-    //todo add length
+
 
     public Column(String name, SQLTypes type) {
         this.name = name;

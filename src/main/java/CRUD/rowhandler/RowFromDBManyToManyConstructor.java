@@ -1,14 +1,14 @@
 package CRUD.rowhandler;
 
-import annotations.AssociatedTable;
+
+import annotations.AssociatedClass;
 
 public class RowFromDBManyToManyConstructor extends RowConstructorFromDB {
-    private RowFromDBManyToMany row;
-
-    public RowFromDBManyToManyConstructor(Class typeOfObject, Object id, AssociatedTable associatedTable) {
+   private RowFromDBManyToMany row;
+    public RowFromDBManyToManyConstructor(Class typeOfObject, Object id, AssociatedClass associatedClass) {
         super(typeOfObject, id);
-        row = new RowFromDBManyToMany();
-        readInfFromAssociateTable(associatedTable);
+        row  = new RowFromDBManyToMany();
+        readInfFromAssociateTable(associatedClass);
     }
 
     @Override
@@ -16,10 +16,9 @@ public class RowFromDBManyToManyConstructor extends RowConstructorFromDB {
         operationsToBuild(row);
         return row;
     }
-
-    private void readInfFromAssociateTable(AssociatedTable associatedTable) {
-        row.setManyToManyTableName(associatedTable.associatedTableName());
-        row.setJoinCoulmn(associatedTable.joinColumns().name());
-        row.setInverseColumn(associatedTable.inverseJoinColumns().name());
+    private void readInfFromAssociateTable(AssociatedClass associatedClass){
+        row.setManyToManyTableName(associatedClass.getAssociatedTableName());
+        row.setJoinCoulmn(associatedClass.getJoinColumn());
+        row.setInverseColumn(associatedClass.getInverseJoinColumns());
     }
 }
