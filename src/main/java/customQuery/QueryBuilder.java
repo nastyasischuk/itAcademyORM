@@ -1,6 +1,6 @@
-package CRUD.customQuery;
+package customQuery;
 
-public interface Query{
+public interface QueryBuilder {
 
     public QueryImpl select();
 

@@ -1,4 +1,4 @@
-package CRUD.customQuery;
+package customQuery;
 
 import annotations.Column;
 import exceptions.NoPrimaryKeyException;

@@ -1,9 +1,9 @@
-package CRUD.customQuery;
+package customQuery;
 
 import tablecreation.SQLStatements;
 
 
-public class QueryImpl implements Query {
+public class QueryImpl implements QueryBuilder {
     protected StringBuilder query;
     private Class<?> classType;
     private Limits limits;

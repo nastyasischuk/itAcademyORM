@@ -1,4 +1,4 @@
-package CRUD.customQuery;
+package customQuery;
 
 import tablecreation.SQLStatements;
 
