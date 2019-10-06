@@ -17,7 +17,7 @@ public class PersonTestManyToMany {
             inverseJoinColumns = @ForeignKey(name = "c_id"))
     Collection<CatTestManyToMany> cats;
 
-    public PersonTestManyToMany(int id, String name, int age) {
+    public PersonTestManyToMany(int id, String name) {
         this.id = id;
         this.name = name;
     }

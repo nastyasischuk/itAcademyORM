@@ -14,7 +14,7 @@ public class RowFromDBManyToManyConstructorTest {
 
     @Test
     public void buildRowTestPoperNameOfColumnsInManyToManyTable() throws Exception{
-        PersonTestManyToMany person = new PersonTestManyToMany(1,"Kate",20);
+        PersonTestManyToMany person = new PersonTestManyToMany(1,"Kate");
         RowFromDBManyToMany row = new RowFromDBManyToManyConstructor(CatTestManyToMany.class,1, AnnotationUtils.getAssociatedTable(person.getClass().getDeclaredField("cats"))).buildRow();
         assertNotEquals(row.getTableName(),"PersonTestManyToMany");
         assertEquals("c_id",row.getInverse_column());
@@ -22,7 +22,7 @@ public class RowFromDBManyToManyConstructorTest {
     }
     @Test
     public void buildRowTestProperNameAndVlueOfId() throws Exception{
-        PersonTestManyToMany person = new PersonTestManyToMany(1,"Kate",20);
+        PersonTestManyToMany person = new PersonTestManyToMany(1,"Kate");
         RowFromDBManyToMany row = new RowFromDBManyToManyConstructor(CatTestManyToMany.class,1,AnnotationUtils.getAssociatedTable(person.getClass().getDeclaredField("cats"))).buildRow();
 
         assertEquals("1",row.getIdValue());
@@ -32,7 +32,7 @@ public class RowFromDBManyToManyConstructorTest {
     }
     @Test
     public void buildRowTestProperColumnsInTable() throws Exception{
-        PersonTestManyToMany person = new PersonTestManyToMany(1,"Kate",20);
+        PersonTestManyToMany person = new PersonTestManyToMany(1,"Kate");
         RowFromDBManyToMany row = new RowFromDBManyToManyConstructor(CatTestManyToMany.class,1,AnnotationUtils.getAssociatedTable(person.getClass().getDeclaredField("cats"))).buildRow();
 
         assertTrue(row.getNameAndType().containsKey("name"));

@@ -17,12 +17,18 @@ public class RowConstructorFromDB extends RowConstructor {
         rowFromDB = new RowFromDB();
     }
 
+    public RowConstructorFromDB(Class typeOfObject) {
+        this.typeOfObject = typeOfObject;
+        rowFromDB = new RowFromDB();
+    }
+
     @Override
     public RowFromDB buildRow() {
        operationsToBuild(rowFromDB);
         return rowFromDB;
     }
     protected void operationsToBuild(RowFromDB rowFromDB){
+        if(id!=null)
         rowFromDB.setIdValue(id.toString());
         rowFromDB.setIdName(getIdName());
         rowFromDB.setTableName(getTableName(typeOfObject));
@@ -61,5 +67,14 @@ public class RowConstructorFromDB extends RowConstructor {
 
     public Class getTypeOfObject() {
         return typeOfObject;
+    }
+
+    @Override
+    public String toString() {
+        return "RowConstructorFromDB{" +
+                "typeOfObject=" + typeOfObject +
+                ", id=" + id +
+                ", rowFromDB=" + rowFromDB +
+                '}';
     }
 }

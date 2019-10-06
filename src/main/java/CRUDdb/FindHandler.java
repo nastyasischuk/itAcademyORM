@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class FindHandler {
+public class FindHandler extends FindAllHandler {
     protected static org.apache.log4j.Logger logger = Logger.getLogger(FindHandler.class);
     protected RowFromDB row;
     protected DataBase dataBase;
@@ -24,44 +24,28 @@ public class FindHandler {
     protected Statement statement;
 
     public FindHandler(DataBase dataBase, Class<?> objectType, Object id) {
+        super(dataBase,objectType);
         this.dataBase = dataBase;
         this.objectType = objectType;
         this.idOfClassToFind = id;
 
     }
-
-    public CachedRowSet getResultSetFromQuery(String queryFind) {
-        statement = dataBase.getStatement(queryFind);
-        CachedRowSet rowset = null;
-        try {
-            ResultSet resultSet = statement.executeQuery(queryFind);
-            RowSetFactory factory = RowSetProvider.newFactory();
-            rowset = factory.createCachedRowSet();
-            rowset.populate(resultSet);
-
-        } catch (SQLException e) {
-            logger.info(e, e.getCause());
-        }
-        return rowset;
-    }
-
-    public String buildQuery() {
-        row = new RowConstructorFromDB(objectType, idOfClassToFind).buildRow();
-        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row, QueryType.SELECT_OBJECT).buildQuery();
-        return queryFind;
-    }
-
     public Object buildObject(CachedRowSet rowSet) {
         Object resultObject = null;
         try {
             rowSet.next();
             resultObject = new ObjectBuilder(row, rowSet, objectType, dataBase).buildObject();
         }catch (NullPointerException e){
-            logger.error("Could not find object");
+            logger.error("Could not find object",e.getCause());
         }catch (Exception e) {
             logger.error(e, e.getCause());
         }
         dataBase.closeStatement(statement);
         return resultObject;
+    }
+    public String buildQuery() {
+        row = new RowConstructorFromDB(objectType, idOfClassToFind).buildRow();
+        String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row, QueryType.SELECT_OBJECT).buildQuery();
+        return queryFind;
     }
 }

@@ -45,14 +45,14 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
                     fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, entry.getKey());
                 }
             } catch (Exception e) {
-                logger.info(e,e.getCause());
+                logger.error(e,e.getCause());
             }
             field.set(objectToBuildFromDB, fieldValue);
             if (field.isAnnotationPresent(ManyToOne.class)) {
                 listOfCollectionInObject.add(setToCollection(fieldValue));
             }
         }
-        removeAllDuplecates(listOfCollectionInObject);
+        removeAllDuplicates(listOfCollectionInObject);
     }
 
     protected Object handleCasesWhenTypeIsNotSimple(Field field, String nameOfFieldToGet) {
@@ -68,7 +68,7 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
                         typeOfReferencedObject(), row.getIdValue(), objectToBuildFromDB, field.getAnnotation(OneToMany.class).mappedBy());
                 fieldValue = col;
             } catch (Exception e) {
-                logger.info(e.getMessage());
+                logger.error(e.getMessage(),e);
             }
         } else if (field.isAnnotationPresent(ManyToMany.class)) {
             try {
@@ -78,7 +78,7 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
                                 AnnotationUtils.getAssociatedTable(field));
                 fieldValue = col;
             } catch (Exception e) {
-                logger.info(e.getMessage());
+                logger.error(e.getMessage(),e);
             }
         }
         return fieldValue;
@@ -98,8 +98,6 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
     protected Object getValueFromResultSet(String nameOfMethod, String nameOfAttributeToGet) {
         Method method;
         Object valueOfObject = null;
-        logger.info(nameOfMethod);
-        logger.info(nameOfAttributeToGet);
         try {
             method = CachedRowSet.class.getMethod(nameOfMethod, String.class);
             valueOfObject = method.invoke(resultSet, nameOfAttributeToGet);
@@ -130,7 +128,7 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
         return collectionInManyToOne;
     }
 
-    public void removeAllDuplecates(List<Collection<Object>> toRemoveDublicates) {
+    public void removeAllDuplicates(List<Collection<Object>> toRemoveDublicates) {
         for (Collection<Object> collection : toRemoveDublicates) {
             removeDuplicateInCollection(collection);
         }
@@ -141,9 +139,7 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
         for (Object element : collection) {
             try {
                 if (determinePrimaryKeyValue(element).equals(determinePrimaryKeyValue(this.objectToBuildFromDB)) && this.objectToBuildFromDB != element) {
-                    objectToRemove = element;
-                    logger.info("To remove " + objectToRemove);
-                }
+                    objectToRemove = element; }
             } catch (IllegalAccessException e) {
                 logger.error(e);
             }

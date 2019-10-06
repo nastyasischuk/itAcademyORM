@@ -32,32 +32,20 @@ public class CRUDImplTest {
         CRUDImpl crud = dataBase.getCrud();
         CatManyToOne object = (CatManyToOne) crud.find(CatManyToOne.class, 1);
         PersonOneToMany person = object.getPerson();
-        logger.info(object.getPerson());
-        logger.info(object.toString());
-        for (CatManyToOne cat : person.getCollectrion()) {
-            if (cat.equals(object))
-                logger.info("exists");
-        }
         assertTrue(person.getCollectrion().contains(object));
     }
 
     @Test
-    public void findCollection1() {
-
-    }
-
-    @Test
     public void findWithManyToMany() {
-        PersonTestManyToMany person = new PersonTestManyToMany(1, "Kate", 20);
-        person = (PersonTestManyToMany) dataBase.getCrud().find(person.getClass(), 1);
-        System.out.println(person);
+        PersonTestManyToMany personExpected = new PersonTestManyToMany(1, "Kate");
+        PersonTestManyToMany personReal = (PersonTestManyToMany) dataBase.getCrud().find(personExpected.getClass(), 1);
+        assertEquals(personExpected.getName(),personReal.getName());
     }
 
     @Before
     public void setDataBase() {
         dataBase = new DataBaseImplementation("D:\\my files\\softserve\\itAcademyORM\\src\\main\\resources\\config.xml", "catspeople", false);
         dataBase.openConnection();
-
     }
 
     @After
@@ -89,7 +77,7 @@ public class CRUDImplTest {
         PersonOneToMany found = (PersonOneToMany) crud.find(PersonOneToMany.class, 14);
         String es = found.getName();
         assertEquals(update.length(), es.length());
-        assertEquals(update, es.trim());
+        assertEquals(update, es);
     }
 
     @Test
