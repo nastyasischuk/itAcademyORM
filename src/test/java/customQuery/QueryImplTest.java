@@ -1,11 +1,10 @@
-package tablecreation;
+package customQuery;
 
-import CRUD.customQuery.QueryImpl;
-import CRUD.customQuery.SubQuery;
 import org.junit.Assert;
 import org.junit.Test;
 import tablecreation.classesintesting.CatTestManyToMany;
 import tablecreation.classesintesting.PersonWithSimpleProperColumns;
+
 
 public class QueryImplTest {
     private QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
@@ -316,7 +315,7 @@ public class QueryImplTest {
     public void test() {
         String expected = " SELECT PersonWithSimpleProperColumns.p_id, PersonWithSimpleProperColumns.namE, PersonWithSimpleProperColumns.age, " +
                 "PersonWithSimpleProperColumns.bd FROM PersonWithSimpleProperColumns INNER  JOIN CatTestManyToMany " +
-                "ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.nameCat WHERE p_id > 5 IN ( SELECT p_id FROM PersonWithSimpleProperColumns WHERE p_id);";
+                "ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.name WHERE p_id > 5 IN ( SELECT p_id FROM PersonWithSimpleProperColumns WHERE p_id);";
         String actual = query.select().innerJoin(CatTestManyToMany.class).on(query.getLimits()
                 .equals("id", PersonWithSimpleProperColumns.class, "nameCat", CatTestManyToMany.class))
                 .where(query.buildQuery().getLimits().equals("id").more("5").inSubQuery(subQuery.select("id").where(subQuery.getLimits().equals("id")))).fetch();
@@ -325,7 +324,9 @@ public class QueryImplTest {
 
     @Test
     public void innerJoinTest() {
-        String expected = " SELECT PersonWithSimpleProperColumns.p_id, PersonWithSimpleProperColumns.namE, PersonWithSimpleProperColumns.age, PersonWithSimpleProperColumns.bd FROM PersonWithSimpleProperColumns INNER  JOIN CatTestManyToMany ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.nameCat;";
+        String expected = " SELECT PersonWithSimpleProperColumns.p_id, PersonWithSimpleProperColumns.namE, PersonWithSimpleProperColumns.age," +
+                " PersonWithSimpleProperColumns.bd FROM PersonWithSimpleProperColumns INNER  JOIN CatTestManyToMany " +
+                "ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.name;";
         String actual = query.select().innerJoin(CatTestManyToMany.class)
                 .on(query.getLimits().equals("id", PersonWithSimpleProperColumns.class, "nameCat", CatTestManyToMany.class)).fetch();
         Assert.assertEquals(expected, actual);
@@ -336,7 +337,7 @@ public class QueryImplTest {
     public void leftJoinTest() {
         String expected = " SELECT PersonWithSimpleProperColumns.p_id, PersonWithSimpleProperColumns.namE, PersonWithSimpleProperColumns.age," +
                 " PersonWithSimpleProperColumns.bd FROM PersonWithSimpleProperColumns LEFT  JOIN CatTestManyToMany " +
-                "ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.nameCat;";
+                "ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.name;";
         String actual = query.select().leftJoin(CatTestManyToMany.class)
                 .on(query.getLimits().equals("id", PersonWithSimpleProperColumns.class, "nameCat", CatTestManyToMany.class))
                 .fetch();
@@ -347,7 +348,7 @@ public class QueryImplTest {
     public void rightJoinTest() {
         String expected = " SELECT PersonWithSimpleProperColumns.p_id, PersonWithSimpleProperColumns.namE, PersonWithSimpleProperColumns.age," +
                 " PersonWithSimpleProperColumns.bd FROM PersonWithSimpleProperColumns RIGHT  JOIN CatTestManyToMany " +
-                "ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.nameCat;";
+                "ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.name;";
         String actual = query.select().rightJoin(CatTestManyToMany.class)
                 .on(query.getLimits().equals("id", PersonWithSimpleProperColumns.class, "nameCat", CatTestManyToMany.class))
                 .fetch();
@@ -358,10 +359,11 @@ public class QueryImplTest {
     public void fullOuterJoinTest() {
         String expected = " SELECT PersonWithSimpleProperColumns.p_id, PersonWithSimpleProperColumns.namE, PersonWithSimpleProperColumns.age," +
                 " PersonWithSimpleProperColumns.bd FROM PersonWithSimpleProperColumns FULL  OUTER  JOIN CatTestManyToMany " +
-                "ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.nameCat;";
+                "ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.name;";
         String actual = query.select().fullOuterJoin(CatTestManyToMany.class)
                 .on(query.getLimits().equals("id", PersonWithSimpleProperColumns.class, "nameCat", CatTestManyToMany.class))
                 .fetch();
         Assert.assertEquals(expected, actual);
     }
+
 }
