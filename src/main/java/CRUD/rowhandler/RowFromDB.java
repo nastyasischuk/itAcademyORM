@@ -19,4 +19,5 @@ public class RowFromDB extends Row {
     void setNameAndType(Map<String, Class> nameAndType) {
         this.nameAndType = nameAndType;
     }
+
 }

@@ -24,7 +24,7 @@ public abstract class Row {
         return idName;
     }
 
-    void setIdName(String idName) {
+    public void setIdName(String idName) {
         this.idName = idName;
     }
 
@@ -32,7 +32,8 @@ public abstract class Row {
         return idValue;
     }
 
-    void setIdValue(String idValue) {
+
+    public void setIdValue(String idValue) {
         this.idValue = idValue;
     }
 }

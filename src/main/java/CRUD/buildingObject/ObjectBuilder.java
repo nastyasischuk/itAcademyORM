@@ -36,6 +36,10 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
     public void setResultFromResultSet() throws NoSuchFieldException, IllegalAccessException {
         List<Collection<Object>> listOfCollectionInObject = new ArrayList<>();
         for (Map.Entry<String, Class> entry : row.getNameAndType().entrySet()) {
+            if(row.getIdValue()==null){
+                String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(row.getNameAndType().get(row.getIdName()));
+                row.setIdValue( getValueFromResultSet(nameOfMethodInResultSetToGetValue, row.getIdName()).toString());
+            }
             Field field = classType.getDeclaredField(entry.getKey());
             field.setAccessible(true);
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(entry.getValue());
@@ -49,6 +53,7 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
             } catch (Exception e) {
                 logger.error(e,e.getCause());
             }
+
             field.set(objectToBuildFromDB, fieldValue);
             if (AnnotationUtils.isManyToOnePresent(field)) {
                 listOfCollectionInObject.add(setToCollection(fieldValue));

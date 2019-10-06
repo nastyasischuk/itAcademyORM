@@ -56,6 +56,7 @@ public class AnnotationUtils {
     }
 
     public static String getTableName(Class toBuildClass) {
+        if(!toBuildClass.isAnnotationPresent(Table.class)) return toBuildClass.getSimpleName();
         return ((annotations.Table) toBuildClass.getAnnotation(annotations.Table.class)).name();
     }
 

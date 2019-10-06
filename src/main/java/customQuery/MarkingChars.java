@@ -1,4 +1,4 @@
-package CRUD.requests;
+package customQuery;
 
 public class MarkingChars {
     public static final String comma = ", ";
@@ -11,7 +11,9 @@ public class MarkingChars {
     public static final String less = "<";
     public static final String more = ">";
     public static final String space = " ";
+    public static final String dot = ".";
+    public static final String percent = "%";
+    public static final String underscore ="_";
     public static final String redundantComa = ", );";
     public static final String closeBracketAndSemicolon = ");";
-
 }

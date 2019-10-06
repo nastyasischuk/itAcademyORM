@@ -40,10 +40,10 @@ public class FindAllHandler {
         return rowset;
     }
     public Object buildObjectWithoutId(CachedRowSet rowSet){
-        this.row = new RowConstructorFromDB(objectType,null).buildRow();
+        this.row = new RowConstructorFromDB(objectType).buildRow();
         Object resultObject = null;
         try {
-            rowSet.next();
+
             resultObject = new ObjectBuilder(row, rowSet, objectType, dataBase).buildObject();
         }catch (NullPointerException e){
             logger.error("Could not find object",e.getCause());
