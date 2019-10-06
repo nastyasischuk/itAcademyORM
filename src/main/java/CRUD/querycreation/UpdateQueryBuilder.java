@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class UpdateQueryBuilder extends QueryBuilder {
-    public UpdateQueryBuilder(RowToDB row) {
+    UpdateQueryBuilder(RowToDB row) {
         super(row);
     }
 
@@ -35,7 +35,8 @@ public class UpdateQueryBuilder extends QueryBuilder {
             }
         }
         request.append(columnNamesAndColumnValues);
-        request.append(SQLStatements.WHERE.getValue()).append(row.getIdName()).append(MarkingChars.equally).append(row.getIdValue()).append(MarkingChars.semicolon);
+        request.append(SQLStatements.WHERE.getValue()).append(row.getIdName()).append(MarkingChars.equally)
+                .append(row.getIdValue()).append(MarkingChars.semicolon);
 
         return request.toString();
     }

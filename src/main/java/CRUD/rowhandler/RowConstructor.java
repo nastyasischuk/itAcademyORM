@@ -13,7 +13,6 @@ public abstract class RowConstructor {
         } else {
             return classToConvertTorow.getSimpleName();
         }
-
     }
 
     String getNameOfField(Field field) {
@@ -22,20 +21,25 @@ public abstract class RowConstructor {
         } else if (AnnotationUtils.isForeignKeyPresentAndNotEmpty(field)) {
             return AnnotationUtils.getFKName(field);
         } else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {
-            Class currentClass = field.getDeclaringClass();
-            Field[] fields = currentClass.getDeclaredFields();
-            for (Field fieldOfEntity : fields) {
-                if (fieldOfEntity.isAnnotationPresent(PrimaryKey.class)) {
-                    if (AnnotationUtils.isColumnPresentAndNotEmpty(fieldOfEntity)) {
-                        return AnnotationUtils.getColumnName(fieldOfEntity);
-                    } else {
-                        return fieldOfEntity.getName();
-                    }
-                }
-            }
-            return field.getName();
+            return getNameIfOneToOne(field);
         } else {
             return field.getName();
         }
+    }
+
+    private String getNameIfOneToOne(Field field) {
+        Class currentClass = field.getDeclaringClass();
+        Field[] fields = currentClass.getDeclaredFields();
+        for (Field fieldOfEntity : fields) {
+            if (AnnotationUtils.isPrimaryKeyPresent(fieldOfEntity)) {
+                if (AnnotationUtils.isColumnPresentAndNotEmpty(fieldOfEntity)) {
+                    return AnnotationUtils.getColumnName(fieldOfEntity);
+                } else {
+                    return fieldOfEntity.getName();
+                }
+            }
+
+        }
+        return field.getName();
     }
 }

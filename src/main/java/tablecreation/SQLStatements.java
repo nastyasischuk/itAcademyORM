@@ -47,6 +47,10 @@ public enum SQLStatements {
     JOIN(" JOIN "),
     INNER(" INNER "),
     LIKE(" LIKE ");
+    ANY(" ANY "),
+    ALL(" ALL "),
+    ON_DELETE_CASCADE(" ON DELETE CASCADE ");//TODO Create few more requests
+
     private String value;
 
     SQLStatements(String value) {

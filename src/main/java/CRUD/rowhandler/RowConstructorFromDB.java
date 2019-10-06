@@ -24,7 +24,7 @@ public class RowConstructorFromDB extends RowConstructor {
 
     @Override
     public RowFromDB buildRow() {
-       operationsToBuild(rowFromDB);
+        operationsToBuild(rowFromDB);
         return rowFromDB;
     }
     protected void operationsToBuild(RowFromDB rowFromDB){
@@ -38,24 +38,24 @@ public class RowConstructorFromDB extends RowConstructor {
     protected String getIdName() {
         Field[] fields = typeOfObject.getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(PrimaryKey.class)) {
+            if (AnnotationUtils.isPrimaryKeyPresent(field)) {
                 return getNameOfField(field);
             }
         }
-        throw new RuntimeException("No pk?");
+        throw new RuntimeException("Primary key is not found!");
     }
 
     private Map<String, Class> getNameAndType() {
         Field[] allFields = typeOfObject.getDeclaredFields();
         Map<String, Class> namesAndType = new HashMap<>();
-        for (Field currentField : allFields) {
+        for (Field currentField : allFields) {//todo use method from AnnotationUtils
             if (currentField.isAnnotationPresent(Column.class)
-                    ||   currentField.isAnnotationPresent(ForeignKey.class)||
+                    || currentField.isAnnotationPresent(ForeignKey.class) ||
                     currentField.isAnnotationPresent(ManyToMany.class)
-                    ||currentField.isAnnotationPresent(ManyToOne.class)
-                    ||currentField.isAnnotationPresent(OneToMany.class)
-            ||currentField.isAnnotationPresent(OneToOne.class)
-            ||currentField.isAnnotationPresent(PrimaryKey.class)) {
+                    || currentField.isAnnotationPresent(ManyToOne.class)
+                    || currentField.isAnnotationPresent(OneToMany.class)
+                    || currentField.isAnnotationPresent(OneToOne.class)
+                    || currentField.isAnnotationPresent(PrimaryKey.class)) {
                 String name = getNameOfField(currentField);
                 Class type = currentField.getType();
                 namesAndType.put(name, type);
@@ -64,8 +64,7 @@ public class RowConstructorFromDB extends RowConstructor {
         return namesAndType;
     }
 
-
-    public Class getTypeOfObject() {
+    Class getTypeOfObject() {
         return typeOfObject;
     }
 

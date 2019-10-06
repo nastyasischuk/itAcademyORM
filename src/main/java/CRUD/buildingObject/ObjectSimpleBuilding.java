@@ -1,6 +1,7 @@
 package CRUD.buildingObject;
-
 import annotations.PrimaryKey;
+import annotations.AnnotationUtils;
+
 import org.apache.log4j.Logger;
 import tablecreation.DeterminatorOfType;
 
@@ -11,6 +12,7 @@ import java.lang.reflect.Method;
 
 public class ObjectSimpleBuilding {
     public static Logger logger = Logger.getLogger(ObjectSimpleBuilding.class);
+
     public static final String METHOD_NAME_FOR_INTEGER = "getInt";
     public static final String START_OF_METHOD_RESULTSET_TO_GET_VALUE = "get";
 
@@ -27,20 +29,20 @@ public class ObjectSimpleBuilding {
         this.objectToBuildFromDB = instantiateObject();
     }
 
-    public Object buildObject() throws NoSuchFieldException, IllegalAccessException{
+    public Object buildObject() throws NoSuchFieldException, IllegalAccessException {
         Field pkField = primaryKeyField();
         setPK(pkField, getPKValueFromResultSet(pkField.getType()));
         return objectToBuildFromDB;
     }
 
-    protected Object instantiateObject() {
-        Object toInst = null;
+    private Object instantiateObject() {
+        Object objectToInstantiate = null;
         try {
-            toInst = classType.newInstance();
+            objectToInstantiate = classType.newInstance();
         } catch (Exception e) {
             logger.error(e, e.getCause());
         }
-        return toInst;
+        return objectToInstantiate;
     }
 
     public String constructResultSetMethodName(Class<?> typeOfresult) {
@@ -56,7 +58,7 @@ public class ObjectSimpleBuilding {
         return START_OF_METHOD_RESULTSET_TO_GET_VALUE + nameCapitalized;
     }
 
-    protected Object getValueFromResultSet(String nameOfMethod) {
+    private Object getValueFromResultSet(String nameOfMethod) {
         Method method;
         Object valueOfObject = null;
         try {
@@ -75,7 +77,7 @@ public class ObjectSimpleBuilding {
         Field[] fields = classType.getDeclaredFields();
         Field primaryKeyField = null;
         for (Field field : fields) {
-            if (field.isAnnotationPresent(PrimaryKey.class)) {
+            if (AnnotationUtils.isPrimaryKeyPresent(field)) {
                 primaryKeyField = field;
             }
         }
@@ -95,5 +97,4 @@ public class ObjectSimpleBuilding {
             logger.error(e, e.getCause());
         }
     }
-
 }

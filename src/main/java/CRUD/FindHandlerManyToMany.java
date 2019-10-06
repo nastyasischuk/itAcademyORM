@@ -44,6 +44,4 @@ public class FindHandlerManyToMany extends FindHandler {
         dataBase.closeStatement(statement);
         return collection;
     }
-
-
 }

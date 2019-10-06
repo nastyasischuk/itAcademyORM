@@ -3,7 +3,6 @@ package connection;
 import exceptions.OpenConnectionException;
 
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,9 +34,5 @@ public class OpenedConnection {
 
     static void removeConnection(String name) {
         getConnectionMap().remove(name);
-    }
-
-    static ArrayList<Connection> getAllConnections() {
-        return new ArrayList<>(getConnectionMap().values());
     }
 }

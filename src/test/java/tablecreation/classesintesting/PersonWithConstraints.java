@@ -5,8 +5,8 @@ import annotations.*;
 @Entity
 @Check("age>18")
 public class PersonWithConstraints {
-    @Column(autoincrement = true)
-    @PrimaryKey
+    @Column
+    @PrimaryKey(autoincrement = true)
     public int id;
     @Column(unique = true)
     private String name;

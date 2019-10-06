@@ -5,10 +5,10 @@ public abstract class Row {
     private String idName;
     private String idValue;
 
-    public Row() {
+    Row() {
     }
 
-    public Row(String tableName) {
+    Row(String tableName) {
         this.tableName = tableName;
 
     }
@@ -16,7 +16,7 @@ public abstract class Row {
         return tableName;
     }
 
-    public void setTableName(String tableName) {
+    void setTableName(String tableName) {
         this.tableName = tableName;
     }
 
@@ -24,7 +24,7 @@ public abstract class Row {
         return idName;
     }
 
-    public void setIdName(String idName) {
+    void setIdName(String idName) {
         this.idName = idName;
     }
 
@@ -32,7 +32,7 @@ public abstract class Row {
         return idValue;
     }
 
-    public void setIdValue(String idValue) {
+    void setIdValue(String idValue) {
         this.idValue = idValue;
     }
 }
