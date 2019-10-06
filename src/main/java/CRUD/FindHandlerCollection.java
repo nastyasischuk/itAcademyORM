@@ -24,7 +24,7 @@ public class FindHandlerCollection extends FindHandler {
 
     @Override
     public String buildQuery() {
-        row = new RowConstructorFromDBByForeignKey(objectType, idOfClassToFind, ownerOfCollection.getClass()).buildRow();
+        row = new RowConstructorFromDBByForeignKey(objectType, idOfClassToFind).buildRow();
         String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row, QueryType.SELECT_OBJECT).buildQuery();
         return queryFind;
     }

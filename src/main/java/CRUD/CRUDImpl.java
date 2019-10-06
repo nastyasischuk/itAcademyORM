@@ -1,6 +1,5 @@
 package CRUD;
 import annotations.AssociatedClass;
-import CRUD.exceptions.QueryExecutionException;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
 
@@ -11,6 +10,7 @@ import connection.DataBaseImplementation;
 
 import exceptions.NoPrimaryKeyException;
 
+import exceptions.QueryExecutionException;
 import org.apache.log4j.Logger;
 import javax.sql.rowset.CachedRowSet;
 
@@ -69,7 +69,7 @@ public class CRUDImpl implements CRUD {
         return (Collection<Object>) getBuiltObject(findHandler);
     }
 
-    private RowToDB cudBasics(Object objectToDB, QueryType queryType) throws SQLException{
+    RowToDB cudBasics(Object objectToDB, QueryType queryType) throws SQLException{
         RowToDB rowToDB = new RowConstructorToDB(objectToDB).buildRow();
         String query = new QueryBuilderFactory().createQueryBuilder(rowToDB, queryType).buildQuery();
         dataBase.executeUpdateQuery(query);
@@ -84,12 +84,6 @@ public class CRUDImpl implements CRUD {
     @Override
     public Collection<Object> findCollection(Class classToFind, Object id, Object usingForeignKey, String mapping) {
         FindHandler findHandler = new FindHandlerCollection(dataBase, classToFind, id, usingForeignKey, mapping);
-        return (Collection<Object>) getBuiltObject(findHandler);
-    }
-
-    @Override
-    public Collection<Object> findCollectionFoManyToMany(Class classToFind, Object id, AssociatedTable associatedTable) {
-        FindHandler findHandler = new FindHandlerManyToMany(dataBase, classToFind, id, associatedTable);
         return (Collection<Object>) getBuiltObject(findHandler);
     }
 
