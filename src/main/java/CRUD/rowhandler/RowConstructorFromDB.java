@@ -52,7 +52,7 @@ public class RowConstructorFromDB extends RowConstructor {
     private Map<String, Class> getNameAndType() {
         Field[] allFields = typeOfObject.getDeclaredFields();
         Map<String, Class> namesAndType = new HashMap<>();
-        for (Field currentField : allFields) {//todo use method from AnnotationUtils
+        for (Field currentField : allFields) {
             if (currentField.isAnnotationPresent(Column.class)
                     || currentField.isAnnotationPresent(ForeignKey.class) ||
                     currentField.isAnnotationPresent(ManyToMany.class)

@@ -3,7 +3,6 @@ package customQuery;
 
 import CRUD.FindAllHandler;
 import connection.DataBase;
-import customQuery.QueryBuilder;
 
 import javax.sql.rowset.CachedRowSet;
 import java.util.ArrayList;
@@ -23,6 +22,9 @@ public class Query<T> {
     public T getSingleObject() {
         FindAllHandler findAllHandler = new FindAllHandler(dataBase, typeOgObjects);
         CachedRowSet rowSet = findAllHandler.getResultSetFromQuery(queryToGetObject);
+        try {
+            rowSet.next();
+        }catch (Exception e){}
         T result = (T) findAllHandler.buildObjectWithoutId(rowSet);
         return result;
     }
@@ -31,7 +33,13 @@ public class Query<T> {
         List<T> resultList = new ArrayList<>();
         FindAllHandler findAllHandler = new FindAllHandler(dataBase, typeOgObjects);
         CachedRowSet rowSet = findAllHandler.getResultSetFromQuery(queryToGetObject);
-        resultList = (List<T>) findAllHandler.buildManyObjects(rowSet);
+       try {
+           while (rowSet.next()) {
+               resultList.add((T) findAllHandler.buildObjectWithoutId(rowSet));
+           }
+       }catch (Exception e){
+
+       }
         return resultList;
     }
 

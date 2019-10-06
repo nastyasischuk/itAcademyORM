@@ -7,8 +7,6 @@ import tablecreation.classesintesting.PersonWithSimpleProperColumns;
 
 
 public class QueryImplTest {
-
-
     @Test
     public void selectTest() {
          QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);

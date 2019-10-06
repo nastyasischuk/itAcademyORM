@@ -13,6 +13,7 @@ import tablecreation.classesintesting.PersonWithSimpleProperColumns;
 import javax.xml.crypto.Data;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -43,5 +44,12 @@ public class QueryTest {
 
     @Test
     public void getListOfFoundObjects() {
+        QueryImpl query = new QueryImpl(PersonOneToMany.class,dataBase);
+        String actual = query.select().where(query.getLimits().equals("id", "1")).fetch();
+        query.setQuery(new StringBuilder("SELECT * FROM person"));
+
+        Query<PersonOneToMany> custQuery = new Query<>(query);
+        List<PersonOneToMany> person = custQuery.getListOfFoundObjects();
+        System.out.println(person);
     }
 }
