@@ -1,12 +1,15 @@
 package CRUD.rowhandler;
 
 import annotations.*;
+import org.apache.log4j.Logger;
+import tablecreation.TableConstructorImpl;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RowConstructorFromDB extends RowConstructor {
+    private static Logger logger = Logger.getLogger(RowConstructorFromDB.class);
     private Class typeOfObject;
     private Object id;
     private RowFromDB rowFromDB;
@@ -42,7 +45,8 @@ public class RowConstructorFromDB extends RowConstructor {
                 return getNameOfField(field);
             }
         }
-        throw new RuntimeException("Primary key is not found!");
+       logger.error("Primary key is not found!");
+        return null;
     }
 
     private Map<String, Class> getNameAndType() {

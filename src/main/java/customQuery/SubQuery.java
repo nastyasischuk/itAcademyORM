@@ -9,8 +9,8 @@ public class SubQuery extends QueryImpl {
         super(classType);
     }
 
-    public StringBuilder getQuery() {
-        return query;
+    public String getQuery() {
+        return query.toString();
     }
 
     public void setQuery(StringBuilder query) {
