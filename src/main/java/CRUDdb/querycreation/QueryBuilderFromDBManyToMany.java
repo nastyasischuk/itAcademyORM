@@ -16,10 +16,10 @@ public class QueryBuilderFromDBManyToMany extends QueryBuilderFromDB{
     }
     public String buildQuery(){
         StringBuilder query = new StringBuilder();
-      query.append(SQLStatements.SELECT.getValue()).append(row.getInverse_column())
+      query.append(SQLStatements.SELECT.getValue()).append(row.getInverseColumn())
               .append(SQLStatements.FROM.getValue()).append(row.getManyToManyTableName()).
               append(SQLStatements.WHERE.getValue())
-              .append(row.getJoin_coulmn()).append(MarkingChars.equally).append(row.getIdValue()).append(MarkingChars.semicolon);
+              .append(row.getJoinCoulmn()).append(MarkingChars.equally).append(row.getIdValue()).append(MarkingChars.semicolon);
         return query.toString();
 
     }

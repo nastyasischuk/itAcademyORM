@@ -57,31 +57,45 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
 
     protected Object handleCasesWhenTypeIsNotSimple(Field field, String nameOfFieldToGet) {
         Object fieldValue = null;
-        if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class) || field.isAnnotationPresent(OneToOne.class)
-                || field.isAnnotationPresent(ManyToOne.class)) {
+        if (field.isAnnotationPresent(ForeignKey.class)
+                || field.isAnnotationPresent(MapsId.class)
+                || field.isAnnotationPresent(OneToOne.class)
+                || field.isAnnotationPresent(ManyToOne.class))
+        {
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(determinePrimaryKeyType(field));
             Object foreignKeyValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, nameOfFieldToGet);
             fieldValue = database.getCrud().find(field.getType(), foreignKeyValue);
         } else if (field.isAnnotationPresent(OneToMany.class)) {
-            try {
-                Collection<Object> col = database.getCrud().findCollection(field.getAnnotation(OneToMany.class).
-                        typeOfReferencedObject(), row.getIdValue(), objectToBuildFromDB, field.getAnnotation(OneToMany.class).mappedBy());
-                fieldValue = col;
-            } catch (Exception e) {
-                logger.error(e.getMessage(),e);
-            }
+            fieldValue = handleOneTOMany(field);
+
         } else if (field.isAnnotationPresent(ManyToMany.class)) {
-            try {
-                Collection<Object> col = database.getCrud().
-                        findCollectionFoManyToMany(AnnotationUtils.classGetTypeOfCollectionField(field),
-                                row.getIdValue(),
-                                AnnotationUtils.getAssociatedTable(field));
-                fieldValue = col;
-            } catch (Exception e) {
-                logger.error(e.getMessage(),e);
-            }
+            fieldValue = handleManyTOMany(field);
         }
         return fieldValue;
+    }
+    private Collection<Object> handleOneTOMany(Field field){
+        Collection<Object> foundObjectCollection = null;
+        try {
+            foundObjectCollection = database.getCrud().findCollection(field.getAnnotation(OneToMany.class).
+                    typeOfReferencedObject(), row.getIdValue(), objectToBuildFromDB, field.getAnnotation(OneToMany.class).mappedBy());
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
+        }
+        return foundObjectCollection;
+    }
+    private Collection<Object> handleManyTOMany(Field field){
+        Collection<Object> foundObjectCollection = null;
+        try {
+            foundObjectCollection = database.getCrud().
+                    findCollectionFoManyToMany(AnnotationUtils.classGetTypeOfCollectionField(field),
+                            row.getIdValue(),
+                            AnnotationUtils.getAssociatedTable(field));
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
+        }
+        return foundObjectCollection;
     }
 
     protected Class determinePrimaryKeyType(Field field) {
@@ -101,10 +115,8 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
         try {
             method = CachedRowSet.class.getMethod(nameOfMethod, String.class);
             valueOfObject = method.invoke(resultSet, nameOfAttributeToGet);
-        } catch (NoSuchMethodException | IllegalAccessException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             logger.error(e, e.getCause());
-        } catch (InvocationTargetException e) {
-            logger.error(e,e.getCause());
         }
         return valueOfObject;
     }

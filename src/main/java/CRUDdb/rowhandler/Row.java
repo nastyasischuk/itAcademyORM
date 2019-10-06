@@ -14,8 +14,6 @@ public abstract class Row {
         this.tableName = tableName;
 
     }
-
-
     public String getTableName() {
         return tableName;
     }

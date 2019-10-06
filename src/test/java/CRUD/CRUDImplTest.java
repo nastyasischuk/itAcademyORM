@@ -60,11 +60,11 @@ public class CRUDImplTest {
         TransactionsManager tr = dataBase.getTransactionManager();
         tr.begin();
         crud.delete(oneToMany);
-        CatManyToOne cat = (CatManyToOne) dataBase.getCrud().find(CatManyToOne.class,12);
-        assertNull(cat);
+        //CatManyToOne cat = (CatManyToOne) dataBase.getCrud().find(CatManyToOne.class,12);
+        //assertNull(cat);
         tr.rollback();
         CatManyToOne cat1 = (CatManyToOne) dataBase.getCrud().find(CatManyToOne.class,12);
-        assertNull(cat);
+        assertNotNull(cat1);
 
     }
 

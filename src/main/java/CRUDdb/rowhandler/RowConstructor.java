@@ -4,7 +4,7 @@ import annotations.*;
 
 import java.lang.reflect.Field;
 
-public abstract class RowConstructor  {
+public abstract class RowConstructor {
     public abstract Row buildRow();
 
     public String getTableName(Class<?> classToConvertTorow) {
@@ -15,12 +15,13 @@ public abstract class RowConstructor  {
         }
 
     }
-    String getNameOfField(Field field){
-        if(AnnotationUtils.isColumnPresentAndNotEmpty(field)){
+
+    String getNameOfField(Field field) {
+        if (AnnotationUtils.isColumnPresentAndNotEmpty(field)) {
             return AnnotationUtils.getColumnName(field);
-        }else if(AnnotationUtils.isForeignKeyPresentAndNotEmpty(field)){
+        } else if (AnnotationUtils.isForeignKeyPresentAndNotEmpty(field)) {
             return AnnotationUtils.getFKName(field);
-        }else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {
+        } else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {
             Class currentClass = field.getDeclaringClass();
             Field[] fields = currentClass.getDeclaredFields();
             for (Field fieldOfEntity : fields) {
@@ -33,7 +34,7 @@ public abstract class RowConstructor  {
                 }
             }
             return field.getName();
-        }else{
+        } else {
             return field.getName();
         }
     }

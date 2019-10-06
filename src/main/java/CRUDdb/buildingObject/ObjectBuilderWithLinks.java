@@ -25,11 +25,9 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
             Field field = classType.getDeclaredField(entry.getKey());
             field.setAccessible(true);
             if (entry.getKey().equals(mapping)) {
-                if (field.getType() == objectToMappedBy.getClass())//if its oneToOne ManyTOne, for other associations skips because of recursion
-                    field.set(objectToBuildFromDB, objectToMappedBy);
+                linkObjectsForManyToOneOneToOne(field);
                 continue;
             }
-
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(entry.getValue());
             Object fieldValue = null;
             try {
@@ -39,10 +37,14 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
                     fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, field.getName());
                 }
             } catch (Exception e) {
-                logger.error(e.getMessage());
+                logger.error(e.getMessage(),e.getCause());
             }
             field.set(objectToBuildFromDB, fieldValue);
         }
+    }
+    private void linkObjectsForManyToOneOneToOne(Field field) throws IllegalAccessException {
+        if (field.getType() == objectToMappedBy.getClass())
+            field.set(objectToBuildFromDB, objectToMappedBy);
     }
 
 }

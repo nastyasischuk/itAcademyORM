@@ -11,15 +11,14 @@ import java.lang.reflect.Method;
 
 public class ObjectSimpleBuilding {
     public static Logger logger = Logger.getLogger(ObjectSimpleBuilding.class);
-    public static final String METHODNAMEFORINTEGER = "getInt";
-    public static final String STARTOFMETHODRESULTSETTOGETVALUE = "get";
+    public static final String METHOD_NAME_FOR_INTEGER = "getInt";
+    public static final String START_OF_METHOD_RESULTSET_TO_GET_VALUE = "get";
 
     protected Object objectToBuildFromDB;
     protected CachedRowSet resultSet;
     protected Class<?> classType;
 
     public ObjectSimpleBuilding() {
-
     }
 
     public ObjectSimpleBuilding(CachedRowSet resultSet, Class<?> classType) {
@@ -49,12 +48,12 @@ public class ObjectSimpleBuilding {
             return null;
         }
         if (typeOfresult == Integer.class) {
-            return METHODNAMEFORINTEGER;
+            return METHOD_NAME_FOR_INTEGER;
         }
         String typeName = typeOfresult.getSimpleName();
         String s1 = typeName.substring(0, 1).toUpperCase();
         String nameCapitalized = s1 + typeName.substring(1);
-        return STARTOFMETHODRESULTSETTOGETVALUE + nameCapitalized;
+        return START_OF_METHOD_RESULTSET_TO_GET_VALUE + nameCapitalized;
     }
 
     protected Object getValueFromResultSet(String nameOfMethod) {
@@ -66,7 +65,7 @@ public class ObjectSimpleBuilding {
         } catch (NoSuchMethodException | IllegalAccessException e) {
             logger.error(e, e.getCause());
         } catch (InvocationTargetException e) {
-            logger.error(nameOfMethod);
+            logger.error(e,e.getCause());
         }
         return valueOfObject;
     }

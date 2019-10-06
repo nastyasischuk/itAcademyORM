@@ -18,7 +18,7 @@ public class RowFromDBManyToManyConstructor extends RowConstructorFromDB {
     }
     private void readInfFromAssociateTable(AssociatedClass associatedClass){
         row.setManyToManyTableName(associatedClass.getAssociatedTableName());
-        row.setJoin_coulmn(associatedClass.getJoinColumn());
-        row.setInverse_column(associatedClass.getInverseJoinColumns());
+        row.setJoinCoulmn(associatedClass.getJoinColumn());
+        row.setInverseColumn(associatedClass.getInverseJoinColumns());
     }
 }

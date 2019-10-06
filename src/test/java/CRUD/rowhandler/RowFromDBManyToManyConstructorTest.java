@@ -3,7 +3,6 @@ package CRUD.rowhandler;
 import CRUDdb.rowhandler.RowFromDBManyToMany;
 import CRUDdb.rowhandler.RowFromDBManyToManyConstructor;
 import annotations.AnnotationUtils;
-import annotations.AssociatedTable;
 import org.junit.Test;
 import tablecreation.classesintesting.CatTestManyToMany;
 import tablecreation.classesintesting.PersonTestManyToMany;
@@ -17,8 +16,8 @@ public class RowFromDBManyToManyConstructorTest {
         PersonTestManyToMany person = new PersonTestManyToMany(1,"Kate");
         RowFromDBManyToMany row = new RowFromDBManyToManyConstructor(CatTestManyToMany.class,1, AnnotationUtils.getAssociatedTable(person.getClass().getDeclaredField("cats"))).buildRow();
         assertNotEquals(row.getTableName(),"PersonTestManyToMany");
-        assertEquals("c_id",row.getInverse_column());
-        assertEquals("p_id",row.getJoin_coulmn());
+        assertEquals("c_id",row.getInverseColumn());
+        assertEquals("p_id",row.getJoinCoulmn());
     }
     @Test
     public void buildRowTestProperNameAndVlueOfId() throws Exception{
@@ -27,8 +26,8 @@ public class RowFromDBManyToManyConstructorTest {
 
         assertEquals("1",row.getIdValue());
         assertEquals("id",row.getIdName());//id name from second table
-        assertEquals("p_id",row.getJoin_coulmn());
-        assertEquals("c_id",row.getInverse_column());
+        assertEquals("p_id",row.getJoinCoulmn());
+        assertEquals("c_id",row.getInverseColumn());
     }
     @Test
     public void buildRowTestProperColumnsInTable() throws Exception{
