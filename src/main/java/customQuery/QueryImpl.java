@@ -1,8 +1,12 @@
 package customQuery;
 
+
 import annotations.Table;
 import exceptions.NoPrimaryKeyException;
 import exceptions.SeveralPrimaryKeysException;
+
+import annotations.AnnotationUtils;
+import connection.DataBase;
 import tablecreation.SQLStatements;
 import tablecreation.TableConstructorImpl;
 
@@ -13,6 +17,15 @@ public class QueryImpl implements QueryBuilder {
     private Limits limits;
     private Aggregation aggregation;
     private int lastIndexOfStar;
+    private DataBase dataBase;
+
+    public QueryImpl(Class<?> classType, DataBase dataBase) {
+        limits = new Limits(classType);
+        aggregation = new Aggregation(classType);
+        this.dataBase = dataBase;
+        query = new StringBuilder();
+        this.classType = classType;
+    }
 
     public QueryImpl(Class<?> classType) {
         limits = new Limits(classType);
@@ -22,11 +35,7 @@ public class QueryImpl implements QueryBuilder {
     }
 
 
-    public StringBuilder getQuery() {
-        return query;
-    }
-
-    Class<?> getClassType() {
+    public Class<?> getClassType() {
         return classType;
     }
 
@@ -44,7 +53,8 @@ public class QueryImpl implements QueryBuilder {
     @Override
     public QueryImpl select() {
         query.append(SQLStatements.SELECT.getValue()).append(MarkingChars.star).append(SQLStatements.FROM.getValue())
-                .append(getFromClassTableName(classType));
+
+                .append(AnnotationUtils.getTableName(classType));
         lastIndexOfStar = query.lastIndexOf("*");
         return this;
     }
@@ -187,21 +197,15 @@ public class QueryImpl implements QueryBuilder {
         return values.toString();
     }
 
-    protected String getFromClassTableName(Class classType){
-        tablecreation.Table table = null;
-        if(classType.isAnnotationPresent(Table.class)){
-            tablecreation.TableConstructor tableConstructor;
-            tableConstructor = new TableConstructorImpl(classType);
-            try {
-                table = tableConstructor.buildTable();
-            } catch (NoPrimaryKeyException | SeveralPrimaryKeysException ignored) {
-            }
 
-        }
-        return table != null ? table.getTableName() : null;
+    public String getQuery() {
+        query.append(MarkingChars.semicolon);
+        return query.toString();
     }
 
-    public QueryImpl buildQuery() {
-        return new QueryImpl(classType);
+    @Override
+    public DataBase getDataBase() {
+        return this.dataBase;
     }
+
 }
