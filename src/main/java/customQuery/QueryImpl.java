@@ -1,5 +1,7 @@
 package customQuery;
 
+import annotations.AnnotationUtils;
+import connection.DataBase;
 import tablecreation.SQLStatements;
 
 
@@ -9,6 +11,15 @@ public class QueryImpl implements QueryBuilder {
     private Limits limits;
     private Aggregation aggregation;
     private int lastIndexOfStar;
+    private DataBase dataBase;
+
+    public QueryImpl(Class<?> classType, DataBase dataBase) {
+        limits = new Limits(classType);
+        aggregation = new Aggregation(classType);
+        this.dataBase = dataBase;
+        query = new StringBuilder();
+        this.classType = classType;
+    }
 
     public QueryImpl(Class<?> classType) {
         limits = new Limits(classType);
@@ -18,11 +29,7 @@ public class QueryImpl implements QueryBuilder {
     }
 
 
-    public StringBuilder getQuery() {
-        return query;
-    }
-
-    Class<?> getClassType() {
+    public Class<?> getClassType() {
         return classType;
     }
 
@@ -40,7 +47,7 @@ public class QueryImpl implements QueryBuilder {
     @Override
     public QueryImpl select() {
         query.append(SQLStatements.SELECT.getValue()).append(MarkingChars.star).append(SQLStatements.FROM.getValue())
-                .append(classType.getSimpleName());
+                .append(AnnotationUtils.getTableName(classType));
         lastIndexOfStar = query.lastIndexOf("*");
         return this;
     }
@@ -184,7 +191,14 @@ public class QueryImpl implements QueryBuilder {
         return values.toString();
     }
 
-    public QueryImpl buildQuery() {
-        return new QueryImpl(classType);
+    public String getQuery() {
+        query.append(MarkingChars.semicolon);
+        return query.toString();
     }
+
+    @Override
+    public DataBase getDataBase() {
+        return this.dataBase;
+    }
+
 }

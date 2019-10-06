@@ -1,7 +1,8 @@
 package CRUD.querycreation;
 
-import CRUD.requests.MarkingChars;
+
 import CRUD.rowhandler.RowToDB;
+import customQuery.MarkingChars;
 import tablecreation.SQLStatements;
 
 public class DeleteQueryBuilder extends QueryBuilder {

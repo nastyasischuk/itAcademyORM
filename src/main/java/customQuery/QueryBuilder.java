@@ -1,5 +1,7 @@
 package customQuery;
 
+import connection.DataBase;
+
 public interface QueryBuilder {
 
     QueryImpl select();
@@ -13,5 +15,8 @@ public interface QueryBuilder {
     Limits getLimits();
 
     Aggregation getAggregates();
+    String getQuery();
+    DataBase getDataBase();
+    Class<?> getClassType();
 
 }
