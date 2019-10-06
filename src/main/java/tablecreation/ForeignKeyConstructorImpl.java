@@ -1,6 +1,8 @@
 package tablecreation;
 
 import annotations.AnnotationUtils;
+import exceptions.NoPrimaryKeyException;
+import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.math.BigInteger;
@@ -8,6 +10,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
+    private static Logger logger = Logger.getLogger(ForeignKeyConstructor.class);
     private Field field;
     private ForeignKey foreignKey;
 
@@ -17,11 +20,16 @@ public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
     }
 
     public ForeignKey buildForeignKey() {
-        foreignKey.setConstructionName(getConstraintNameFK());
-        foreignKey.setForeignKeyName(getForeignKeyName());
-        foreignKey.setReferencePKName(getReferencedPKName());
-        foreignKey.setTableName(getTableName());
-        foreignKey.setReferenceTableName(getReferencedTableName());
+        try {
+            foreignKey.setConstructionName(getConstraintNameFK());
+            foreignKey.setForeignKeyName(getForeignKeyName());
+            foreignKey.setReferencePKName(getReferencedPKName());
+            foreignKey.setTableName(getTableName());
+            foreignKey.setReferenceTableName(getReferencedTableName());
+        }catch (NoPrimaryKeyException e){
+            logger.error(e.getMessage(),e.getCause());
+            return null;
+        }
         return foreignKey;
     }
 
@@ -72,7 +80,7 @@ public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
         }
     }
 
-    private String getReferencedPKName() {
+    private String getReferencedPKName() throws NoPrimaryKeyException {
         Class classOfReferencedTable = field.getType();
         Field[] fields = classOfReferencedTable.getDeclaredFields();
         for (Field field : fields) {
@@ -83,7 +91,7 @@ public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
                     return field.getName();
                 }
             } else {
-                throw new RuntimeException("There is no PK in referenced class");
+                throw new NoPrimaryKeyException("There is no PK in referenced class");
             }
         }
         return null;
@@ -100,7 +108,8 @@ public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
             return "FK" + bigInt.toString( 35 );
         }
         catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException( "Unable to generate a hashed Constraint name!", e);
+          logger.error( "Unable to generate a hashed Constraint name!", e.getCause());
+          return null;
         }
     }
 }

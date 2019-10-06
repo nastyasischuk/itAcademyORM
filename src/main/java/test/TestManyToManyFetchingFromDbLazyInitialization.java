@@ -11,8 +11,6 @@ public class TestManyToManyFetchingFromDbLazyInitialization {
     static DataBase db = new DataBaseImplementation("D:\\my files\\softserve\\itAcademyORM\\src\\main\\resources\\config.xml",false);
     public static void main(String[] args) {
         db.openConnection();
-        ManyToManyAspect.setDb(db);
-        //testcatspeople();
         testSeveralManyToManyInOneClass();
 
     }

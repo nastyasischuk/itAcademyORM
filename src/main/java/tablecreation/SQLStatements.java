@@ -49,7 +49,7 @@ public enum SQLStatements {
     LIKE(" LIKE "),
     ANY(" ANY "),
     ALL(" ALL "),
-    ON_DELETE_CASCADE(" ON DELETE CASCADE ");//TODO Create few more requests
+    ON_DELETE_CASCADE(" ON DELETE CASCADE ");
 
     private String value;
 

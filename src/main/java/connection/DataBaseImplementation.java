@@ -1,11 +1,13 @@
 package connection;
 
 import CRUD.CRUDImpl;
+import CRUD.aspects.ManyToManyAspect;
 import exceptions.DatabaseException;
 import exceptions.NoPrimaryKeyException;
 import exceptions.OpenConnectionException;
 import exceptions.SeveralPrimaryKeysException;
 import org.apache.log4j.Logger;
+import tablecreation.ManyToMany;
 import tablecreation.SQLTableQueryCreator;
 import tablecreation.TableConstructorImpl;
 import transaction.TransactionsManager;
@@ -21,7 +23,6 @@ public class DataBaseImplementation implements DataBase {
     private static Logger logger = Logger.getLogger(DataBaseImplementation.class);
     private static TransactionsManager transactionsManager = null;
     private CRUDImpl crud;
-
     private ParseXMLConfig parseXMLConfig;
     private static final String DEFAULT = "default_db";
     private final String name;
@@ -31,6 +32,7 @@ public class DataBaseImplementation implements DataBase {
         parseXMLConfig = new ParseXMLConfig(pathToXml);
         crud = new CRUDImpl(this);
         this.name = DEFAULT;
+        createAspect();
         createAllTables();
     }
 
@@ -38,6 +40,7 @@ public class DataBaseImplementation implements DataBase {
         parseXMLConfig = new ParseXMLConfig(pathToXml);
         crud = new CRUDImpl(this);
         this.name = DEFAULT;
+        createAspect();
         if (createTables)
             createAllTables();
     }
@@ -46,6 +49,7 @@ public class DataBaseImplementation implements DataBase {
         parseXMLConfig = new ParseXMLConfig(pathToXml);
         crud = new CRUDImpl(this);
         this.name = name;
+        createAspect();
         createAllTables();
     }
 
@@ -53,10 +57,13 @@ public class DataBaseImplementation implements DataBase {
         parseXMLConfig = new ParseXMLConfig(pathToXml);
         crud = new CRUDImpl(this);
         this.name = name;
+        createAspect();
         if (createTables)
             createAllTables();
     }
-
+    private void createAspect(){
+        ManyToManyAspect.setDb(this);
+    }
     public void openConnection() {
         this.checkExistingConnection(this.name);
 
