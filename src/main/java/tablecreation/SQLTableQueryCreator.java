@@ -1,8 +1,9 @@
 package tablecreation;
 
-import CRUD.requests.MarkingChars;
 
-import java.lang.String;
+
+
+import customQuery.MarkingChars;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +84,6 @@ public class SQLTableQueryCreator {
                         .append(MarkingChars.semicolon);
                 queryIndexList.add(request.toString());
             }
-            //createPKQuery(); TODO Handle it?!!
         }
         return queryIndexList;
     }

@@ -118,7 +118,6 @@ public class DataBaseImplementation implements DataBase {
             }
             SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
-            //String createPKQuery = sqlTableQueryCreator.createPKQuery(); //todo remove this
 
             List<String> queriesFK = sqlTableQueryCreator.createFKQuery();
             if (queriesFK != null && !queriesFK.isEmpty())
