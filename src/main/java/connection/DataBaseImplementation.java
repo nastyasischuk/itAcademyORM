@@ -67,7 +67,7 @@ public class DataBaseImplementation implements DataBase {
             logger.debug("Connection has opened " + connection);
             OpenedConnection.addConnection(this.name, connection);
         } catch (SQLException | ClassNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.error(e,e.getCause());
             throw new OpenConnectionException(e.getMessage());
         }
     }
@@ -118,7 +118,6 @@ public class DataBaseImplementation implements DataBase {
             }
             SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
-            //String createPKQuery = sqlTableQueryCreator.createPKQuery(); //todo remove this
 
             List<String> queriesFK = sqlTableQueryCreator.createFKQuery();
             if (queriesFK != null && !queriesFK.isEmpty())

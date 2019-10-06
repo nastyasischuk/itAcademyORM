@@ -14,4 +14,6 @@ public class MarkingChars {
     public static final String dot = ".";
     public static final String percent = "%";
     public static final String underscore ="_";
+    public static final String redundantComa = ", );";
+    public static final String closeBracketAndSemicolon = ");";
 }
