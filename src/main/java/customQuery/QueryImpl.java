@@ -61,32 +61,32 @@ public class QueryImpl implements QueryBuilder {
 
     public QueryImpl select(Aggregation aggregation) {
         query.append(SQLStatements.SELECT.getValue()).append(aggregation.build()).append(SQLStatements.FROM.getValue())
-                .append(getFromClassTableName(classType));
+                .append(AnnotationUtils.getTableName(classType));
         return this;
     }
 
     public QueryImpl innerJoin(Class typeOfClass) {
         query.replace(lastIndexOfStar, lastIndexOfStar + 1, unionLaneForJoin(classType));
-        query.append(SQLStatements.INNER.getValue()).append(SQLStatements.JOIN.getValue()).append(getFromClassTableName(typeOfClass));
+        query.append(SQLStatements.INNER.getValue()).append(SQLStatements.JOIN.getValue()).append(AnnotationUtils.getTableName(classType));
         return this;
     }
 
     public QueryImpl leftJoin(Class typeOfClass) {
         query.replace(lastIndexOfStar, lastIndexOfStar + 1, unionLaneForJoin(classType));
-        query.append(SQLStatements.LEFT.getValue()).append(SQLStatements.JOIN.getValue()).append(getFromClassTableName(typeOfClass));
+        query.append(SQLStatements.LEFT.getValue()).append(SQLStatements.JOIN.getValue()).append(AnnotationUtils.getTableName(classType));
         return this;
     }
 
     public QueryImpl rightJoin(Class typeOfClass) {
         query.replace(lastIndexOfStar, lastIndexOfStar + 1, unionLaneForJoin(classType));
-        query.append(SQLStatements.RIGHT.getValue()).append(SQLStatements.JOIN.getValue()).append(getFromClassTableName(typeOfClass));
+        query.append(SQLStatements.RIGHT.getValue()).append(SQLStatements.JOIN.getValue()).append(AnnotationUtils.getTableName(classType));
         return this;
     }
 
     public QueryImpl fullOuterJoin(Class typeOfClass) {
         query.replace(lastIndexOfStar, lastIndexOfStar + 1, unionLaneForJoin(classType));
         query.append(SQLStatements.FULL.getValue()).append(SQLStatements.OUTER.getValue())
-                .append(SQLStatements.JOIN.getValue()).append(getFromClassTableName(typeOfClass));
+                .append(SQLStatements.JOIN.getValue()).append(AnnotationUtils.getTableName(classType));
         return this;
     }
 
@@ -97,7 +97,7 @@ public class QueryImpl implements QueryBuilder {
 
     public QueryImpl selectMath(Aggregation aggregation, Limits limits) {
         query.append(SQLStatements.SELECT.getValue()).append(aggregation.build()).append(limits.build()).append(SQLStatements.FROM.getValue())
-                .append(getFromClassTableName(classType));
+                .append(AnnotationUtils.getTableName(classType));
         return this;
     }
 
@@ -187,7 +187,7 @@ public class QueryImpl implements QueryBuilder {
         StringBuilder values = new StringBuilder();
         for (String columnName : getLimits().getAllColumnNames(classType)) {
             String lastElement = getLimits().getAllColumnNames(classType).get(getLimits().getAllColumnNames(classType).size() - 1);
-            values.append(getFromClassTableName(classType)).append(MarkingChars.dot).append(columnName);
+            values.append(AnnotationUtils.getTableName(classType)).append(MarkingChars.dot).append(columnName);
             if (!columnName.equals(lastElement)) {
                 values.append(MarkingChars.comma);
             } else {

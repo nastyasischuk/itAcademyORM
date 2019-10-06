@@ -1,5 +1,6 @@
 package customQuery;
 
+import annotations.AnnotationUtils;
 import annotations.Column;
 import exceptions.NoPrimaryKeyException;
 import exceptions.WrongColumnNameException;
@@ -254,7 +255,7 @@ public class Limits {
             }
         }
         assert column != null;
-        return lane.append(queryImpl.getFromClassTableName(classType)).append(MarkingChars.dot).append(column.getName()).toString();
+        return lane.append(AnnotationUtils.getTableName(classType)).append(MarkingChars.dot).append(column.getName()).toString();
     }
 
     String build() {

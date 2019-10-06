@@ -16,6 +16,6 @@ public class QueryBuilderFromDBManyToManyTest {
         PersonTestManyToMany person = new PersonTestManyToMany(1,"Kate");
         RowFromDBManyToMany row = new RowFromDBManyToManyConstructor(CatTestManyToMany.class,1, AnnotationUtils.getAssociatedTable(person.getClass().getDeclaredField("cats"))).buildRow();
         String query = new QueryBuilderFromDBManyToMany(row).buildQuery();
-        assertEquals("SELECT c_id FROM cat_person WHERE p_id=1;",query);
+        assertEquals(" SELECT c_id FROM cat_person WHERE p_id=1;",query);
     }
 }
