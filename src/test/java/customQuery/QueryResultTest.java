@@ -1,24 +1,18 @@
 package customQuery;
 
-import annotations.AnnotationUtils;
 import connection.DataBase;
 import connection.DataBaseImplementation;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
-import tablecreation.TableConstructorImpl;
 import tablecreation.classesintesting.PersonOneToMany;
-import tablecreation.classesintesting.PersonWithSimpleProperColumns;
 
-import javax.xml.crypto.Data;
-
-import java.lang.reflect.Field;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class QueryTest {
-    private static Logger logger = Logger.getLogger(QueryTest.class);
+    private static Logger logger = Logger.getLogger(QueryResultTest.class);
     DataBase dataBase ;
     @Before
     public void setDataBase() {
@@ -27,27 +21,18 @@ public class QueryTest {
     }
     @Test
     public void getSingleObject() {
-        QueryImpl query = new QueryImpl(PersonOneToMany.class,dataBase);
-        String actual = query.select().where(query.getLimits().equals("id", "1")).fetch();
-        String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id=1;";
-        query.setQuery(new StringBuilder("SELECT * FROM person WHERE id=1"));
-        Field[] fields = PersonOneToMany.class.getDeclaredFields();
-        for (Field field : fields) {
-            if (AnnotationUtils.isPrimaryKeyPresent(field)) {
-                logger.info("exists");
-            }
-        }
+        QueryBuilder query = dataBase.getQueryBuilder(PersonOneToMany.class);
+        query.select().where(query.getLimits().equals("id", "1")).fetch();
         Query<PersonOneToMany> custQuery = new Query<>(query);
         PersonOneToMany person = custQuery.getSingleObject();
-        System.out.println(person);
+        assertEquals(1,person.getId());
+        assertEquals(2,person.getCollectrion().size());
     }
 
     @Test
     public void getListOfFoundObjects() {
         QueryImpl query = new QueryImpl(PersonOneToMany.class,dataBase);
-        String actual = query.select().where(query.getLimits().equals("id", "1")).fetch();
-        query.setQuery(new StringBuilder("SELECT * FROM person"));
-
+         query.select().fetch();
         Query<PersonOneToMany> custQuery = new Query<>(query);
         List<PersonOneToMany> person = custQuery.getListOfFoundObjects();
         System.out.println(person);

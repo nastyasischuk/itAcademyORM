@@ -18,5 +18,6 @@ public interface QueryBuilder {
     String getQuery();
     DataBase getDataBase();
     Class<?> getClassType();
+    void setQuery(StringBuilder query);
 
 }
