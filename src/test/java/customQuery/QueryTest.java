@@ -13,11 +13,10 @@ import java.util.List;
 
 public class QueryTest {
     private static Logger logger = Logger.getLogger(QueryTest.class);
-    DataBase dataBase ;
-    @Before
-    public void setDataBase() {
+    static DataBase dataBase ;
+    @BeforeClass
+    public static void setDataBase() {
         dataBase = new DataBaseImplementation("D:\\my files\\softserve\\itAcademyORM\\src\\main\\resources\\config.xml", "catspeople", false);
-        dataBase.openConnection();
     }
     @Test
     public void getSingleObject() {
