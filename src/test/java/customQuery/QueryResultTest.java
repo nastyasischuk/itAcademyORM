@@ -20,7 +20,7 @@ public class QueryResultTest {
     }
     @Test
     public void getSingleObject() {
-        QueryBuilder query = dataBase.getQueryBuilder(PersonOneToMany.class);
+        QueryBuilderImpl query = dataBase.getQueryBuilder(PersonOneToMany.class);
        query.select().where(query.getLimits().equals("id", "1")).fetch();
         QueryResult<PersonOneToMany> custQueryResult = new QueryResult<>(query);
         PersonOneToMany person = custQueryResult.getSingleObject();
@@ -30,7 +30,7 @@ public class QueryResultTest {
 
     @Test
     public void getListOfFoundObjects() {
-        QueryBuilder query =dataBase.getQueryBuilder(PersonOneToMany.class);
+        QueryBuilderImpl query =dataBase.getQueryBuilder(PersonOneToMany.class);
          query.select().fetch();
         QueryResult<PersonOneToMany> custQueryResult = new QueryResult<>(query);
         List<PersonOneToMany> person = custQueryResult.getListOfFoundObjects();

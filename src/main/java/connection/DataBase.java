@@ -2,6 +2,8 @@ package connection;
 
 import CRUD.CRUD;
 import customQuery.QueryBuilder;
+import customQuery.QueryBuilderImpl;
+import fluentquery.Dslmpl.QueryOrderedImpl;
 import transaction.TransactionsManager;
 
 import java.sql.Connection;
@@ -20,6 +22,7 @@ public interface DataBase {
 
     void closeStatement(Statement statement);
     TransactionsManager getTransactionManager();
-    QueryBuilder getQueryBuilder(Class<?> classType);
+    QueryBuilderImpl getQueryBuilder(Class<?> classType);
+    QueryOrderedImpl getQueryOrdered(Class<?> classType);
 
 }

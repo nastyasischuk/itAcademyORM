@@ -8,8 +8,6 @@ import exceptions.SeveralPrimaryKeysException;
 import annotations.AnnotationUtils;
 import connection.DataBase;
 import tablecreation.SQLStatements;
-import tablecreation.TableConstructorImpl;
-
 
 public class QueryBuilderImpl implements QueryBuilder {
     protected StringBuilder query;
@@ -50,7 +48,7 @@ public class QueryBuilderImpl implements QueryBuilder {
     }
 
 
-    @Override
+
     public QueryBuilderImpl select() {
         query.append(SQLStatements.SELECT.getValue()).append(MarkingChars.star).append(SQLStatements.FROM.getValue())
 
@@ -101,21 +99,20 @@ public class QueryBuilderImpl implements QueryBuilder {
         return this;
     }
 
-    @Override
     public QueryBuilderImpl where(Limits limits) {
         StringBuilder lane = new StringBuilder();
         query.append(lane.append(SQLStatements.WHERE.getValue()).append(limits.build()));
         return this;
     }
 
-    @Override
+
     public QueryBuilderImpl groupBy(Limits limits) {
         StringBuilder lane = new StringBuilder();
         setQuery(query.append(lane.append(SQLStatements.GROUP_BY.getValue()).append(limits.build())));
         return this;
     }
 
-    @Override
+
     public QueryBuilderImpl orderBy(Limits limits) {
         query.append(SQLStatements.ORDER_BY.getValue()).append(limits.build());
         return this;
@@ -168,12 +165,12 @@ public class QueryBuilderImpl implements QueryBuilder {
     }
 
 
-    @Override
+
     public Limits getLimits() {
         return limits;
     }
 
-    @Override
+
     public Aggregation getAggregates() {
         return aggregation;
     }

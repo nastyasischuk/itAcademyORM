@@ -9,6 +9,7 @@ import exceptions.DatabaseException;
 import exceptions.NoPrimaryKeyException;
 import exceptions.OpenConnectionException;
 import exceptions.SeveralPrimaryKeysException;
+import fluentquery.Dslmpl.QueryOrderedImpl;
 import org.apache.log4j.Logger;
 import tablecreation.ManyToMany;
 import tablecreation.SQLTableQueryCreator;
@@ -223,7 +224,12 @@ public class DataBaseImplementation implements DataBase {
     }
 
     @Override
-    public QueryBuilder getQueryBuilder(Class<?> classType) {
+    public QueryBuilderImpl getQueryBuilder(Class<?> classType) {
         return new QueryBuilderImpl(classType,this);
+    }
+
+    @Override
+    public QueryOrderedImpl getQueryOrdered(Class<?> classType) {
+        return new QueryOrderedImpl(this,classType);
     }
 }

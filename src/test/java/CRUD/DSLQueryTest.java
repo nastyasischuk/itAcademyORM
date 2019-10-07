@@ -7,6 +7,7 @@ import connection.DataBaseImplementation;
 import customQuery.QueryResult;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import tablecreation.classesintesting.Person;
 
@@ -17,10 +18,11 @@ public class DSLQueryTest {
 
     @BeforeClass
     public static void setDataBase() {
-        dataBase = new DataBaseImplementation("C:\\Users\\DEDUSHKA DEDULYA\\IdeaProjects\\itAcademyORM\\src\\main\\resources\\config.xml", false);
+        dataBase = new DataBaseImplementation("D:\\my files\\softserve\\itAcademyORM\\src\\main\\resources\\config.xml", false);
     }
 
     @Test
+    @Ignore
     public void queryCreationTest() {
         TableForQuery person = new TableForQuery(Person.class);
         dataBase.openConnection();
