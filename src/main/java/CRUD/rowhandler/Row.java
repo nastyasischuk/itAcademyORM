@@ -1,26 +1,22 @@
 package CRUD.rowhandler;
 
-import java.util.Map;
-
 public abstract class Row {
     private String tableName;
     private String idName;
     private String idValue;
 
-    public Row() {
+    Row() {
     }
 
-    public Row(String tableName) {
+    Row(String tableName) {
         this.tableName = tableName;
 
     }
-
-
     public String getTableName() {
         return tableName;
     }
 
-    public void setTableName(String tableName) {
+    void setTableName(String tableName) {
         this.tableName = tableName;
     }
 
@@ -35,6 +31,7 @@ public abstract class Row {
     public String getIdValue() {
         return idValue;
     }
+
 
     public void setIdValue(String idValue) {
         this.idValue = idValue;

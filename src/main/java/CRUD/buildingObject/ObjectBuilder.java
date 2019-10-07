@@ -2,105 +2,181 @@ package CRUD.buildingObject;
 
 import CRUD.rowhandler.RowFromDB;
 import annotations.*;
+import connection.DataBase;
 import org.apache.log4j.Logger;
-import tablecreation.DeterminatorOfType;
 
+import javax.sql.rowset.CachedRowSet;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
-public class ObjectBuilder {
+public class ObjectBuilder extends ObjectSimpleBuilding {
     private static Logger logger = Logger.getLogger(ObjectBuilder.class);
-    public static final String METHODNAMEFORINTEGER ="getInt";
-    public static final String STARTOFMETHODRESULTSETTOGETVALUE ="get";
-    protected Object objectToBuildFromDB;
     protected RowFromDB row;
-    protected ResultSet resultSet;
-    protected Class<?> classType;
-    public ObjectBuilder(){
+    protected DataBase database;
 
+    public ObjectBuilder() {
     }
-    public ObjectBuilder(RowFromDB rowFromDB, ResultSet resultSet,Class<?> classType){
-        this.resultSet = resultSet;
+
+    public ObjectBuilder(RowFromDB rowFromDB, CachedRowSet resultSet, Class<?> classType, DataBase db) {
+        super(resultSet, classType);
+        this.database = db;
         this.row = rowFromDB;
-        this.classType = classType;
-        instantiateObject();
-
     }
-    public Object buildObject() throws NoSuchFieldException,IllegalAccessException{
+
+    public Object buildObject() throws NoSuchFieldException, IllegalAccessException {
         setResultFromResultSet();
         return objectToBuildFromDB;
     }
 
-    public void setResultFromResultSet() throws NoSuchFieldException,IllegalAccessException{
-        for (Map.Entry<String,Class> entry: row.getNameAndType().entrySet()){
-            Field field = classType.getDeclaredField(entry.getKey());
+    public void setResultFromResultSet() throws NoSuchFieldException, IllegalAccessException {
+        List<Collection<Object>> listOfCollectionInObject = new ArrayList<>();
+        for (Map.Entry<String, Class> entry : row.getNameAndType().entrySet()) {
+            if(row.getIdValue()==null){
+                String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(row.getNameAndType().get(row.getIdName()));
+                row.setIdValue( getValueFromResultSet(nameOfMethodInResultSetToGetValue, row.getIdName()).toString());
+            }
+            Field field=null;
+            if(AnnotationUtils.getFieldByColemnName(classType,entry.getKey())!=null){
+                field = classType.getDeclaredField(AnnotationUtils.getFieldByColemnName(classType,entry.getKey()).getName());
+            }else
+             field = classType.getDeclaredField(entry.getKey());
+
             field.setAccessible(true);
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(entry.getValue());
-            Object fieldValue=null;
-            if(nameOfMethodInResultSetToGetValue==null){//we could not find proper type then we check if it is foreign key
-                handleCasesWhenTypeIsNotSimple(field);
-            }else {
-                 fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, field.getName());
+            Object fieldValue = null;
+            try {
+                if (nameOfMethodInResultSetToGetValue == null) {
+                    fieldValue = handleCasesWhenTypeIsNotSimple(field, entry.getKey());
+                } else {
+                    fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue,entry.getKey());
+                }
+            } catch (Exception e) {
+                logger.error(e,e.getCause());
             }
-            field.set(objectToBuildFromDB,fieldValue);//setting value that we got from resultSet
+
+            field.set(objectToBuildFromDB, fieldValue);
+            if (AnnotationUtils.isManyToOnePresent(field)) {
+                listOfCollectionInObject.add(setToCollection(fieldValue));
+            }
         }
+        removeAllDuplicates(listOfCollectionInObject);
     }
-    private Object handleCasesWhenTypeIsNotSimple(Field field){
-        Object fieldValue= null;
-        if(field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class) || field.isAnnotationPresent(OneToOne.class)
-        || field.isAnnotationPresent(ManyToOne.class)){
-           //todo getInteger of ResultSet
-            fieldValue = null;//todo we have to call find for this method
-        }else if(field.isAnnotationPresent(OneToMany.class)){
-            //todo getInteger of ResultSet
-            //fieldValue = find(field.getAnnotation(OneToMany.class).typeOfReferencedObject(),id,classType);
-            //
+
+    Object handleCasesWhenTypeIsNotSimple(Field field, String nameOfFieldToGet) {
+        Object fieldValue = null;
+        if (AnnotationUtils.isAnyOfAnnotationIsPresent(field, ForeignKey.class, MapsId.class, OneToOne.class, ManyToOne.class)) {
+            String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(determinePrimaryKeyType(field));
+            Object foreignKeyValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, nameOfFieldToGet);
+            fieldValue = database.getCrud().find(field.getType(), foreignKeyValue);
+
+        } else if (AnnotationUtils.isOneToManyPresent(field)) {
+          fieldValue = handleOneTOMany(field);
+        } else if (AnnotationUtils.isManyToManyPresent(field)) {
+             fieldValue = handleManyTOMany(field);
+
+        }
+        return fieldValue;
+    }
+    private Collection<Object> handleOneTOMany(Field field){
+        Collection<Object> foundObjectCollection = null;
+        try {
+            foundObjectCollection = database.getCrud().findCollection(field.getAnnotation(OneToMany.class).
+                    typeOfReferencedObject(), row.getIdValue(), objectToBuildFromDB, field.getAnnotation(OneToMany.class).mappedBy());
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
+        }
+        return foundObjectCollection;
+    }
+    private Collection<Object> handleManyTOMany(Field field){
+        Collection<Object> foundObjectCollection = null;
+        try {
+            foundObjectCollection = database.getCrud().
+                    findCollectionFoManyToMany(AnnotationUtils.classGetTypeOfCollectionField(field),
+                            row.getIdValue(),
+                            AnnotationUtils.getAssociatedTable(field));
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
+        }
+        return foundObjectCollection;
+    }
+
+    private Class determinePrimaryKeyType(Field field) {
+        Class classOfForeignKey = field.getType();
+        Field[] fields = classOfForeignKey.getDeclaredFields();
+        for (Field elOfFields : fields) {
+            if (AnnotationUtils.isPrimaryKeyPresent(elOfFields)) {
+                return elOfFields.getType();
+            }
         }
         return null;
     }
 
-
-
-
-
-
-    public String constructResultSetMethodName(Class<?> typeOfresult){
-        if(DeterminatorOfType.getSQLType(typeOfresult)==null){
-            return null;
-            //todo if it is not primitive or not a sql date then it has to be a foreign key or exception
-        }
-        if(typeOfresult==Integer.class){
-            return METHODNAMEFORINTEGER;
-        }
-        String typeName = typeOfresult.getSimpleName();
-        String s1 = typeName.substring(0, 1).toUpperCase();
-        String nameCapitalized = s1 + typeName.substring(1);
-        return STARTOFMETHODRESULTSETTOGETVALUE+nameCapitalized;
-    }
-
-
-    protected Object getValueFromResultSet(String nameOfMethod,String nameOfAttributeToGet){
+    Object getValueFromResultSet(String nameOfMethod, String nameOfAttributeToGet) {
         Method method;
         Object valueOfObject = null;
         try {
-             method = ResultSet.class.getMethod(nameOfMethod,String.class);
-           valueOfObject =  method.invoke(resultSet,nameOfAttributeToGet);
-        }catch(NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
-            logger.error(e.getMessage());
+            method = CachedRowSet.class.getMethod(nameOfMethod, String.class);
+            valueOfObject = method.invoke(resultSet, nameOfAttributeToGet);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            logger.error(e, e.getCause());
         }
         return valueOfObject;
     }
 
-
-    private void instantiateObject(){
-        try{
-            objectToBuildFromDB = classType.newInstance();
-        }catch (Exception e){
-            logger.error(e.getMessage());
-            //todo add logger
+    private Collection<Object> setToCollection(Object fieldValue) {
+        Field field = null;
+        Collection collectionInManyToOne = null;
+        for (Field personField : fieldValue.getClass().getDeclaredFields()) {
+            if (personField.isAnnotationPresent(OneToMany.class))
+                field = personField;
         }
+        try {
+            Method method = field.getType().getMethod("add", Object.class);
+            field.setAccessible(true);
+            collectionInManyToOne = (Collection<Object>) field.get(fieldValue);
+            method.invoke(collectionInManyToOne, classType.cast(objectToBuildFromDB));
+        } catch (Exception e) {
+            logger.error(e);
+        }
+        return collectionInManyToOne;
+    }
+
+
+    public void removeAllDuplicates(List<Collection<Object>> toRemoveDublicates) {
+
+        for (Collection<Object> collection : toRemoveDublicates) {
+            removeDuplicateInCollection(collection);
+        }
+    }
+
+    private void removeDuplicateInCollection(Collection<Object> collection) {
+        Object objectToRemove = null;
+        for (Object element : collection) {
+            try {
+                if (determinePrimaryKeyValue(element).equals(determinePrimaryKeyValue(this.objectToBuildFromDB)) && this.objectToBuildFromDB != element) {
+                    objectToRemove = element; }
+            } catch (IllegalAccessException e) {
+                logger.error(e);
+            }
+        }
+        collection.remove(objectToRemove);
+    }
+
+    private Object determinePrimaryKeyValue(Object objectInCollection) throws IllegalAccessException {
+        Field[] fields = objectInCollection.getClass().getDeclaredFields();
+        for (Field elOfFields : fields) {
+            if (AnnotationUtils.isPrimaryKeyPresent(elOfFields)) {
+                elOfFields.setAccessible(true);
+                return elOfFields.get(objectInCollection);
+            }
+        }
+        return null;
     }
 }

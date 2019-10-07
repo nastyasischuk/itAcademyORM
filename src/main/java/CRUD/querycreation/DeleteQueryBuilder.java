@@ -1,23 +1,22 @@
 package CRUD.querycreation;
 
-import CRUD.rowhandler.Row;
+
 import CRUD.rowhandler.RowToDB;
+import customQuery.MarkingChars;
 import tablecreation.SQLStatements;
 
 public class DeleteQueryBuilder extends QueryBuilder {
-    private RowToDB row;
 
-    public DeleteQueryBuilder(RowToDB row) {
+    DeleteQueryBuilder(RowToDB row) {
         super(row);
     }
 
     @Override
     public String buildQuery() {
-        StringBuilder request = new StringBuilder();
-        request.append(SQLStatements.DELETE.getValue()).append(SQLStatements.FROM.getValue())
-                .append(row.getTableName()).append(SQLStatements.WHERE.getValue());
-        row.getMap().forEach((k, v) -> request.append(k + " " + v));
-        request.append(';');
-        return request.toString();
+        StringBuilder query = new StringBuilder();
+        query.append(SQLStatements.DELETE.getValue()).append(SQLStatements.FROM.getValue()).append(row.getTableName())
+                .append(SQLStatements.WHERE.getValue()).append(row.getIdName()).append(" = ").append(row.getIdValue());
+        query.append(MarkingChars.semicolon);
+        return query.toString();
     }
 }

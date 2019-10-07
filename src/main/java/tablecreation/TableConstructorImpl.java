@@ -23,7 +23,7 @@ public class TableConstructorImpl implements TableConstructor {
     }
 
     @Override
-    public Table buildTable() throws NoPrimaryKeyException,SeveralPrimaryKeysException{
+    public Table buildTable() throws NoPrimaryKeyException, SeveralPrimaryKeysException {
         table.setColumns(getColumns());
         addCheckConstraintIfExists();
         return table;
@@ -43,39 +43,36 @@ public class TableConstructorImpl implements TableConstructor {
         }
     }
 
-    private List<Column> getColumns() throws NoPrimaryKeyException,SeveralPrimaryKeysException{
+    private List<Column> getColumns() throws NoPrimaryKeyException, SeveralPrimaryKeysException {
         Field[] classFields = toBuildClass.getDeclaredFields();
         List<Column> columns = new ArrayList<>();
-        for (int i = 0; i < classFields.length; i++) {
-            //todo check if column
-            if (!classFields[i].isAnnotationPresent(annotations.Column.class) &&
-                    !classFields[i].isAnnotationPresent(annotations.ForeignKey.class) &&
-                    !classFields[i].isAnnotationPresent(MapsId.class) &&
-                    !classFields[i].isAnnotationPresent(AssociatedTable.class))
-                continue; //todo wtf? why?
+        for (Field classField : classFields) {
+            if (!classField.isAnnotationPresent(annotations.Column.class) &&
+                    !classField.isAnnotationPresent(annotations.ForeignKey.class) &&
+                    !classField.isAnnotationPresent(MapsId.class) &&
+                    !classField.isAnnotationPresent(AssociatedTable.class))
+                continue;
 
             Column builtColumn;
             try {
-                builtColumn = new ColumnConstructor(classFields[i]).buildColumn();
+                builtColumn = new ColumnConstructor(classField).buildColumn();
             } catch (WrongSQLType e) {
                 logger.error(e.getMessage());
                 continue;
             }
             columns.add(builtColumn);
             if (builtColumn.isForeignKey()) {
-                table.addForeignKey(formFK(classFields[i]));
+                table.addForeignKey(formFK(classField));
             }
             if (builtColumn.isPrimaryKey()) {
                 checkIfPrimaryKeyIsNotOne();
                 table.setPrimaryKey(formPK(builtColumn));
             }
             if (builtColumn.isManyToMany()) {
-                ManyToMany mtm = formManyToMany(classFields[i]);
-                logger.debug("Added mtm " + mtm.toString());
-                table.addManyToManyAssociation(mtm);
+                table.addManyToManyAssociation(formManyToMany(classField));
             }
-            if (classFields[i].isAnnotationPresent(Index.class)) {
-                tablecreation.Index indexToTable = generateIndex(classFields[i]);
+            if (classField.isAnnotationPresent(Index.class)) {
+                tablecreation.Index indexToTable = generateIndex(classField);
                 indexToTable.addColumns(builtColumn);
             }
         }
@@ -88,9 +85,8 @@ public class TableConstructorImpl implements TableConstructor {
         if (table.getPrimaryKey() != null) {
             primaryKey = table.getPrimaryKey();
         } else {
-            primaryKey = new PrimaryKey();
+            primaryKey = new PrimaryKey(column);
         }
-        primaryKey.addPrimaryKey(column);
         return primaryKey;
     }
 
@@ -103,7 +99,8 @@ public class TableConstructorImpl implements TableConstructor {
     }
 
     private tablecreation.Index generateIndex(Field field) {
-        tablecreation.Index indexTOCreate = new tablecreation.Index(field.getAnnotation(Index.class).name(), field.getAnnotation(Index.class).unique());
+        tablecreation.Index indexTOCreate = new tablecreation.Index(
+                field.getAnnotation(Index.class).name(), field.getAnnotation(Index.class).unique());
         if (table.getIndexes().contains(indexTOCreate)) {
             indexTOCreate = table.getIndexes().get(table.getIndexes().indexOf(indexTOCreate));
         } else {
@@ -116,8 +113,9 @@ public class TableConstructorImpl implements TableConstructor {
         if (table.getPrimaryKey() == null)
             throw new NoPrimaryKeyException();
     }
-    private void checkIfPrimaryKeyIsNotOne()throws SeveralPrimaryKeysException{
-        if(table.getPrimaryKey()!=null){
+
+    private void checkIfPrimaryKeyIsNotOne() throws SeveralPrimaryKeysException {
+        if (table.getPrimaryKey() != null) {
             throw new SeveralPrimaryKeysException();
         }
     }

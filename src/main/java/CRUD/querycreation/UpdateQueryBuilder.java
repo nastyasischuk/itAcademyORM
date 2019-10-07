@@ -1,16 +1,16 @@
 package CRUD.querycreation;
 
+
 import CRUD.rowhandler.RowToDB;
 
+import customQuery.MarkingChars;
 import tablecreation.SQLStatements;
 
 import java.util.Iterator;
 import java.util.Map;
 
 public class UpdateQueryBuilder extends QueryBuilder {
-    private RowToDB row;
-
-    public UpdateQueryBuilder(RowToDB row) {
+    UpdateQueryBuilder(RowToDB row) {
         super(row);
     }
 
@@ -21,23 +21,23 @@ public class UpdateQueryBuilder extends QueryBuilder {
         Iterator columnNamesIterator = row.getMap().keySet().iterator();
         String lastColumnNameIterator = null;
 
-        request.append(SQLStatements.UPDATE.getValue()).append(" ").append(row.getTableName())
-                .append(SQLStatements.SET).append(columnNamesAndColumnValues);
+        request.append(SQLStatements.UPDATE.getValue()).append(MarkingChars.space).append(row.getTableName())
+                .append(SQLStatements.SET.getValue());
 
         while (columnNamesIterator.hasNext()) {
             lastColumnNameIterator = String.valueOf(columnNamesIterator.next());
-
         }
 
         for (Map.Entry<String, String> pair : row.getMap().entrySet()) {
-            columnNamesAndColumnValues.append(pair.getKey()).append("=").append("\'")
-                    .append(pair.getValue()).append("\'");
+            columnNamesAndColumnValues.append(pair.getKey()).append(MarkingChars.equally).append(MarkingChars.space)
+                    .append(MarkingChars.quote).append(pair.getValue()).append(MarkingChars.quote);
             if (!pair.getKey().equals(lastColumnNameIterator)) {
-                columnNamesAndColumnValues.append(", ");
+                columnNamesAndColumnValues.append(MarkingChars.comma);
             }
-            request.append(SQLStatements.WHERE.getValue()).append(row.getIdName()).append("=").append(row.getIdValue()).append(';');
-            return request.toString();
         }
+        request.append(columnNamesAndColumnValues);
+        request.append(SQLStatements.WHERE.getValue()).append(row.getIdName()).append(MarkingChars.equally)
+                .append(row.getIdValue()).append(MarkingChars.semicolon);
 
         return request.toString();
     }

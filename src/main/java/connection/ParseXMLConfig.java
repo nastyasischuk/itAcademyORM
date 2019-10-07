@@ -24,17 +24,13 @@ import java.util.Set;
 
 public class ParseXMLConfig {
     private static Logger logger = Logger.getLogger(ParseXMLConfig.class);
-    private static final String URL = "database.connection.URL";
+    private static final String URL = "database.connection.url";
     private static final String DRIVER_CLASS = "database.connection.driver_class";
-    private static final String USERNAME = "database.connection.USERNAME";
-    private static final String PASSWORD = "database.connection.PASSWORD";
+    private static final String USERNAME = "database.connection.username";
+    private static final String PASSWORD = "database.connection.password";
     private static final String PROPERTY = "property";
     private static final String NAME = "name";
-    private static final String MAPPING = "mapping";
-    private static final String CLASS = "class";
     private static final String PACKAGE = "scan.package";
-
-
     private File xmlConfigFile;
 
     public ParseXMLConfig(String pathToXmlConfigFile) {
@@ -145,3 +141,4 @@ public class ParseXMLConfig {
         return currentClass;
     }
 }
+

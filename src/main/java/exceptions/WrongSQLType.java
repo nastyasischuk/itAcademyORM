@@ -5,10 +5,6 @@ public class WrongSQLType extends Exception {
         super("Cannot build a column of type "+type);
     }
 
-    public WrongSQLType(String message) {
-        super(message);
-    }
-
     @Override
     public String getMessage() {
         return super.getMessage();

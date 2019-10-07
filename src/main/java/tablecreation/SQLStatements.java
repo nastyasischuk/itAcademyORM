@@ -22,13 +22,35 @@ public enum SQLStatements {
     A_INCREMENT(" AUTO_INCREMENT "),
     ADD(" ADD "),
     REFERENCE(" REFERENCES "),
-    UPDATE(" UPDATE "),
-    DELETE(" DELETE "),
-    INSERT(" INSERT "),
-    SELECT(" SELECT "),
-    MIN(" MIN "),
-    MAX(" MAX ");
-
+    UPDATE("UPDATE "),
+    DELETE("DELETE "),
+    INSERT("INSERT "),
+    SELECT("SELECT "),
+    MIN("MIN"),
+    MAX("MAX"),
+    IN(" IN "),
+    NOT(" NOT "),
+    BETWEEN(" BETWEEN "),
+    AND(" AND "),
+    OR(" OR "),
+    ORDER_BY(" ORDER BY "),
+    GROUP_BY(" GROUP BY "),
+    ASC(" ASC"),
+    DESC(" DESC"),
+    IS(" IS "),
+    NULL(" NULL "),
+    HAVING(" HAVING "),
+    COUNT(" COUNT "),
+    AVG("AVG"),
+    SUM("SUM"),
+    ON_DELETE_CASCADE(" ON DELETE CASCADE"),//TODO Create few more requests
+    LEFT(" LEFT "),
+    RIGHT(" RIGHT "),
+    FULL(" FULL "),
+    OUTER( " OUTER "),
+    JOIN(" JOIN "),
+    INNER(" INNER "),
+    LIKE(" LIKE ");
     private String value;
 
     SQLStatements(String value) {

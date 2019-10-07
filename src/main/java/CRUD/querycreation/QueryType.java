@@ -1,11 +1,12 @@
 package CRUD.querycreation;
 
 public enum QueryType {
-
     UPDATE,
     DELETE,
     INSERT,
-    SELECTID
+    SELECT_ID,
+    SELECT_OBJECT,
+    SELECT_MANY_TO_MANY,
 }
 
 
