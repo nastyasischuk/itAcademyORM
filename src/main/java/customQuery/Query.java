@@ -8,12 +8,12 @@ import javax.sql.rowset.CachedRowSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QueryResult<T> {
+public class Query<T> {
     private String queryToGetObject;
     private Class typeOgObjects;
     private DataBase dataBase;
 
-    public QueryResult(QueryBuilder customQuery) {
+    public Query(QueryBuilder customQuery) {
         this.queryToGetObject = customQuery.getQuery();
         this.dataBase = customQuery.getDataBase();
         typeOgObjects = customQuery.getClassType();

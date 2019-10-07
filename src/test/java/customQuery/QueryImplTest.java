@@ -6,10 +6,10 @@ import tablecreation.classesintesting.CatTestManyToMany;
 import tablecreation.classesintesting.PersonWithSimpleProperColumns;
 
 
-public class QueryBuilderImplTest {
+public class QueryImplTest {
     @Test
     public void selectTest() {
-         QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+         QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns";
         String actual = query.select().toString();
         Assert.assertEquals(expected, actual);
@@ -17,7 +17,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void whereTest() {
-         QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+         QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " WHERE ";
         String actual = query.where(query.getLimits()).toString();
         Assert.assertEquals(expected, actual);
@@ -25,7 +25,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void groupByTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " GROUP BY ";
         String actual = query.groupBy(query.getLimits()).toString();
         Assert.assertEquals(expected, actual);
@@ -33,16 +33,16 @@ public class QueryBuilderImplTest {
 
     @Test
     public void orderByTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " ORDER BY ";
-        SubQueryBuilder subQuery = new SubQueryBuilder(PersonWithSimpleProperColumns.class);
+        SubQuery subQuery = new SubQuery(PersonWithSimpleProperColumns.class);
         String actual = query.orderBy(subQuery.builder(), query.getLimits()).toString();
         Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void havingByTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " HAVING  ";
         String actual = query.having(query.getAggregates(), query.getLimits()).toString();
         Assert.assertEquals(expected, actual);
@@ -50,14 +50,14 @@ public class QueryBuilderImplTest {
 
     @Test
     public void objectIsNotNullTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         Assert.assertNotNull(query.getLimits());
         Assert.assertNotNull(query.getAggregates());
     }
 
     @Test
     public void fetchTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = ";";
         String actual = query.fetch();
         Assert.assertEquals(expected, actual);
@@ -65,7 +65,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectWhereEqualTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id='1';";
         String actual = query.select().where(query.getLimits().equals("id", "1")).fetch();
         Assert.assertEquals(expected, actual);
@@ -73,7 +73,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectWhereMoreThenTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id > 1;";
         String actual = query.select().where(query.getLimits().equals("id").more("1")).fetch();
         Assert.assertEquals(expected, actual);
@@ -81,7 +81,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectWhereLessThen() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id < 1;";
         String actual = query.select().where(query.getLimits().equals("id").less("1")).fetch();
         Assert.assertEquals(expected, actual);
@@ -89,7 +89,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectWhereLessOrEqualThenTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id <= 1;";
         String actual = query.select().where(query.getLimits().equals("id").lessOrEqual("1")).fetch();
         Assert.assertEquals(expected, actual);
@@ -97,7 +97,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectWhereMoreOrEqualThen() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id >= 1;";
         String actual = query.select().where(query.getLimits().equals("id").moreOrEqual("1")).fetch();
         Assert.assertEquals(expected, actual);
@@ -105,7 +105,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectWhereNotEqualTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id <> 1;";
         String actual = query.select().where(query.getLimits().equals("id").notEqual("1")).fetch();
         Assert.assertEquals(expected, actual);
@@ -113,7 +113,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectWhereBetweenTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id BETWEEN '1' AND '23';";
         String actual = query.select().where(query.getLimits().equals("id").between("1", "23"))
                 .fetch();
@@ -122,7 +122,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectWhereNotBetweenTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id NOT  BETWEEN '10' AND '20';";
         String actual = query.select().where(query.getLimits().equals("id").not().between("10", "20"))
                 .fetch();
@@ -131,7 +131,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectWhereNotBetweenOrderByTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id NOT  BETWEEN '10' AND '20' ORDER BY p_id;";
         String actual = query.select().where(query.getLimits().equals("id").not().between("10", "20")).orderBy(query.getLimits().builder().equals("id"))
                 .fetch();
@@ -140,7 +140,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectWhereNotBetweenAndNotInTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id NOT  BETWEEN '10' AND '20' AND  NOT p_id IN ('1', '2', '3');";
         String actual = query.select().where(query.getLimits().equals("id").not().between("10", "20")
                 .and().not().equals("id").in("1", "2", "3")).fetch();
@@ -149,12 +149,12 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectWhereLikeTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
-        QueryBuilderImpl query1 = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
-        QueryBuilderImpl query2 = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
-        QueryBuilderImpl query3 = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
-        QueryBuilderImpl query4 = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
-        QueryBuilderImpl query5 = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query1 = new QueryImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query2 = new QueryImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query3 = new QueryImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query4 = new QueryImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query5 = new QueryImpl(PersonWithSimpleProperColumns.class);
 
 
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id LIKE 's%';";
@@ -187,7 +187,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectInTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id IN ('Germany', 'France', 'UK');";
         String actual = query.select().where(query.getLimits().equals("id").in("Germany", "France", "UK")).fetch();
         Assert.assertEquals(expected, actual);
@@ -195,7 +195,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectNotInTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id NOT  IN ('Germany', 'France', 'UK');";
         String actual = query.select().where(query.getLimits().equals("id").not().in("Germany", "France", "UK")).fetch();
         Assert.assertEquals(expected, actual);
@@ -203,8 +203,8 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectInWithCompoundTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
-        SubQueryBuilder subQuery = new SubQueryBuilder(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
+        SubQuery subQuery = new SubQuery(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id IN ( SELECT p_id FROM PersonWithSimpleProperColumns WHERE p_id > 5);";
         String actual = query.select().where(query.getLimits().builder().equals("id")
                 .inSubQuery(subQuery.select("id").where(subQuery.getLimits().equals("id").more("5")))).fetch();
@@ -213,8 +213,8 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectNotInWithCompoundTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
-        SubQueryBuilder subQuery = new SubQueryBuilder(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
+        SubQuery subQuery = new SubQuery(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id NOT  IN ( SELECT p_id FROM PersonWithSimpleProperColumns WHERE p_id > 5);";
         String actual = query.select().where(query.getLimits().builder().equals("id").not()
                 .inSubQuery(subQuery.select("id").where(subQuery.getLimits().equals("id").more("5")))).fetch();
@@ -223,7 +223,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectCountTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT  COUNT (p_id), p_id FROM PersonWithSimpleProperColumns;";
         String actual = query.select(query.getAggregates().builder().count("id", "id")).fetch();
         Assert.assertEquals(expected, actual);
@@ -231,7 +231,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectCountGroupByTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT  COUNT (p_id), p_id FROM PersonWithSimpleProperColumns GROUP BY p_id;";
         String actual = query.select(query.getAggregates().builder().count("id", "id"))
                 .groupBy(query.getLimits().equals("id")).fetch();
@@ -240,8 +240,8 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectCountGroupByOrderByTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
-        SubQueryBuilder subQuery = new SubQueryBuilder(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
+        SubQuery subQuery = new SubQuery(PersonWithSimpleProperColumns.class);
         String expected = " SELECT  COUNT (p_id), p_id FROM PersonWithSimpleProperColumns GROUP BY p_id ORDER BY  COUNT (p_id) DESC ;";
         String actual = query.select(query.getAggregates().builder().count("id", "id"))
                 .groupBy(query.getLimits().equals("id")).orderBy(query.getAggregates().builder().count("id"), subQuery.desc()).fetch();
@@ -250,8 +250,8 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectCountGroupByHavingOrderByTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
-        SubQueryBuilder subQuery = new SubQueryBuilder(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
+        SubQuery subQuery = new SubQuery(PersonWithSimpleProperColumns.class);
         String expected = " SELECT  COUNT (p_id), p_id FROM PersonWithSimpleProperColumns GROUP BY p_id HAVING  COUNT (p_id)  > 5 ORDER BY  COUNT (p_id) DESC ;";
         String actual = query.select(query.getAggregates().builder().count("id", "id"))
                 .groupBy(query.getLimits().equals("id")).having(query.getAggregates().builder().count("id"), query.getLimits().builder()
@@ -261,7 +261,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectMinTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT MIN(p_id) FROM PersonWithSimpleProperColumns;";
         String actual = query.select(query.getAggregates().builder().selectMin("id")).fetch();
         Assert.assertEquals(expected, actual);
@@ -269,7 +269,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectMaxTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT MAX(p_id) FROM PersonWithSimpleProperColumns;";
         String actual = query.select(query.getAggregates().builder().selectMax("id")).fetch();
         Assert.assertEquals(expected, actual);
@@ -277,7 +277,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectAvgTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT  AVG (p_id) FROM PersonWithSimpleProperColumns;";
         String actual = query.select(query.getAggregates().builder().avg("id")).fetch();
         Assert.assertEquals(expected, actual);
@@ -285,7 +285,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectSumTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT  SUM (p_id) FROM PersonWithSimpleProperColumns;";
         String actual = query.select(query.getAggregates().builder().sum("id")).fetch();
         Assert.assertEquals(expected, actual);
@@ -293,7 +293,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectSumIsNullTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT  SUM (p_id) IS  NULL  FROM PersonWithSimpleProperColumns;";
         String actual = query.selectMath(query.getAggregates().builder().sum("id"), query.getLimits().builder().is().nuLL()).fetch();
         Assert.assertEquals(expected, actual);
@@ -301,7 +301,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectSumIsNullOrNotNullTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT  SUM (p_id) IS  NULL  OR  NOT  NULL  FROM PersonWithSimpleProperColumns;";
         String actual = query.selectMath(query.getAggregates().builder().sum("id"), query.getLimits()
                 .builder().is().nuLL().or().not().nuLL()).fetch();
@@ -310,7 +310,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectWhereNotAndNotTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE  NOT p_id='1' AND  NOT p_id='2';";
         String actual = query.select().where(query.getLimits().builder().not().equals("id", "1")
                 .and().not().equals("id", "2")).fetch();
@@ -319,7 +319,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectOrderByAscAndDescTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns ORDER BY p_id ASC, p_id DESC; ";
         String actual = query.select().orderBy(query.ascAndDesc("id", "id")).fetch();
         Assert.assertEquals(expected, actual);
@@ -327,7 +327,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectOrderByAscTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns ORDER BY p_id ASC; ";
         String actual = query.select().orderBy(query.asc("id")).fetch();
         Assert.assertEquals(expected, actual);
@@ -335,7 +335,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectOrderByDescTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT * FROM PersonWithSimpleProperColumns ORDER BY p_id DESC; ";
         String actual = query.select().orderBy(query.desc("id")).fetch();
         Assert.assertEquals(expected, actual);
@@ -343,8 +343,8 @@ public class QueryBuilderImplTest {
 
     @Test
     public void selectCountGroupByOrderByAscTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
-        SubQueryBuilder subQuery = new SubQueryBuilder(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
+        SubQuery subQuery = new SubQuery(PersonWithSimpleProperColumns.class);
         String expected = " SELECT  COUNT (p_id), p_id FROM PersonWithSimpleProperColumns GROUP BY p_id ORDER BY  COUNT (p_id) ASC ;";
         String actual = query.select(query.getAggregates().builder().count("id", "id"))
                 .groupBy(query.getLimits().equals("id")).orderBy(query.getAggregates().builder().count("id"), subQuery.asc()).fetch();
@@ -353,8 +353,8 @@ public class QueryBuilderImplTest {
     //todo fix
     //@Test
   //  public void test() {
-  //      QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
-  //      SubQueryBuilder subQuery = new SubQueryBuilder(PersonWithSimpleProperColumns.class);
+  //      QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
+  //      SubQuery subQuery = new SubQuery(PersonWithSimpleProperColumns.class);
   //      String expected = " SELECT PersonWithSimpleProperColumns.p_id, PersonWithSimpleProperColumns.name, PersonWithSimpleProperColumns.age, " +
   //              "PersonWithSimpleProperColumns.bd FROM PersonWithSimpleProperColumns INNER  JOIN CatTestManyToMany " +
   //              "ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.name WHERE p_id > 5 IN ( SELECT p_id FROM PersonWithSimpleProperColumns WHERE p_id);";
@@ -366,7 +366,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void innerJoinTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT PersonWithSimpleProperColumns.p_id, PersonWithSimpleProperColumns.name, PersonWithSimpleProperColumns.age," +
                 " PersonWithSimpleProperColumns.bd FROM PersonWithSimpleProperColumns INNER  JOIN CatTestManyToMany " +
                 "ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.name;";
@@ -378,7 +378,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void leftJoinTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT PersonWithSimpleProperColumns.p_id, PersonWithSimpleProperColumns.name, PersonWithSimpleProperColumns.age," +
                 " PersonWithSimpleProperColumns.bd FROM PersonWithSimpleProperColumns LEFT  JOIN CatTestManyToMany " +
                 "ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.name;";
@@ -390,7 +390,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void rightJoinTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT PersonWithSimpleProperColumns.p_id, PersonWithSimpleProperColumns.name, PersonWithSimpleProperColumns.age," +
                 " PersonWithSimpleProperColumns.bd FROM PersonWithSimpleProperColumns RIGHT  JOIN CatTestManyToMany " +
                 "ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.name;";
@@ -402,7 +402,7 @@ public class QueryBuilderImplTest {
 
     @Test
     public void fullOuterJoinTest() {
-        QueryBuilderImpl query = new QueryBuilderImpl(PersonWithSimpleProperColumns.class);
+        QueryImpl query = new QueryImpl(PersonWithSimpleProperColumns.class);
         String expected = " SELECT PersonWithSimpleProperColumns.p_id, PersonWithSimpleProperColumns.name, PersonWithSimpleProperColumns.age," +
                 " PersonWithSimpleProperColumns.bd FROM PersonWithSimpleProperColumns FULL  OUTER  JOIN CatTestManyToMany " +
                 "ON PersonWithSimpleProperColumns.p_id=CatTestManyToMany.name;";

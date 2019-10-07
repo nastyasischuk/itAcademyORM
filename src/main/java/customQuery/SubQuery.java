@@ -1,11 +1,12 @@
 package customQuery;
 
+import annotations.AnnotationUtils;
 import tablecreation.SQLStatements;
 
 
-public class SubQueryBuilder extends QueryBuilderImpl {
+public class SubQuery extends QueryImpl {
 
-    public SubQueryBuilder(Class<?> classType) {
+    public SubQuery(Class<?> classType) {
         super(classType);
     }
 
@@ -17,13 +18,13 @@ public class SubQueryBuilder extends QueryBuilderImpl {
         this.query = query;
     }
 
-    public SubQueryBuilder select(String columnName) {
+    public SubQuery select(String columnName) {
         query.append(SQLStatements.SELECT.getValue()).append(getLimits().getColumnName(columnName)).append(SQLStatements.FROM.getValue())
-                .append(getClassType().getSimpleName());
+                .append(AnnotationUtils.getTableName(getClassType()));
         return this;
     }
 
-    public SubQueryBuilder builder() {
-        return new SubQueryBuilder(getClassType());
+    public SubQuery builder() {
+        return new SubQuery(getClassType());
     }
 }
