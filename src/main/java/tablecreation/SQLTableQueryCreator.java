@@ -1,14 +1,11 @@
 package tablecreation;
 
-
-
-
 import customQuery.MarkingChars;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLTableQueryCreator {
+public class  SQLTableQueryCreator {
     private Table table;
 
     public SQLTableQueryCreator(Table table) {
@@ -108,6 +105,7 @@ public class SQLTableQueryCreator {
         List<String> queryMTMList = new ArrayList<>();
         StringBuilder queryAlterMTM = new StringBuilder();
         StringBuilder queryCreateTableMTMT = new StringBuilder();
+        StringBuilder querySecondCreateTableMTMT = new StringBuilder();
         for (ManyToMany mtm : table.getMtmAssociations()) {
             queryCreateTableMTMT.append(SQLStatements.CREATE_TABLE.getValue()).append(mtm.getAssociatedTableName())
                     .append(MarkingChars.openBracket).append(mtm.getForeignKeyToOriginalTableName())
@@ -129,7 +127,6 @@ public class SQLTableQueryCreator {
                     .append(SQLStatements.ON_DELETE_CASCADE.getValue()).append(MarkingChars.semicolon);
             queryMTMList.add(queryAlterMTM.toString());
         }
-
         for (ManyToMany mtm : table.getMtmAssociations()) {
             querySecondCreateTableMTMT.append(SQLStatements.ALTER_TABLE.getValue()).append(mtm.getAssociatedTableName()).append(MarkingChars.space)
                     .append(SQLStatements.ADD).append(SQLStatements.FK.getValue())

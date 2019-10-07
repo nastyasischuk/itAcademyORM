@@ -11,7 +11,7 @@ public class TestManyToManyFetchingFromDbLazyInitialization {
     static DataBase db = new DataBaseImplementation("D:\\my files\\softserve\\itAcademyORM\\src\\main\\resources\\config.xml",false);
     public static void main(String[] args) {
         db.openConnection();
-        //testcatspeople();
+        testcatspeople();
         //testSeveralManyToManyInOneClass();
     }
     public static void  testcatspeople(){
