@@ -45,8 +45,8 @@ public class Limits {
     }
 
 
-    public Limits equals(String name, QueryImpl queryImpl) {
-        query.append(getColumnName(name)).append(MarkingChars.equally).append(MarkingChars.openBracket).append(queryImpl)
+    public Limits equals(String name, QueryBuilderImpl queryBuilderImpl) {
+        query.append(getColumnName(name)).append(MarkingChars.equally).append(MarkingChars.openBracket).append(queryBuilderImpl)
                 .append(MarkingChars.closedBracket);
         return this;
     }
@@ -67,7 +67,7 @@ public class Limits {
         return this;
     }
 
-    public Limits inSubQuery(QueryImpl subQuery) {
+    public Limits inSubQuery(QueryBuilderImpl subQuery) {
         query.append(SQLStatements.IN.getValue()).append(MarkingChars.openBracket)
                 .append(subQuery).append(MarkingChars.closedBracket);
         return this;
@@ -240,7 +240,7 @@ public class Limits {
 
     protected String getColumnName(String name, Class classType) {
         StringBuilder lane = new StringBuilder();
-        QueryImpl queryImpl = new QueryImpl(classType);
+        QueryBuilderImpl queryBuilderImpl = new QueryBuilderImpl(classType);
         tablecreation.Column column = null;
         Field[] fields = classType.getDeclaredFields();
         for (Field field : fields) {

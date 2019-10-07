@@ -1,6 +1,7 @@
 package connection;
 
 import CRUD.CRUD;
+import customQuery.QueryBuilder;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -17,5 +18,6 @@ public interface DataBase {
     CRUD getCrud();
 
     void closeStatement(Statement statement);
+    QueryBuilder getQueryBuilder(Class classType);
 
 }

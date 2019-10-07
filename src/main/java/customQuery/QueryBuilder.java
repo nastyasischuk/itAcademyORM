@@ -4,13 +4,13 @@ import connection.DataBase;
 
 public interface QueryBuilder {
 
-    QueryImpl select();
+    QueryBuilderImpl select();
 
-    QueryImpl where(Limits limits);
+    QueryBuilderImpl where(Limits limits);
 
-    QueryImpl groupBy(Limits limits);
+    QueryBuilderImpl groupBy(Limits limits);
 
-    QueryImpl orderBy(Limits limits);
+    QueryBuilderImpl orderBy(Limits limits);
 
     Limits getLimits();
 
