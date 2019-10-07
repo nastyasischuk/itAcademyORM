@@ -1,6 +1,7 @@
 package CRUD.buildingObject;
-
+import annotations.PrimaryKey;
 import annotations.AnnotationUtils;
+
 import org.apache.log4j.Logger;
 import tablecreation.DeterminatorOfType;
 
@@ -11,14 +12,15 @@ import java.lang.reflect.Method;
 
 public class ObjectSimpleBuilding {
     public static Logger logger = Logger.getLogger(ObjectSimpleBuilding.class);
-    private static final String METHOD_NAME_FOR_INTEGER = "getInt";
-    private static final String START_OF_METHOD_RESULTSET_TO_GET_VALUE = "get";
 
-    Object objectToBuildFromDB;
-    CachedRowSet resultSet;
-    Class<?> classType;
+    public static final String METHOD_NAME_FOR_INTEGER = "getInt";
+    public static final String START_OF_METHOD_RESULTSET_TO_GET_VALUE = "get";
 
-    ObjectSimpleBuilding() {
+    protected Object objectToBuildFromDB;
+    protected CachedRowSet resultSet;
+    protected Class<?> classType;
+
+    public ObjectSimpleBuilding() {
     }
 
     public ObjectSimpleBuilding(CachedRowSet resultSet, Class<?> classType) {
@@ -65,7 +67,7 @@ public class ObjectSimpleBuilding {
         } catch (NoSuchMethodException | IllegalAccessException e) {
             logger.error(e, e.getCause());
         } catch (InvocationTargetException e) {
-            logger.error(nameOfMethod);
+            logger.error(e,e.getCause());
         }
         return valueOfObject;
     }

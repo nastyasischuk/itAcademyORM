@@ -1,22 +1,15 @@
 package CRUD.buildingObject;
 
 import CRUD.rowhandler.RowFromDB;
-import annotations.ManyToMany;
-import annotations.ManyToOne;
 import connection.DataBase;
-import connection.DataBaseImplementation;
+import org.apache.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 public class ObjectBuilderWithLinks extends ObjectBuilder {
+    private static Logger logger = Logger.getLogger(ObjectBuilderWithLinks.class);
     private String mapping;
     private Object objectToMappedBy;
 
@@ -32,12 +25,9 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
             Field field = classType.getDeclaredField(entry.getKey());
             field.setAccessible(true);
             if (entry.getKey().equals(mapping)) {
-                //todo extract private method with speaking name
-                if (field.getType() == objectToMappedBy.getClass())//if its oneToOne ManyTOne, for other associations skips because of recursion
-                    field.set(objectToBuildFromDB, objectToMappedBy);
+                linkObjectsForManyToOneOneToOne(field);
                 continue;
             }
-
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(entry.getValue());
             Object fieldValue = null;
             try {
@@ -47,9 +37,14 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
                     fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, field.getName());
                 }
             } catch (Exception e) {
-                logger.error(e.getMessage());
+                logger.error(e.getMessage(),e.getCause());
             }
             field.set(objectToBuildFromDB, fieldValue);
         }
     }
+    private void linkObjectsForManyToOneOneToOne(Field field) throws IllegalAccessException {
+        if (field.getType() == objectToMappedBy.getClass())
+            field.set(objectToBuildFromDB, objectToMappedBy);
+    }
+
 }

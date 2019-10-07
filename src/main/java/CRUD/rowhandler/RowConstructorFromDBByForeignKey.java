@@ -5,11 +5,9 @@ import annotations.*;
 import java.lang.reflect.Field;
 
 public class RowConstructorFromDBByForeignKey extends RowConstructorFromDB {
-    private Class typeUsesClassAsForeignkey;//todo ?
 
-    public RowConstructorFromDBByForeignKey(Class typeOfObject, Object id, Class typeUsesClassAsForeignkey) {
+    public RowConstructorFromDBByForeignKey(Class typeOfObject, Object id) {
         super(typeOfObject, id);
-        this.typeUsesClassAsForeignkey = typeUsesClassAsForeignkey;
     }
 
     @Override

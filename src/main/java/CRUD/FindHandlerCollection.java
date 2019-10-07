@@ -1,17 +1,18 @@
 package CRUD;
 
-import CRUD.buildingObject.ObjectBuilder;
 import CRUD.buildingObject.ObjectBuilderWithLinks;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.RowConstructorFromDBByForeignKey;
 import connection.DataBase;
+import org.apache.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.util.Collection;
 import java.util.HashSet;
 
 public class FindHandlerCollection extends FindHandler {
+    protected static org.apache.log4j.Logger logger = Logger.getLogger(FindHandlerCollection.class);
     private Object ownerOfCollection;
     private String nameInObjectOwner;
 
@@ -23,7 +24,7 @@ public class FindHandlerCollection extends FindHandler {
 
     @Override
     public String buildQuery() {
-        row = new RowConstructorFromDBByForeignKey(objectType, idOfClassToFind, ownerOfCollection.getClass()).buildRow();
+        row = new RowConstructorFromDBByForeignKey(objectType, idOfClassToFind).buildRow();
         String queryFind = new QueryBuilderFactory().createQueryBuilderFromDB(row, QueryType.SELECT_OBJECT).buildQuery();
         return queryFind;
     }

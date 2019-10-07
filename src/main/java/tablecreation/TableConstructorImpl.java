@@ -87,7 +87,6 @@ public class TableConstructorImpl implements TableConstructor {
         } else {
             primaryKey = new PrimaryKey(column);
         }
-//        primaryKey.addPrimaryKey(column);
         return primaryKey;
     }
 

@@ -10,8 +10,4 @@ public class PrimaryKey {
     Column getColumnPrimaryKey() {
         return primaryKey;
     }
-
-    public void setPrimaryKey(Column primaryKey) {
-        this.primaryKey = primaryKey;
-    }
 }

@@ -5,9 +5,6 @@ public class SeveralPrimaryKeysException extends Exception{
         super("Several primary keys");
     }
 
-    public SeveralPrimaryKeysException(String message) {
-        super(message);
-    }
 
     @Override
     public String getMessage() {

@@ -3,8 +3,6 @@ package CRUD.rowhandler;
 import org.junit.Test;
 import tablecreation.classesintesting.PersonOneFieldWithoutColumnAnnotation;
 
-import java.util.Collection;
-
 import static org.junit.Assert.*;
 
 public class RowConstructorFromDBTest {

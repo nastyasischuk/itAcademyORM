@@ -1,11 +1,16 @@
 package connection;
 
 import CRUD.CRUDImpl;
+import customQuery.QueryBuilder;
+import customQuery.QueryBuilderImpl;
+import CRUD.aspects.ManyToManyAspect;
+
 import exceptions.DatabaseException;
 import exceptions.NoPrimaryKeyException;
 import exceptions.OpenConnectionException;
 import exceptions.SeveralPrimaryKeysException;
 import org.apache.log4j.Logger;
+import tablecreation.ManyToMany;
 import tablecreation.SQLTableQueryCreator;
 import tablecreation.TableConstructorImpl;
 import transaction.TransactionsManager;
@@ -21,7 +26,6 @@ public class DataBaseImplementation implements DataBase {
     private static Logger logger = Logger.getLogger(DataBaseImplementation.class);
     private static TransactionsManager transactionsManager = null;
     private CRUDImpl crud;
-
     private ParseXMLConfig parseXMLConfig;
     private static final String DEFAULT = "default_db";
     private final String name;
@@ -31,6 +35,7 @@ public class DataBaseImplementation implements DataBase {
         parseXMLConfig = new ParseXMLConfig(pathToXml);
         crud = new CRUDImpl(this);
         this.name = DEFAULT;
+        createAspect();
         createAllTables();
     }
 
@@ -38,6 +43,7 @@ public class DataBaseImplementation implements DataBase {
         parseXMLConfig = new ParseXMLConfig(pathToXml);
         crud = new CRUDImpl(this);
         this.name = DEFAULT;
+        createAspect();
         if (createTables)
             createAllTables();
     }
@@ -46,6 +52,7 @@ public class DataBaseImplementation implements DataBase {
         parseXMLConfig = new ParseXMLConfig(pathToXml);
         crud = new CRUDImpl(this);
         this.name = name;
+        createAspect();
         createAllTables();
     }
 
@@ -53,10 +60,13 @@ public class DataBaseImplementation implements DataBase {
         parseXMLConfig = new ParseXMLConfig(pathToXml);
         crud = new CRUDImpl(this);
         this.name = name;
+        createAspect();
         if (createTables)
             createAllTables();
     }
-
+    private void createAspect(){
+        ManyToManyAspect.setDb(this);
+    }
     public void openConnection() {
         this.checkExistingConnection(this.name);
 
@@ -67,7 +77,7 @@ public class DataBaseImplementation implements DataBase {
             logger.debug("Connection has opened " + connection);
             OpenedConnection.addConnection(this.name, connection);
         } catch (SQLException | ClassNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.error(e,e.getCause());
             throw new OpenConnectionException(e.getMessage());
         }
     }
@@ -118,7 +128,6 @@ public class DataBaseImplementation implements DataBase {
             }
             SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
-            //String createPKQuery = sqlTableQueryCreator.createPKQuery(); //todo remove this
 
             List<String> queriesFK = sqlTableQueryCreator.createFKQuery();
             if (queriesFK != null && !queriesFK.isEmpty())
@@ -207,10 +216,15 @@ public class DataBaseImplementation implements DataBase {
             logger.error(e.getMessage());
         }
     }
-
+    @Override
     public TransactionsManager getTransactionManager() {
         if (transactionsManager == null)
             transactionsManager = new TransactionsManager(this.getConnection());
         return transactionsManager;
+    }
+
+    @Override
+    public QueryBuilder getQueryBuilder(Class<?> classType) {
+        return new QueryBuilderImpl(classType,this);
     }
 }

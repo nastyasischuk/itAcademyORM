@@ -11,13 +11,13 @@ public class PersonTestManyToMany {
     private int id;
     @Column
     private String name;
-    @ManyToMany(mappedBy = "person")
+    @ManyToMany()
             @AssociatedTable(associatedTableName = "cat_person",
             joinColumns =@ForeignKey(name = "p_id"),
             inverseJoinColumns = @ForeignKey(name = "c_id"))
     Collection<CatTestManyToMany> cats;
 
-    public PersonTestManyToMany(int id, String name, int age) {
+    public PersonTestManyToMany(int id, String name) {
         this.id = id;
         this.name = name;
     }
