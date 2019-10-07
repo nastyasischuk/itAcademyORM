@@ -87,7 +87,6 @@ public class DataBaseImplementation implements DataBase {
             throw new OpenConnectionException("Connection " + name + "is already existing.");
         }
     }
-
     public Connection getConnection() {
         Connection connection = OpenedConnection.getConnection(this.name);
         if (connection == null) {
