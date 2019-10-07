@@ -23,7 +23,7 @@ public class RowFromDBManyToManyConstructorTest {
         RowFromDBManyToMany row = new RowFromDBManyToManyConstructor(CatTestManyToMany.class,1,AnnotationUtils.getAssociatedTable(person.getClass().getDeclaredField("cats"))).buildRow();
 
         assertEquals("1",row.getIdValue());
-        assertEquals("id",row.getIdName());//id name from second table
+        assertEquals("id",row.getIdName());
         assertEquals("p_id",row.getJoinCoulmn());
         assertEquals("c_id",row.getInverseColumn());
     }

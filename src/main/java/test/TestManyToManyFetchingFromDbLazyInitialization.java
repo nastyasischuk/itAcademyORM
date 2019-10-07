@@ -12,6 +12,7 @@ public class TestManyToManyFetchingFromDbLazyInitialization {
     public static void main(String[] args) {
         db.openConnection();
         testcatspeople();
+
         testSeveralManyToManyInOneClass();
     }
     public static void  testcatspeople(){

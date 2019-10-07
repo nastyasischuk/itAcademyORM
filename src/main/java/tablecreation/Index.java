@@ -11,6 +11,7 @@ public class Index {
 
     public Index(String name,boolean unique){
         this.name = name;
+        this.unique = unique;
         columnsInIndex = new ArrayList<>();
     }
 
