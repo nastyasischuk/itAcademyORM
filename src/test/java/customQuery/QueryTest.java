@@ -4,7 +4,9 @@ import annotations.AnnotationUtils;
 import connection.DataBase;
 import connection.DataBaseImplementation;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import tablecreation.classesintesting.PersonOneToMany;
 
@@ -13,37 +15,28 @@ import java.util.List;
 
 public class QueryTest {
     private static Logger logger = Logger.getLogger(QueryTest.class);
-    DataBase dataBase ;
-    @Before
-    public void setDataBase() {
+   static  DataBase dataBase ;
+    @BeforeClass
+    public static void setDataBase() {
         dataBase = new DataBaseImplementation("D:\\my files\\softserve\\itAcademyORM\\src\\main\\resources\\config.xml", "catspeople", false);
-        dataBase.openConnection();
+    dataBase.openConnection();
     }
     @Test
     public void getSingleObject() {
         QueryBuilderImpl query = new QueryBuilderImpl(PersonOneToMany.class,dataBase);
-        String actual = query.select().where(query.getLimits().equals("id", "1")).fetch();
-        String expected = " SELECT * FROM PersonWithSimpleProperColumns WHERE p_id=1;";
-        query.setQuery(new StringBuilder("SELECT * FROM person WHERE id=1"));
-        Field[] fields = PersonOneToMany.class.getDeclaredFields();
-        for (Field field : fields) {
-            if (AnnotationUtils.isPrimaryKeyPresent(field)) {
-                logger.info("exists");
-            }
-        }
+        query.select().where(query.getLimits().equals("id", "1")).fetch();
         QueryResult<PersonOneToMany> custQuery = new QueryResult<>(query);
         PersonOneToMany person = custQuery.getSingleObject();
-        System.out.println(person);
+        Assert.assertEquals(1,person.getId());
     }
 
     @Test
     public void getListOfFoundObjects() {
         QueryBuilderImpl query = new QueryBuilderImpl(PersonOneToMany.class,dataBase);
-        String actual = query.select().where(query.getLimits().equals("id", "1")).fetch();
-        query.setQuery(new StringBuilder("SELECT * FROM person"));
+        query.select().fetch();
 
         QueryResult<PersonOneToMany> custQuery = new QueryResult<>(query);
         List<PersonOneToMany> person = custQuery.getListOfFoundObjects();
-        System.out.println(person);
+        Assert.assertEquals(4,person.size());
     }
 }
