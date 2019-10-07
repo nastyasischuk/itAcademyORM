@@ -1,6 +1,7 @@
 package CRUD.buildingObject;
 
 import CRUD.rowhandler.RowFromDB;
+import annotations.AnnotationUtils;
 import connection.DataBase;
 import org.apache.log4j.Logger;
 
@@ -22,9 +23,11 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
     @Override
     public void setResultFromResultSet() throws NoSuchFieldException, IllegalAccessException {
         for (Map.Entry<String, Class> entry : row.getNameAndType().entrySet()) {
-            logger.info(entry.getKey());
-            Field field = classType.getDeclaredField(entry.getKey());
-
+            Field field=null;
+            if(AnnotationUtils.getFieldByColemnName(classType,entry.getKey())!=null){
+                field = classType.getDeclaredField(AnnotationUtils.getFieldByColemnName(classType,entry.getKey()).getName());
+            }else
+                field = classType.getDeclaredField(entry.getKey());
             field.setAccessible(true);
             if (entry.getKey().equals(mapping)) {
                 linkObjectsForManyToOneOneToOne(field);
