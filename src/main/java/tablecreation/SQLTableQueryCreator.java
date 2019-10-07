@@ -118,7 +118,7 @@ public class SQLTableQueryCreator {
                     .append(SQLStatements.NOT_NULL.getValue())
                     .append(MarkingChars.comma).append(SQLStatements.PK.getValue()).append(MarkingChars.openBracket)
                     .append(mtm.getForeignKeyToOriginalTableName()).append(MarkingChars.comma)
-                    .append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.closedBracket).append(MarkingChars.closedBracket);
+                    .append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.closedBracket).append(MarkingChars.closedBracket).append(MarkingChars.semicolon);
             queryMTMList.add(queryCreateTableMTMT.toString());
         }
         for (ManyToMany mtm : table.getMtmAssociations()) {
