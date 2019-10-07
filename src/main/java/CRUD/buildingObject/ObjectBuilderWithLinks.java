@@ -22,7 +22,9 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
     @Override
     public void setResultFromResultSet() throws NoSuchFieldException, IllegalAccessException {
         for (Map.Entry<String, Class> entry : row.getNameAndType().entrySet()) {
+            logger.info(entry.getKey());
             Field field = classType.getDeclaredField(entry.getKey());
+
             field.setAccessible(true);
             if (entry.getKey().equals(mapping)) {
                 linkObjectsForManyToOneOneToOne(field);
@@ -34,7 +36,7 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
                 if (nameOfMethodInResultSetToGetValue == null) {
                     fieldValue = handleCasesWhenTypeIsNotSimple(field, entry.getKey());
                 } else {
-                    fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, field.getName());
+                    fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, entry.getKey());
                 }
             } catch (Exception e) {
                 logger.error(e.getMessage(),e.getCause());

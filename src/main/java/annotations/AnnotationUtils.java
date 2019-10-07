@@ -140,5 +140,16 @@ public class AnnotationUtils {
         }
         return foundAssociatedTable;
     }
+    public static Field getFieldByColemnName(Class classWithFields,String columnName){
+        Field[] fields = classWithFields.getDeclaredFields();
+        for(Field field:fields){
+            if(isColumnPresentAndNotEmpty(field)){
+                logger.info(field.getName());
+                if(field.getAnnotation(Column.class).name().equals(columnName))
+                    return field;
+            }
+        }
+        return null;
+    }
 
 }
