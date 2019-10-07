@@ -5,6 +5,7 @@ import connection.DataBase;
 import connection.DataBaseImplementation;
 import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import tablecreation.TableConstructorImpl;
 import tablecreation.classesintesting.PersonOneToMany;
@@ -19,11 +20,10 @@ import static org.junit.Assert.*;
 
 public class QueryTest {
     private static Logger logger = Logger.getLogger(QueryTest.class);
-    DataBase dataBase ;
-    @Before
-    public void setDataBase() {
+    static DataBase dataBase ;
+    @BeforeClass
+    public static void setDataBase() {
         dataBase = new DataBaseImplementation("D:\\my files\\softserve\\itAcademyORM\\src\\main\\resources\\config.xml", "catspeople", false);
-        dataBase.openConnection();
     }
     @Test
     public void getSingleObject() {
