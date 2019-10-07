@@ -1,29 +1,35 @@
 package CRUD;
 
-import CRUD.requests.DSLImpl.StartClass;
+import fluentquery.Dslmpl.QueryOrderedImpl;
+import fluentquery.Dslmpl.TableForQuery;
+import connection.DataBase;
+import connection.DataBaseImplementation;
+import customQuery.QueryResult;
+import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import tablecreation.classesintesting.Person;
 
-import static CRUD.requests.DSLImpl.StartClass.*;
-import static org.junit.Assert.assertEquals;
+import java.util.List;
 
 public class DSLQueryTest {
+    private static  DataBase dataBase;
+
+    @BeforeClass
+    public static void setDataBase() {
+        dataBase = new DataBaseImplementation("C:\\Users\\DEDUSHKA DEDULYA\\IdeaProjects\\itAcademyORM\\src\\main\\resources\\config.xml", false);
+    }
 
     @Test
     public void queryCreationTest() {
-        String actualQuery = StartClass.select(count(column("col54"))).from(table("Products")).where(skip()
-                .exists(select(avg(column("d")), column("col")).from(table("Orders"))
-                        .where(column("product_id").equal("id")))).groupBy(column("d")).having(column("d").equal(1)).end();
+        TableForQuery person = new TableForQuery(Person.class);
+        dataBase.openConnection();
+        QueryOrderedImpl start = new QueryOrderedImpl(dataBase, Person.class);
+        start.select().from(person.table()).where(person.field("salary").greater(12)).end();
+        QueryResult<Person> custQuery = new QueryResult<>(start);
+        List<Person> personList = custQuery.getListOfFoundObjects();
 
-        String actual2 = StartClass.select(column("col"), column("col2")).from(table("table"))
-                .where(column("column").greaterOrEqual(12).and(column("column2").lessOrEqual(15))
-                        .orNot(column("column3").isNotNull()).or(column("column").between(12, 56))).end();
-
-        String expectedQuery  = "select  count(col54)  from Products where  exists  (select  avg(d) , col from Orders " +
-            "where product_id = id)  group by d  having d = 1;";
-
-        String expected2 = "select col, col2 from table where column >= 12 and column2 <= 15 or not column3 is not null  or column between 12 and 56;";
-
-        assertEquals(actualQuery, expectedQuery);
-        assertEquals(actual2, expected2);
+        dataBase.close();
+        Assert.assertEquals(2, personList.size());
     }
 }

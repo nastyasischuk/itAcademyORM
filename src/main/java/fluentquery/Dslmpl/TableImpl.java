@@ -1,6 +1,6 @@
-package CRUD.requests.DSLImpl;
+package fluentquery.Dslmpl;
 
-import CRUD.requests.DSLInterfaces.*;
+import fluentquery.Dslnterfaces.*;
 
 public class TableImpl implements Table {
     private String name;

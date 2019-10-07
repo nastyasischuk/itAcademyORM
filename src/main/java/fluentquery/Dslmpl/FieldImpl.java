@@ -1,14 +1,14 @@
-package CRUD.requests.DSLImpl;
+package fluentquery.Dslmpl;
 
-import CRUD.requests.DSLInterfaces.*;
+import fluentquery.Dslnterfaces.*;
 
 public class FieldImpl extends SimpleFieldImpl implements Field {
     private StringBuilder queryCondition;
 
-    FieldImpl(String name) {
+    public FieldImpl(String name) {
         super(name);
         queryCondition = new StringBuilder();
-        queryCondition.append(name);
+        queryCondition.append(name); //TODO CHECK THIS LATER
     }
 
     @Override
@@ -38,7 +38,7 @@ public class FieldImpl extends SimpleFieldImpl implements Field {
     @Override
     public Condition in(AfterFromStep selectFrom) {
         queryCondition.append(" in ").append(" ( ").append(selectFrom.toString()).append(" ) ");
-        return new ConditionImpl(queryCondition);
+        return new ConditionImpl(queryCondition); //TODO inner subqueries, think later
     }
 
     @Override
@@ -55,7 +55,10 @@ public class FieldImpl extends SimpleFieldImpl implements Field {
 
     @Override
     public Condition equal(Object value) {
-        queryCondition.append(" = ").append(value.toString());
+        if (value instanceof SimpleField)
+            queryCondition.append(" = ").append(((Field) value).getName());
+        else
+            queryCondition.append(" = ").append(value.toString());
         return new ConditionImpl(queryCondition);
     }
 

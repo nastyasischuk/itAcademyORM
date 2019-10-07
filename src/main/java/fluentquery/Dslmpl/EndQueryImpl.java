@@ -1,11 +1,11 @@
-package CRUD.requests.DSLImpl;
+package fluentquery.Dslmpl;
 
-import CRUD.requests.DSLInterfaces.*;
+import fluentquery.Dslnterfaces.*;
 
 public class EndQueryImpl implements EndQuery {
     private StringBuilder query;
 
-    EndQueryImpl(StringBuilder query) {
+    public EndQueryImpl(StringBuilder query) {
         this.query = query;
     }
 

@@ -1,4 +1,4 @@
-package CRUD.requests.DSLInterfaces;
+package fluentquery.Dslnterfaces;
 
 public interface Condition {
     Condition and(Condition condition);

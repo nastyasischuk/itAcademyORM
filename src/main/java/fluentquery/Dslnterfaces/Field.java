@@ -1,4 +1,4 @@
-package CRUD.requests.DSLInterfaces;
+package fluentquery.Dslnterfaces;
 
 public interface Field extends SimpleField {
     Condition isNull();

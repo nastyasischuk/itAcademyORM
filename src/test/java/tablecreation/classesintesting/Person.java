@@ -39,4 +39,12 @@ public class Person {
     public void setSalary(double salary) {
         this.salary = salary;
     }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id_person=" + id_person +
+                ", salary=" + salary +
+                '}';
+    }
 }

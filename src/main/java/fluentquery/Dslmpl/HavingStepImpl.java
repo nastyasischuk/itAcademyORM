@@ -1,8 +1,9 @@
-package CRUD.requests.DSLImpl;
+package fluentquery.Dslmpl;
 
-import CRUD.requests.DSLInterfaces.*;
+import fluentquery.Dslnterfaces.*;
 
-public class HavingStepImpl implements HavingStep {
+
+public class HavingStepImpl implements HavingStep, Ordering {
     private StringBuilder query;
 
     HavingStepImpl(StringBuilder query) {
@@ -19,5 +20,17 @@ public class HavingStepImpl implements HavingStep {
     public String end() {
         query.append(";");
         return query.toString();
+    }
+
+    @Override
+    public EndQuery asc() {
+        query.append(" asc ");
+        return new EndQueryImpl(query);
+    }
+
+    @Override
+    public EndQuery desc() {
+        query.append(" desc ");
+        return new EndQueryImpl(query);
     }
 }

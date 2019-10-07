@@ -1,11 +1,11 @@
-package CRUD.requests.DSLImpl;
+package fluentquery.Dslmpl;
 
-import CRUD.requests.DSLInterfaces.*;
+import fluentquery.Dslnterfaces.*;
 
 public class ConditionImpl implements Condition {
     private StringBuilder connectCondition;
 
-    ConditionImpl(StringBuilder queryCondition) {
+    public ConditionImpl(StringBuilder queryCondition) {
         connectCondition = queryCondition;
     }
 

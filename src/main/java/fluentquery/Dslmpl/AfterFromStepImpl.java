@@ -1,6 +1,6 @@
-package CRUD.requests.DSLImpl;
+package fluentquery.Dslmpl;
 
-import CRUD.requests.DSLInterfaces.*;
+import fluentquery.Dslnterfaces.*;
 
 public class AfterFromStepImpl implements AfterFromStep {
     private StringBuilder query;
@@ -10,9 +10,9 @@ public class AfterFromStepImpl implements AfterFromStep {
     }
 
     @Override
-    public EndQuery orderBy(SimpleField column) {
+    public Ordering orderBy(SimpleField column) {
         query.append(" order by ").append(column.getName());
-        return new EndQueryImpl(query);
+        return new OrderingImpl(query);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class AfterFromStepImpl implements AfterFromStep {
 
     @Override
     public AfterFromStep where(Condition condition) {
-        query.append(" where ").append(condition.toString());
+        query.append(" where ").append(condition.toString()); //TODO toString
         return new AfterFromStepImpl(query);
     }
 
@@ -37,6 +37,26 @@ public class AfterFromStepImpl implements AfterFromStep {
     public AfterFromStep where() {
         query.append(" where ");
         return new AfterFromStepImpl(query);
+    }
+
+    public JoinStep join(Table table) {
+        query.append(" join ").append(table.getName());
+        return new JoinImpl(query);
+    }
+
+    public JoinStep leftJoin(Table table) {
+        query.append(" left join ").append(table.getName());
+        return new JoinImpl(query);
+    }
+
+    public JoinStep innerJoin(Table table) {
+        query.append(" inner join ").append(table.getName());
+        return new JoinImpl(query);
+    }
+
+    public JoinStep rightJoin(Table table) {
+        query.append(" right join ").append(table.getName());
+        return new JoinImpl(query);
     }
 
     @Override

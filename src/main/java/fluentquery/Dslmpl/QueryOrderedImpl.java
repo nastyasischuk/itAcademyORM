@@ -1,16 +1,30 @@
-package CRUD.requests.DSLImpl;
+package fluentquery.Dslmpl;
 
-import CRUD.requests.DSLInterfaces.*;
+import connection.DataBase;
+import customQuery.QueryBuilder;
+import fluentquery.Dslnterfaces.Field;
+import fluentquery.Dslnterfaces.From;
+import fluentquery.Dslnterfaces.SimpleField;
+import fluentquery.Dslnterfaces.SkippableField;
+import fluentquery.Dslnterfaces.*;
 
-public class StartClass {
+public class QueryOrderedImpl implements QueryBuilder {
+    private DataBase dataBase;
+    private Class classToReturn;
+    private StringBuilder query;
 
-    public static From select() {
-        StringBuilder query = new StringBuilder("select * ");
+    public QueryOrderedImpl(DataBase dataBase, Class classToReturn) {
+        this.dataBase = dataBase;
+        this.classToReturn = classToReturn;
+    }
+
+    public From select() {
+        query = new StringBuilder("select * ");
         return new FromImpl(query);
     }
 
-    public static From select(SimpleField... fields) {
-        StringBuilder query = new StringBuilder("select ");
+    public From select(SimpleField... fields) {
+        query = new StringBuilder("select ");
         for (SimpleField column : fields)
             query.append(column.getName()).append(", ");
 
@@ -62,4 +76,20 @@ public class StartClass {
     public static TableImpl table(String tableName) {
         return new TableImpl(tableName);
     }
+
+    @Override
+    public String getQuery() {
+        return query.toString();
+    }
+
+    @Override
+    public DataBase getDataBase() {
+        return dataBase;
+    }
+
+    @Override
+    public Class<?> getClassType() {
+        return classToReturn;
+    }
+
 }
