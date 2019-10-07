@@ -1,9 +1,8 @@
 package connection;
 
 import CRUD.CRUDImpl;
-import CRUD.aspects.ManyToManyAspect;
 import customQuery.QueryBuilder;
-import customQuery.QueryBuilderImpl;
+import customQuery.QueryImpl;
 import exceptions.DatabaseException;
 import exceptions.NoPrimaryKeyException;
 import exceptions.OpenConnectionException;
@@ -41,13 +40,11 @@ public class DataBaseImplementation implements DataBase {
         parseXMLConfig = new ParseXMLConfig(pathToXml);
         crud = new CRUDImpl(this);
         this.name = DEFAULT;
-        ManyToManyAspect.setDb(this);
         if (createTables)
             createAllTables();
     }
 
     public DataBaseImplementation(String pathToXml, String name) {
-        ManyToManyAspect.setDb(this);
         parseXMLConfig = new ParseXMLConfig(pathToXml);
         crud = new CRUDImpl(this);
         this.name = name;
@@ -56,7 +53,6 @@ public class DataBaseImplementation implements DataBase {
 
     public DataBaseImplementation(String pathToXml, String name, boolean createTables) {
         parseXMLConfig = new ParseXMLConfig(pathToXml);
-        ManyToManyAspect.setDb(this);
         crud = new CRUDImpl(this);
         this.name = name;
         if (createTables)
@@ -212,7 +208,7 @@ public class DataBaseImplementation implements DataBase {
             logger.error(e.getMessage());
         }
     }
-
+    @Override
     public TransactionsManager getTransactionManager() {
         if (transactionsManager == null)
             transactionsManager = new TransactionsManager(this.getConnection());
@@ -220,7 +216,7 @@ public class DataBaseImplementation implements DataBase {
     }
 
     @Override
-    public QueryBuilder getQueryBuilder(Class classType) {
-        return new QueryBuilderImpl(classType,this);
+    public QueryBuilder getQueryBuilder(Class<?> classType) {
+        return new QueryImpl(classType,this);
     }
 }

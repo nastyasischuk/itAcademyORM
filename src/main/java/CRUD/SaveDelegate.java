@@ -139,10 +139,10 @@ public class SaveDelegate {
                 if (currentCollection instanceof Collection) {
                     for (Object o : (Collection) currentCollection) {
                         ids.add(getValueOfPK(o));
-                        //if (checkIfNotInDB(o, getValueOfPK(o))) { //TODO прикрутить проверку на сущестоввание в бд; пока не существует по умолчанию
-                        logger.debug("Saving object -> " + o.toString());
+                        if (checkIfNotInDB(o, getValueOfPK(o))) { 
+                            logger.debug("Saving object -> " + o.toString());
                         crud.save(o);
-                        //}
+                        }
                     }
                 }
             }

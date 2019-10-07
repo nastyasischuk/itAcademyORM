@@ -1,18 +1,11 @@
 package customQuery;
 
-
-import annotations.Table;
-import connection.DataBase;
-import exceptions.NoPrimaryKeyException;
-import exceptions.SeveralPrimaryKeysException;
-
 import annotations.AnnotationUtils;
-
+import connection.DataBase;
 import tablecreation.SQLStatements;
-import tablecreation.TableConstructorImpl;
 
 
-public class QueryBuilderImpl implements QueryBuilder {
+public class QueryImpl implements QueryBuilder {
     protected StringBuilder query;
     private Class<?> classType;
     private Limits limits;
@@ -20,15 +13,15 @@ public class QueryBuilderImpl implements QueryBuilder {
     private int lastIndexOfStar;
     private DataBase dataBase;
 
-    public QueryBuilderImpl(Class<?> classType, DataBase database) {
+    public QueryImpl(Class<?> classType, DataBase dataBase) {
         limits = new Limits(classType);
         aggregation = new Aggregation(classType);
-        this.dataBase = database;
+        this.dataBase = dataBase;
         query = new StringBuilder();
         this.classType = classType;
     }
 
-    public QueryBuilderImpl(Class<?> classType) {
+    public QueryImpl(Class<?> classType) {
         limits = new Limits(classType);
         aggregation = new Aggregation(classType);
         query = new StringBuilder();
@@ -40,7 +33,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         return classType;
     }
 
-    protected void setQuery(StringBuilder query) {
+    public void setQuery(StringBuilder query) {
         this.query = query;
     }
 
@@ -52,118 +45,118 @@ public class QueryBuilderImpl implements QueryBuilder {
 
 
     @Override
-    public QueryBuilderImpl select() {
+    public QueryImpl select() {
         query.append(SQLStatements.SELECT.getValue()).append(MarkingChars.star).append(SQLStatements.FROM.getValue())
-
                 .append(AnnotationUtils.getTableName(classType));
         lastIndexOfStar = query.lastIndexOf("*");
         return this;
     }
 
-    public QueryBuilderImpl select(Aggregation aggregation) {
+    public QueryImpl select(Aggregation aggregation) {
         query.append(SQLStatements.SELECT.getValue()).append(aggregation.build()).append(SQLStatements.FROM.getValue())
-                .append(getFromClassTableName(classType));
+                .append(classType.getSimpleName());
         return this;
     }
 
-    public QueryBuilderImpl innerJoin(Class typeOfClass) {
+    public QueryImpl innerJoin(Class typeOfClass) {
         query.replace(lastIndexOfStar, lastIndexOfStar + 1, unionLaneForJoin(classType));
-        query.append(SQLStatements.INNER.getValue()).append(SQLStatements.JOIN.getValue()).append(getFromClassTableName(typeOfClass));
+        query.append(SQLStatements.INNER.getValue()).append(SQLStatements.JOIN.getValue()).append(typeOfClass.getSimpleName());
         return this;
     }
 
-    public QueryBuilderImpl leftJoin(Class typeOfClass) {
+    public QueryImpl leftJoin(Class typeOfClass) {
         query.replace(lastIndexOfStar, lastIndexOfStar + 1, unionLaneForJoin(classType));
-        query.append(SQLStatements.LEFT.getValue()).append(SQLStatements.JOIN.getValue()).append(getFromClassTableName(typeOfClass));
+        query.append(SQLStatements.LEFT.getValue()).append(SQLStatements.JOIN.getValue()).append(typeOfClass.getSimpleName());
         return this;
     }
 
-    public QueryBuilderImpl rightJoin(Class typeOfClass) {
+    public QueryImpl rightJoin(Class typeOfClass) {
         query.replace(lastIndexOfStar, lastIndexOfStar + 1, unionLaneForJoin(classType));
-        query.append(SQLStatements.RIGHT.getValue()).append(SQLStatements.JOIN.getValue()).append(getFromClassTableName(typeOfClass));
+        query.append(SQLStatements.RIGHT.getValue()).append(SQLStatements.JOIN.getValue()).append(typeOfClass.getSimpleName());
         return this;
     }
 
-    public QueryBuilderImpl fullOuterJoin(Class typeOfClass) {
+    public QueryImpl fullOuterJoin(Class typeOfClass) {
         query.replace(lastIndexOfStar, lastIndexOfStar + 1, unionLaneForJoin(classType));
         query.append(SQLStatements.FULL.getValue()).append(SQLStatements.OUTER.getValue())
-                .append(SQLStatements.JOIN.getValue()).append(getFromClassTableName(typeOfClass));
+                .append(SQLStatements.JOIN.getValue()).append(typeOfClass.getSimpleName());
         return this;
     }
 
-    public QueryBuilderImpl on(Limits limits) {
+    public QueryImpl on(Limits limits) {
         query.append(SQLStatements.ON.getValue()).append(limits.build());
         return this;
     }
 
-    public QueryBuilderImpl selectMath(Aggregation aggregation, Limits limits) {
+    public QueryImpl selectMath(Aggregation aggregation, Limits limits) {
         query.append(SQLStatements.SELECT.getValue()).append(aggregation.build()).append(limits.build()).append(SQLStatements.FROM.getValue())
-                .append(getFromClassTableName(classType));
+                .append(classType.getSimpleName());
         return this;
     }
 
     @Override
-    public QueryBuilderImpl where(Limits limits) {
+    public QueryImpl where(Limits limits) {
         StringBuilder lane = new StringBuilder();
         query.append(lane.append(SQLStatements.WHERE.getValue()).append(limits.build()));
         return this;
     }
 
     @Override
-    public QueryBuilderImpl groupBy(Limits limits) {
+    public QueryImpl groupBy(Limits limits) {
         StringBuilder lane = new StringBuilder();
         setQuery(query.append(lane.append(SQLStatements.GROUP_BY.getValue()).append(limits.build())));
         return this;
     }
 
     @Override
-    public QueryBuilderImpl orderBy(Limits limits) {
+    public QueryImpl orderBy(Limits limits) {
         query.append(SQLStatements.ORDER_BY.getValue()).append(limits.build());
         return this;
     }
 
-    public QueryBuilderImpl orderBy() {
-        query.append(SQLStatements.ORDER_BY.getValue());
+    public QueryImpl orderBy(QueryImpl queryImpl) {
+        query.append(SQLStatements.ORDER_BY.getValue()).append(queryImpl);
         return this;
     }
 
-    public QueryBuilderImpl orderBy(QueryBuilderImpl queryBuilderImpl, Limits limits) {
-        query.append(SQLStatements.ORDER_BY.getValue()).append(queryBuilderImpl).append(limits.build());
+    public QueryImpl orderBy(QueryImpl queryImpl, Limits limits) {
+        query.append(SQLStatements.ORDER_BY.getValue()).append(queryImpl).append(limits.build());
         return this;
     }
 
-    public QueryBuilderImpl orderBy(Aggregation aggregation, QueryBuilderImpl queryBuilderImpl) {
-        query.append(SQLStatements.ORDER_BY.getValue()).append(aggregation.build()).append(queryBuilderImpl);
+    public QueryImpl orderBy(Aggregation aggregation, QueryImpl queryImpl) {
+        query.append(SQLStatements.ORDER_BY.getValue()).append(aggregation.build()).append(queryImpl);
         return this;
     }
 
-    public QueryBuilderImpl having(Aggregation aggregation, Limits limits) {
+    public QueryImpl having(Aggregation aggregation, Limits limits) {
         query.append(SQLStatements.HAVING.getValue()).append(aggregation.build()).append(MarkingChars.space).append(limits.build());
         return this;
     }
 
-    public QueryBuilderImpl ascAndDesc(String ascColumnName, String descColumnName) {
+    public QueryImpl ascAndDesc(String ascColumnName, String descColumnName) {
+
         query.append(getLimits().getColumnName(ascColumnName)).append(SQLStatements.ASC.getValue()).append(MarkingChars.comma)
                 .append(getLimits().getColumnName(descColumnName)).append(SQLStatements.DESC.getValue());
         return this;
     }
 
-    public QueryBuilderImpl asc(String columnName) {
+    public QueryImpl asc(String columnName) {
         query.append(getLimits().getColumnName(columnName)).append(SQLStatements.ASC.getValue());
         return this;
     }
 
-    public QueryBuilderImpl asc() {
+    public QueryImpl asc() {
         query.append(SQLStatements.ASC.getValue());
         return this;
     }
 
-    public QueryBuilderImpl desc(String columnName) {
+    public QueryImpl desc(String columnName) {
         query.append(getLimits().getColumnName(columnName)).append(SQLStatements.DESC.getValue());
         return this;
     }
 
-    public QueryBuilderImpl desc() {
+    public QueryImpl desc() {
         query.append(SQLStatements.DESC.getValue());
         return this;
     }
@@ -188,7 +181,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         StringBuilder values = new StringBuilder();
         for (String columnName : getLimits().getAllColumnNames(classType)) {
             String lastElement = getLimits().getAllColumnNames(classType).get(getLimits().getAllColumnNames(classType).size() - 1);
-            values.append(getFromClassTableName(classType)).append(MarkingChars.dot).append(columnName);
+            values.append(classType.getSimpleName()).append(MarkingChars.dot).append(columnName);
             if (!columnName.equals(lastElement)) {
                 values.append(MarkingChars.comma);
             } else {
@@ -197,21 +190,6 @@ public class QueryBuilderImpl implements QueryBuilder {
         }
         return values.toString();
     }
-
-    protected String getFromClassTableName(Class classType){
-        tablecreation.Table table = null;
-        if(classType.isAnnotationPresent(Table.class)){
-            tablecreation.TableConstructor tableConstructor;
-            tableConstructor = new TableConstructorImpl(classType);
-            try {
-                table = tableConstructor.buildTable();
-            } catch (NoPrimaryKeyException | SeveralPrimaryKeysException ignored) {
-            }
-
-        }
-        return table != null ? table.getTableName() : null;
-    }
-
 
     public String getQuery() {
         query.append(MarkingChars.semicolon);

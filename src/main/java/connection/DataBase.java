@@ -2,6 +2,7 @@ package connection;
 
 import CRUD.CRUD;
 import customQuery.QueryBuilder;
+import transaction.TransactionsManager;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -18,6 +19,7 @@ public interface DataBase {
     CRUD getCrud();
 
     void closeStatement(Statement statement);
-    QueryBuilder getQueryBuilder(Class classType);
+    TransactionsManager getTransactionManager();
+    QueryBuilder getQueryBuilder(Class<?> classType);
 
 }
