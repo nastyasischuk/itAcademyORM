@@ -198,7 +198,6 @@ public class QueryBuilderImpl implements QueryBuilder {
     }
 
     public String getQuery() {
-        query.append(MarkingChars.semicolon);
         return query.toString();
     }
 

@@ -40,7 +40,12 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
                 String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(row.getNameAndType().get(row.getIdName()));
                 row.setIdValue( getValueFromResultSet(nameOfMethodInResultSetToGetValue, row.getIdName()).toString());
             }
-            Field field = classType.getDeclaredField(entry.getKey());
+            Field field=null;
+            if(AnnotationUtils.getFieldByColemnName(classType,entry.getKey())!=null){
+                field = classType.getDeclaredField(AnnotationUtils.getFieldByColemnName(classType,entry.getKey()).getName());
+            }else
+             field = classType.getDeclaredField(entry.getKey());
+
             field.setAccessible(true);
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(entry.getValue());
             Object fieldValue = null;
@@ -48,7 +53,7 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
                 if (nameOfMethodInResultSetToGetValue == null) {
                     fieldValue = handleCasesWhenTypeIsNotSimple(field, entry.getKey());
                 } else {
-                    fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, entry.getKey());
+                    fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue,entry.getKey());
                 }
             } catch (Exception e) {
                 logger.error(e,e.getCause());

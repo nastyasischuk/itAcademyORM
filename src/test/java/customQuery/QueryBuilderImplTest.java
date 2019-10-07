@@ -312,13 +312,13 @@ public class QueryBuilderImplTest {
 
     @Test
     public void test() {
-      // String expected = "SELECT person.p_id, person.name, person.age, " +
-      //         "person.bd FROM person INNER  JOIN person " +
-      //         "ON person.p_id=person.p_id WHERE p_id > 5 IN (SELECT p_id FROM person WHERE p_id);";
-      // String actual = query.select().innerJoin(PersonWithSimpleProperColumns.class).on(query.getLimits()
-      //         .equals("id", PersonWithSimpleProperColumns.class, "id", PersonWithSimpleProperColumns.class))
-      //         .where(query.getLimits().builder().equals("id").more("5").inSubQuery(subQuery.select("id").where(subQuery.getLimits().equals("id")))).fetch();
-      // Assert.assertEquals(expected, actual);
+       String expected = "SELECT person.p_id, person.name, person.age, " +
+               "person.bd FROM person INNER  JOIN person " +
+               "ON person.p_id=person.p_id WHERE p_id > 5 IN (SELECT p_id FROM person WHERE p_id);";
+       String actual = query.select().innerJoin(PersonWithSimpleProperColumns.class).on(query.getLimits()
+               .equals("id", PersonWithSimpleProperColumns.class, "id", PersonWithSimpleProperColumns.class))
+               .where(query.getLimits().builder().equals("id").more("5").inSubQuery(subQuery.select("id").where(subQuery.getLimits().equals("id")))).fetch();
+       Assert.assertEquals(expected, actual);
     }
 
     @Test
