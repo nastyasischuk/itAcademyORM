@@ -11,10 +11,8 @@ public class TestManyToManyFetchingFromDbLazyInitialization {
     static DataBase db = new DataBaseImplementation("D:\\my files\\softserve\\itAcademyORM\\src\\main\\resources\\config.xml",false);
     public static void main(String[] args) {
         db.openConnection();
-        ManyToManyAspect.setDb(db);
         testcatspeople();
         testSeveralManyToManyInOneClass();
-
     }
     public static void  testcatspeople(){
         ManyToManyAspect.setDb(db);
@@ -29,12 +27,12 @@ public class TestManyToManyFetchingFromDbLazyInitialization {
           System.out.println(personTestManyToMany.getCats());
     }
     public static void  testSeveralManyToManyInOneClass(){
-      // Employee employee =(Employee) db.getCrud().find(Employee.class,2);
-      // logger.info("Collection without calling get");
-      // logger.info(employee.clients);
-      // logger.info(employee.projects );
-      // logger.info("Collection after calling get");
-      // logger.info(employee.getClients());
-      // logger.info(employee.getProjects());
+       Employee employee =(Employee) db.getCrud().find(Employee.class,2);
+       logger.info("Collection without calling get");
+       logger.info(employee.clients);
+       logger.info(employee.projects );
+       logger.info("Collection after calling get");
+       logger.info(employee.getClients());
+       logger.info(employee.getProjects());
     }
 }

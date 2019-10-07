@@ -5,17 +5,12 @@ import CRUD.querycreation.QueryType;
 
 import CRUD.rowhandler.*;
 
-import annotations.*;
 import connection.DataBaseImplementation;
-
-import exceptions.NoPrimaryKeyException;
 
 import exceptions.QueryExecutionException;
 import org.apache.log4j.Logger;
 import javax.sql.rowset.CachedRowSet;
 
-import java.lang.reflect.Field;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import java.util.*;

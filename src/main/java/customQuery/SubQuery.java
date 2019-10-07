@@ -4,7 +4,7 @@ import annotations.AnnotationUtils;
 import tablecreation.SQLStatements;
 
 
-public class SubQuery extends QueryImpl {
+public class SubQuery extends QueryBuilderImpl {
 
     public SubQuery(Class<?> classType) {
         super(classType);

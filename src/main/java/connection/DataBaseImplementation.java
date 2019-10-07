@@ -2,7 +2,7 @@ package connection;
 
 import CRUD.CRUDImpl;
 import customQuery.QueryBuilder;
-import customQuery.QueryImpl;
+import customQuery.QueryBuilderImpl;
 import exceptions.DatabaseException;
 import exceptions.NoPrimaryKeyException;
 import exceptions.OpenConnectionException;
@@ -217,6 +217,6 @@ public class DataBaseImplementation implements DataBase {
 
     @Override
     public QueryBuilder getQueryBuilder(Class<?> classType) {
-        return new QueryImpl(classType,this);
+        return new QueryBuilderImpl(classType,this);
     }
 }

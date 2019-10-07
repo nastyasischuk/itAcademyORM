@@ -6,7 +6,7 @@ import CRUD.buildingObject.ObjectSimpleBuilding;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.RowFromDBManyToManyConstructor;
-import connection.DataBase;
+import connection.*;
 import org.apache.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
