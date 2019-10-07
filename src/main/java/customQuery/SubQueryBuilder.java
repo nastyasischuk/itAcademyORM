@@ -3,9 +3,9 @@ package customQuery;
 import tablecreation.SQLStatements;
 
 
-public class SubQuery extends QueryImpl {
+public class SubQueryBuilder extends QueryBuilderImpl {
 
-    public SubQuery(Class<?> classType) {
+    public SubQueryBuilder(Class<?> classType) {
         super(classType);
     }
 
@@ -17,13 +17,13 @@ public class SubQuery extends QueryImpl {
         this.query = query;
     }
 
-    public SubQuery select(String columnName) {
+    public SubQueryBuilder select(String columnName) {
         query.append(SQLStatements.SELECT.getValue()).append(getLimits().getColumnName(columnName)).append(SQLStatements.FROM.getValue())
                 .append(getClassType().getSimpleName());
         return this;
     }
 
-    public SubQuery builder() {
-        return new SubQuery(getClassType());
+    public SubQueryBuilder builder() {
+        return new SubQueryBuilder(getClassType());
     }
 }

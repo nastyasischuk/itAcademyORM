@@ -1,6 +1,8 @@
 package connection;
 
 import CRUD.CRUDImpl;
+import customQuery.QueryBuilder;
+import customQuery.QueryBuilderImpl;
 import exceptions.DatabaseException;
 import exceptions.NoPrimaryKeyException;
 import exceptions.OpenConnectionException;
@@ -206,10 +208,15 @@ public class DataBaseImplementation implements DataBase {
             logger.error(e.getMessage());
         }
     }
-
+    @Override
     public TransactionsManager getTransactionManager() {
         if (transactionsManager == null)
             transactionsManager = new TransactionsManager(this.getConnection());
         return transactionsManager;
+    }
+
+    @Override
+    public QueryBuilder getQueryBuilder(Class<?> classType) {
+        return new QueryBuilderImpl(classType,this);
     }
 }

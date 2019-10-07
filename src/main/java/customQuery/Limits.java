@@ -38,7 +38,7 @@ public class Limits {
         return this;
     }
 
-    public Limits equals(String name, QueryImpl queryImpl) {
+    public Limits equals(String name, QueryBuilderImpl queryImpl) {
         query.append(getColumnName(name)).append(MarkingChars.equally).append(MarkingChars.openBracket).append(queryImpl)
                 .append(MarkingChars.closedBracket);
         return this;
@@ -60,7 +60,7 @@ public class Limits {
         return this;
     }
 
-    public Limits inSubQuery(QueryImpl subQuery) {
+    public Limits inSubQuery(QueryBuilderImpl subQuery) {
         query.append(SQLStatements.IN.getValue()).append(MarkingChars.openBracket)
                 .append(subQuery).append(MarkingChars.closedBracket);
         return this;

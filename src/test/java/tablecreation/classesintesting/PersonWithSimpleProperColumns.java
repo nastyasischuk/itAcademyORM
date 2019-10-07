@@ -9,7 +9,7 @@ import java.sql.*;
 @Entity
 @Table(name="person")
 public class PersonWithSimpleProperColumns {
-    @Column(name ="p_id")
+    @Column
     @PrimaryKey
     public int id;
     @Column
@@ -18,7 +18,9 @@ public class PersonWithSimpleProperColumns {
     private int age;
     @Column
     Date bd;
+    public PersonWithSimpleProperColumns(){
 
+    }
     public PersonWithSimpleProperColumns(int id, String name, int age,Date date) {
         this.id = id;
         this.name = name;
