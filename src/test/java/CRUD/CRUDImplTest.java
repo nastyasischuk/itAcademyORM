@@ -37,7 +37,7 @@ public class CRUDImplTest {
     public void findWithManyToMany() {
         PersonTestManyToMany personExpected = new PersonTestManyToMany(1, "Kate");
         PersonTestManyToMany personReal = (PersonTestManyToMany) dataBase.getCrud().find(personExpected.getClass(), 1);
-        assertEquals(personExpected.getName(),personReal.getName());
+        assertEquals(personExpected.getName(), personReal.getName());
     }
 
     @Before
@@ -53,7 +53,7 @@ public class CRUDImplTest {
 
     @Test
     public void deleteTestSimple() {
-        CatManyToOne oneToMany = new CatManyToOne(12,"",new PersonOneToMany(14,"per"));
+        CatManyToOne oneToMany = new CatManyToOne(12, "", new PersonOneToMany(14, "per"));
         CRUD crud = dataBase.getCrud();
         TransactionsManager tr = dataBase.getTransactionManager();
         tr.begin();
@@ -61,7 +61,7 @@ public class CRUDImplTest {
         //CatManyToOne cat = (CatManyToOne) dataBase.getCrud().find(CatManyToOne.class,12);
         //assertNull(cat);
         tr.rollback();
-        CatManyToOne cat1 = (CatManyToOne) dataBase.getCrud().find(CatManyToOne.class,12);
+        CatManyToOne cat1 = (CatManyToOne) dataBase.getCrud().find(CatManyToOne.class, 12);
         assertNotNull(cat1);
 
     }
@@ -85,6 +85,6 @@ public class CRUDImplTest {
         crud.update(oneToMany);
         CatManyToOne found = (CatManyToOne) crud.find(CatManyToOne.class, 12);
         logger.info(found);
-        assertEquals(found.getName(),"new Name");
+        assertEquals(found.getName(), "new Name");
     }
 }
