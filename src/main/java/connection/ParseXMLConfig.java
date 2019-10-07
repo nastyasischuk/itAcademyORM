@@ -31,7 +31,6 @@ public class ParseXMLConfig {
     private static final String PROPERTY = "property";
     private static final String NAME = "name";
     private static final String PACKAGE = "scan.package";
-
     private File xmlConfigFile;
 
     public ParseXMLConfig(String pathToXmlConfigFile) {
@@ -102,6 +101,18 @@ public class ParseXMLConfig {
                 configuredClassList.add(currentClass);
             }
         }
+//        NodeList properties = getNode(MAPPING);
+//        for (int counter = 0; counter < properties.getLength(); counter++) {
+//            Node currentProperty = properties.item(counter);
+//            if (currentProperty.getNodeType() == Node.ELEMENT_NODE) {
+//                Element element = (Element) currentProperty;
+//                Class currentClass = loadClass(element);
+//                if (currentClass.isAnnotationPresent(Entity.class)) {
+//                    configuredClassList.add(currentClass);
+//                }
+//            }
+//        }
+
         return configuredClassList;
     }
 
@@ -130,3 +141,4 @@ public class ParseXMLConfig {
         return currentClass;
     }
 }
+

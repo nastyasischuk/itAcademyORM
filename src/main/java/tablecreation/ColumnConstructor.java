@@ -81,10 +81,10 @@ public class ColumnConstructor {
             }
         }
 
-        if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class)) {
+        if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class)){
             column.setForeignKey(true);
         }
-        if (field.isAnnotationPresent(NotNull.class)) {
+        if (field.isAnnotationPresent(NotNull.class)){
             column.setNullable(false);
         }
         if (AnnotationUtils.isManyToManyPresent(field) && AnnotationUtils.isAssociatedTablePresentAndNotEmpty(field)) {

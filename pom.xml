@@ -37,7 +37,6 @@
             <artifactId>aspectjrt</artifactId>
             <version>1.9.4</version>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
         <dependency>
             <groupId>org.reflections</groupId>
