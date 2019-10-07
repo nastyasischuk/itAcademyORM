@@ -1,9 +1,10 @@
 package customQuery;
 
+import annotations.AnnotationUtils;
 import tablecreation.SQLStatements;
 
 
-public class SubQuery extends QueryImpl {
+public class SubQuery extends QueryBuilderImpl {
 
     public SubQuery(Class<?> classType) {
         super(classType);
@@ -19,7 +20,7 @@ public class SubQuery extends QueryImpl {
 
     public SubQuery select(String columnName) {
         query.append(SQLStatements.SELECT.getValue()).append(getLimits().getColumnName(columnName)).append(SQLStatements.FROM.getValue())
-                .append(getClassType().getSimpleName());
+                .append(AnnotationUtils.getTableName(getClassType()));
         return this;
     }
 

@@ -1,5 +1,6 @@
 package customQuery;
 
+import annotations.AnnotationUtils;
 import annotations.Column;
 import exceptions.NoPrimaryKeyException;
 import exceptions.WrongColumnNameException;
@@ -33,13 +34,19 @@ public class Limits {
         return this;
     }
 
+    public Limits equals(String name, int value) {
+        query.append(getColumnName(name)).append(MarkingChars.equally).append(value);
+        return this;
+    }
+
     public Limits equals(String name) {
         query.append(getColumnName(name));
         return this;
     }
 
-    public Limits equals(String name, QueryImpl queryImpl) {
-        query.append(getColumnName(name)).append(MarkingChars.equally).append(MarkingChars.openBracket).append(queryImpl)
+
+    public Limits equals(String name, QueryBuilderImpl queryBuilderImpl) {
+        query.append(getColumnName(name)).append(MarkingChars.equally).append(MarkingChars.openBracket).append(queryBuilderImpl)
                 .append(MarkingChars.closedBracket);
         return this;
     }
@@ -60,7 +67,7 @@ public class Limits {
         return this;
     }
 
-    public Limits inSubQuery(QueryImpl subQuery) {
+    public Limits inSubQuery(QueryBuilderImpl subQuery) {
         query.append(SQLStatements.IN.getValue()).append(MarkingChars.openBracket)
                 .append(subQuery).append(MarkingChars.closedBracket);
         return this;
@@ -122,6 +129,12 @@ public class Limits {
         return this;
     }
 
+
+    public Limits equals(String columnName, Class fromClassType){
+        query.append(getColumnName(columnName, fromClassType));
+        return this;
+    }
+
     public Limits between(String valueFrom, String valueTill) {
         query.append(SQLStatements.BETWEEN.getValue()).append(MarkingChars.quote)
                 .append(valueFrom).append(MarkingChars.quote).append(SQLStatements.AND.getValue())
@@ -130,13 +143,17 @@ public class Limits {
     }
 
     public Limits more(String value) {
-
         query.append(MarkingChars.space).append(MarkingChars.more).append(MarkingChars.space).
                 append(value);
         return this;
     }
 
-    public Limits moreOrEqual(String value) {
+    public Limits equally(){
+        query.append(MarkingChars.equally);
+        return this;
+    }
+
+    public Limits moreOrEqually(String value) {
         query.append(MarkingChars.space).append(MarkingChars.more).append(MarkingChars.equally)
                 .append(MarkingChars.space).append(value);
         return this;
@@ -147,13 +164,13 @@ public class Limits {
         return this;
     }
 
-    public Limits lessOrEqual(String value) {
+    public Limits lessOrEqually(String value) {
         query.append(MarkingChars.space).append(MarkingChars.less).append(MarkingChars.equally)
                 .append(MarkingChars.space).append(value);
         return this;
     }
 
-    public Limits notEqual(String value) {
+    public Limits notEqually(String value) {
         query.append(MarkingChars.space).append(MarkingChars.less).append(MarkingChars.more)
                 .append(MarkingChars.space).append(value);
         return this;
@@ -223,6 +240,7 @@ public class Limits {
 
     protected String getColumnName(String name, Class classType) {
         StringBuilder lane = new StringBuilder();
+        QueryBuilderImpl queryBuilderImpl = new QueryBuilderImpl(classType);
         tablecreation.Column column = null;
         Field[] fields = classType.getDeclaredFields();
         for (Field field : fields) {
@@ -237,7 +255,7 @@ public class Limits {
             }
         }
         assert column != null;
-        return lane.append(classType.getSimpleName()).append(MarkingChars.dot).append(column.getName()).toString();
+        return lane.append(AnnotationUtils.getTableName(classType)).append(MarkingChars.dot).append(column.getName()).toString();
     }
 
     String build() {
