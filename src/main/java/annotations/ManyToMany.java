@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OneToMany {
+public @interface ManyToMany {
     String mappedBy() default "";
-    Class<?> typeOfReferencedObject();
 }

@@ -1,11 +1,11 @@
 package tablecreation;
 
-import annotations.Check;
+import annotations.*;
 import annotations.Index;
-import annotations.MapsId;
 import exceptions.NoPrimaryKeyException;
 import exceptions.SeveralPrimaryKeysException;
 import exceptions.WrongSQLType;
+import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -13,8 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TableConstructorImpl implements TableConstructor {
-    Class<?> toBuildClass;
-    Table table;
+    private static Logger logger = Logger.getLogger(TableConstructorImpl.class);
+    private Class<?> toBuildClass;
+    private Table table;
 
     public TableConstructorImpl(Class<?> toBuildClass) {
         this.toBuildClass = toBuildClass;
@@ -24,20 +25,19 @@ public class TableConstructorImpl implements TableConstructor {
     @Override
     public Table buildTable() throws NoPrimaryKeyException,SeveralPrimaryKeysException{
         table.setColumns(getColumns());
-        addcheckConstraintIfExists();
+        addCheckConstraintIfExists();
         return table;
     }
 
     private String getTableName() {
-        if (toBuildClass.isAnnotationPresent(annotations.Table.class) && !toBuildClass.getAnnotation(annotations.Table.class).name().equals("")) {
-            return toBuildClass.getAnnotation(annotations.Table.class).name();
+        if (AnnotationUtils.isTablePresentAndNotEmpty(toBuildClass)) {
+            return AnnotationUtils.getTableName(toBuildClass);
         } else {
             return toBuildClass.getSimpleName();
         }
-
     }
 
-    private void addcheckConstraintIfExists() {
+    private void addCheckConstraintIfExists() {
         if (toBuildClass.isAnnotationPresent(Check.class)) {
             table.setCheckConstraint(toBuildClass.getAnnotation(Check.class).value());
         }
@@ -50,14 +50,15 @@ public class TableConstructorImpl implements TableConstructor {
             //todo check if column
             if (!classFields[i].isAnnotationPresent(annotations.Column.class) &&
                     !classFields[i].isAnnotationPresent(annotations.ForeignKey.class) &&
-                    !classFields[i].isAnnotationPresent(MapsId.class))
-                continue;
+                    !classFields[i].isAnnotationPresent(MapsId.class) &&
+                    !classFields[i].isAnnotationPresent(AssociatedTable.class))
+                continue; //todo wtf? why?
 
-            Column builtColumn = null;
+            Column builtColumn;
             try {
                 builtColumn = new ColumnConstructor(classFields[i]).buildColumn();
             } catch (WrongSQLType e) {
-                e.getMessage();
+                logger.error(e.getMessage());
                 continue;
             }
             columns.add(builtColumn);
@@ -67,6 +68,11 @@ public class TableConstructorImpl implements TableConstructor {
             if (builtColumn.isPrimaryKey()) {
                 checkIfPrimaryKeyIsNotOne();
                 table.setPrimaryKey(formPK(builtColumn));
+            }
+            if (builtColumn.isManyToMany()) {
+                ManyToMany mtm = formManyToMany(classFields[i]);
+                logger.debug("Added mtm " + mtm.toString());
+                table.addManyToManyAssociation(mtm);
             }
             if (classFields[i].isAnnotationPresent(Index.class)) {
                 tablecreation.Index indexToTable = generateIndex(classFields[i]);
@@ -92,6 +98,10 @@ public class TableConstructorImpl implements TableConstructor {
         return new ForeignKeyConstructorImpl(field).buildForeignKey();
     }
 
+    private ManyToMany formManyToMany(Field field) throws NoPrimaryKeyException {
+        return new ManyToManyConstructor(field).build();
+    }
+
     private tablecreation.Index generateIndex(Field field) {
         tablecreation.Index indexTOCreate = new tablecreation.Index(field.getAnnotation(Index.class).name(), field.getAnnotation(Index.class).unique());
         if (table.getIndexes().contains(indexTOCreate)) {
@@ -111,5 +121,4 @@ public class TableConstructorImpl implements TableConstructor {
             throw new SeveralPrimaryKeysException();
         }
     }
-
 }

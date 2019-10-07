@@ -4,6 +4,7 @@ import annotations.Column;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class RowToDB extends Row {
@@ -12,7 +13,7 @@ public class RowToDB extends Row {
 
     public RowToDB(String tableName) {
         super(tableName);
-        this.nameOfColumnsAndValues = new HashMap<>();
+        this.nameOfColumnsAndValues = new LinkedHashMap<>();
 
     }
     public void setIdField(Field idField){
@@ -22,7 +23,7 @@ public class RowToDB extends Row {
         nameOfColumnsAndValues.put(name,value);
     }
 
-    @Override
+
     public Map<String, String> getMap() {
         return nameOfColumnsAndValues;
     }

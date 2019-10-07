@@ -10,10 +10,7 @@ import tablecreation.SQLTableQueryCreator;
 import tablecreation.TableConstructorImpl;
 import transaction.TransactionsManager;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +30,27 @@ public class DataBaseImplementation implements DataBase {
         createAllTables();
     }
 
+    public DataBaseImplementation(String pathToXml, boolean createTables) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
+        this.name = DEFAULT;
+        if (createTables)
+            createAllTables();
+    }
+
     public DataBaseImplementation(String pathToXml, String name) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
         this.name = name;
+        createAllTables();
+    }
+
+    public DataBaseImplementation(String pathToXml, String name, boolean createTables) {
+        parseXMLConfig = new ParseXMLConfig(pathToXml);
+        crud = new CRUDImpl(this);
+        this.name = name;
+        if (createTables)
+            createAllTables();
     }
 
     public void openConnection() {
@@ -76,6 +92,7 @@ public class DataBaseImplementation implements DataBase {
             connection.close();
             logger.debug("Closed connection: {}" + connection);
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
         } finally {
             OpenedConnection.removeConnection(this.name);
@@ -84,26 +101,42 @@ public class DataBaseImplementation implements DataBase {
 
     private void createAllTables() {
         List<String> fkQueriesToExecute = new ArrayList<>();
+        List<String> mtmQueriesToExecute = new ArrayList<>();
+
         List<Class<?>> allEntities = parseXMLConfig.getAllClasses();
         for (Class currentClass : allEntities) {
             tablecreation.Table table = null;
             try {
                 table = new TableConstructorImpl(currentClass).buildTable();
-            } catch (NoPrimaryKeyException e) {
-                e.printStackTrace();
-            } catch (SeveralPrimaryKeysException e) {
-                e.printStackTrace();
+            } catch (NoPrimaryKeyException | SeveralPrimaryKeysException e) {
+                logger.error(e.getMessage());
             }
             SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
             String createPKQuery = sqlTableQueryCreator.createPKQuery();
-            fkQueriesToExecute.addAll(sqlTableQueryCreator.createFKQuery());
+
+            List<String> queriesFK = sqlTableQueryCreator.createFKQuery();
+            if (queriesFK != null && !queriesFK.isEmpty())
+                fkQueriesToExecute.addAll(queriesFK);
+
+            List<String> queriesMTM = sqlTableQueryCreator.createManyToManyQuery();
+            if (queriesMTM != null && !queriesMTM.isEmpty()) {
+                logger.debug("Add MTM query to list");
+                mtmQueriesToExecute.addAll(queriesMTM);
+            }
 
             executeQueryForCreateDB(createTableQuery);
             executeQueryForCreateDB(createPKQuery);
         }
 
         for (String query : fkQueriesToExecute) {
+            logger.debug("Executing FK " + query);
+            executeQueryForCreateDB(query);
+        }
+
+        logger.debug("Size of MTM list " + mtmQueriesToExecute.size());
+        for (String query : mtmQueriesToExecute) {
+            logger.debug("Executing MTM " + query);
             executeQueryForCreateDB(query);
         }
     }
@@ -116,6 +149,7 @@ public class DataBaseImplementation implements DataBase {
             logger.debug("Executing query " + query);
             statement.executeUpdate(query);
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
         } finally {
             try {
@@ -124,6 +158,7 @@ public class DataBaseImplementation implements DataBase {
                 }
                 this.close();
             } catch (Exception e) {
+                logger.error(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -141,17 +176,18 @@ public class DataBaseImplementation implements DataBase {
         crud.update(object);
     }
 
-    public Object find(Class type, Object id) {
+    public Object find(Class type, Object id) throws SQLException{
         return crud.find(type, id);
     }
 
-    public void executeQuery(String query) {
+    public void executeQuery(String query) {//todo rename because it is only for execute update not for getting result set
         Statement statement = null;
         try {
             statement = this.getConnection().createStatement();
             logger.debug("Executing query " + query);
             statement.executeUpdate(query);
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             throw new DatabaseException(e.getMessage());
         } finally {
             try {
@@ -159,9 +195,32 @@ public class DataBaseImplementation implements DataBase {
                     statement.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
+//                e.printStackTrace();
             }
         }
+    }
+    public ResultSet executeQueryWuthResult(String query){//todo check ussage of result set
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = this.getConnection().createStatement();
+            logger.debug("Executing query " + query);
+            resultSet = statement.executeQuery(query);
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new DatabaseException(e.getMessage());
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+//                e.printStackTrace();
+            }
+        }
+        return resultSet;
     }
 
     public TransactionsManager getTransactionManager() {
