@@ -13,8 +13,8 @@ public class SelectLatestIdQueryBuilder extends QueryBuilder {
     @Override
     public String buildQuery() {
         StringBuilder query = new StringBuilder();
-        query.append(SQLStatements.SELECT.getValue()).append(SQLStatements.MAX).append(MarkingChars.openBracket)
-                .append(row.getIdName()).append(MarkingChars.closedBracket).append(SQLStatements.FROM.getValue())
+        query.append(SQLStatements.SELECT.getValue()).append(SQLStatements.MAX).append(MarkingChars.OPEN_BRACKET)
+                .append(row.getIdName()).append(MarkingChars.CLOSED_BRACKET).append(SQLStatements.FROM.getValue())
                 .append(row.getTableName());
         return query.toString();
     }

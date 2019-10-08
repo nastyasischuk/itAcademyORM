@@ -24,28 +24,28 @@ public class InsertQueryBuilder extends QueryBuilder {
         String lastColumnNameIterator = null;
 
         request.append(SQLStatements.INSERT.getValue()).append(SQLStatements.INTO.getValue())
-                .append(row.getTableName()).append(MarkingChars.space);
+                .append(row.getTableName()).append(MarkingChars.SPACE);
 
         while (columnNamesIterator.hasNext()) {
             lastColumnNameIterator = String.valueOf(columnNamesIterator.next());
 
         }
         if (!row.isAutoIncrement()) {
-            columnNames.append(row.getIdName()).append(MarkingChars.comma);
-            columnValues.append(MarkingChars.quote).append(row.getIdValue()).append(MarkingChars.quote).append(MarkingChars.comma);
+            columnNames.append(row.getIdName()).append(MarkingChars.COMMA);
+            columnValues.append(MarkingChars.QUOTE).append(row.getIdValue()).append(MarkingChars.QUOTE).append(MarkingChars.COMMA);
         }
         for (Map.Entry<String, String> pair : row.getMap().entrySet()) {
             columnNames.append(pair.getKey());
-            columnValues.append(MarkingChars.quote).append(pair.getValue()).append(MarkingChars.quote);
+            columnValues.append(MarkingChars.QUOTE).append(pair.getValue()).append(MarkingChars.QUOTE);
             if (!pair.getKey().equals(lastColumnNameIterator)) {
-                columnNames.append(MarkingChars.comma);
-                columnValues.append(MarkingChars.comma);
+                columnNames.append(MarkingChars.COMMA);
+                columnValues.append(MarkingChars.COMMA);
             }
         }
 
-        request.append(MarkingChars.openBracket).append(columnNames).append(MarkingChars.closedBracket).
-                append(SQLStatements.VALUES.getValue()).append(MarkingChars.space).append(MarkingChars.openBracket)
-                .append(columnValues).append(MarkingChars.closedBracket).append(MarkingChars.semicolon);
+        request.append(MarkingChars.OPEN_BRACKET).append(columnNames).append(MarkingChars.CLOSED_BRACKET).
+                append(SQLStatements.VALUES.getValue()).append(MarkingChars.SPACE).append(MarkingChars.OPEN_BRACKET)
+                .append(columnValues).append(MarkingChars.CLOSED_BRACKET).append(MarkingChars.SEMICOLON);
         return request.toString();
     }
 }

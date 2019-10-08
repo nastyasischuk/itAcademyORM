@@ -217,10 +217,10 @@ class SaveDelegate {
     private String createQueryToAssociatedTable(Object idSide, Object idMain, tablecreation.ManyToMany mtm) {
         StringBuilder query = new StringBuilder();
         query.append(SQLStatements.INSERT.getValue()).append(SQLStatements.INTO.getValue())
-                .append(mtm.getAssociatedTableName()).append(MarkingChars.space);
-        query.append(MarkingChars.openBracket).append(mtm.getForeignKeyToOriginalTableName()).append(MarkingChars.comma)
-                .append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.closedBracket).append(SQLStatements.VALUES.getValue()).append(MarkingChars.openBracket);
-        query.append(idMain.toString()).append(MarkingChars.comma).append(idSide.toString()).append(MarkingChars.closeBracketAndSemicolon);
+                .append(mtm.getAssociatedTableName()).append(MarkingChars.SPACE);
+        query.append(MarkingChars.OPEN_BRACKET).append(mtm.getForeignKeyToOriginalTableName()).append(MarkingChars.COMMA)
+                .append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.CLOSED_BRACKET).append(SQLStatements.VALUES.getValue()).append(MarkingChars.OPEN_BRACKET);
+        query.append(idMain.toString()).append(MarkingChars.COMMA).append(idSide.toString()).append(MarkingChars.CLOSE_BRACKET_AND_SEMICOLON);
 
         return query.toString();
     }

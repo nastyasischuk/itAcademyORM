@@ -45,7 +45,7 @@ public class QueryBuilderImpl implements QueryBuilder {
 
 
     public QueryBuilderImpl select() {
-        query.append(SQLStatements.SELECT.getValue()).append(MarkingChars.star).append(SQLStatements.FROM.getValue())
+        query.append(SQLStatements.SELECT.getValue()).append(MarkingChars.STAR).append(SQLStatements.FROM.getValue())
 
                 .append(AnnotationUtils.getTableName(classType));
         lastIndexOfStar = query.lastIndexOf("*");
@@ -129,12 +129,12 @@ public class QueryBuilderImpl implements QueryBuilder {
     }
 
     public QueryBuilderImpl having(Aggregation aggregation, Limits limits) {
-        query.append(SQLStatements.HAVING.getValue()).append(aggregation.build()).append(MarkingChars.space).append(limits.build());
+        query.append(SQLStatements.HAVING.getValue()).append(aggregation.build()).append(MarkingChars.SPACE).append(limits.build());
         return this;
     }
 
     public QueryBuilderImpl ascAndDesc(String ascColumnName, String descColumnName) {
-        query.append(getLimits().getColumnName(ascColumnName)).append(SQLStatements.ASC.getValue()).append(MarkingChars.comma)
+        query.append(getLimits().getColumnName(ascColumnName)).append(SQLStatements.ASC.getValue()).append(MarkingChars.COMMA)
                 .append(getLimits().getColumnName(descColumnName)).append(SQLStatements.DESC.getValue());
         return this;
     }
@@ -171,7 +171,7 @@ public class QueryBuilderImpl implements QueryBuilder {
     }
 
     public String fetch() {
-        query.append(MarkingChars.semicolon);
+        query.append(MarkingChars.SEMICOLON);
         return query.toString();
     }
 
@@ -179,9 +179,9 @@ public class QueryBuilderImpl implements QueryBuilder {
         StringBuilder values = new StringBuilder();
         for (String columnName : getLimits().getAllColumnNames(classType)) {
             String lastElement = getLimits().getAllColumnNames(classType).get(getLimits().getAllColumnNames(classType).size() - 1);
-            values.append(AnnotationUtils.getTableName(classType)).append(MarkingChars.dot).append(columnName);
+            values.append(AnnotationUtils.getTableName(classType)).append(MarkingChars.DOT).append(columnName);
             if (!columnName.equals(lastElement)) {
-                values.append(MarkingChars.comma);
+                values.append(MarkingChars.COMMA);
             } else {
                 break;
             }

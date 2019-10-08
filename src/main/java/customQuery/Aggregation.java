@@ -19,38 +19,38 @@ public class Aggregation {
     }
 
     public Aggregation count(String columnName, String inEachColumn) {
-        query.append(SQLStatements.COUNT.getValue()).append(MarkingChars.openBracket)
-                .append(createColumn(columnName).getName()).append(MarkingChars.closedBracket)
-                .append(MarkingChars.comma).append(createColumn(inEachColumn).getName());
+        query.append(SQLStatements.COUNT.getValue()).append(MarkingChars.OPEN_BRACKET)
+                .append(createColumn(columnName).getName()).append(MarkingChars.CLOSED_BRACKET)
+                .append(MarkingChars.COMMA).append(createColumn(inEachColumn).getName());
         return this;
     }
     public Aggregation count(String columnName) {
-        query.append(SQLStatements.COUNT.getValue()).append(MarkingChars.openBracket)
-                .append(createColumn(columnName).getName()).append(MarkingChars.closedBracket);
+        query.append(SQLStatements.COUNT.getValue()).append(MarkingChars.OPEN_BRACKET)
+                .append(createColumn(columnName).getName()).append(MarkingChars.CLOSED_BRACKET);
         return this;
     }
 
     public Aggregation selectMin(String columnName) {
-        query.append(SQLStatements.MIN.getValue()).append(MarkingChars.openBracket)
-                .append(createColumn(columnName).getName()).append(MarkingChars.closedBracket);
+        query.append(SQLStatements.MIN.getValue()).append(MarkingChars.OPEN_BRACKET)
+                .append(createColumn(columnName).getName()).append(MarkingChars.CLOSED_BRACKET);
         return this;
     }
 
     public Aggregation selectMax(String columnName) {
-        query.append(SQLStatements.MAX.getValue()).append(MarkingChars.openBracket)
-                .append(createColumn(columnName).getName()).append(MarkingChars.closedBracket);
+        query.append(SQLStatements.MAX.getValue()).append(MarkingChars.OPEN_BRACKET)
+                .append(createColumn(columnName).getName()).append(MarkingChars.CLOSED_BRACKET);
         return this;
     }
 
     public Aggregation avg(String columnName) {
-        query.append(SQLStatements.AVG.getValue()).append(MarkingChars.openBracket)
-                .append(createColumn(columnName).getName()).append(MarkingChars.closedBracket);
+        query.append(SQLStatements.AVG.getValue()).append(MarkingChars.OPEN_BRACKET)
+                .append(createColumn(columnName).getName()).append(MarkingChars.CLOSED_BRACKET);
         return this;
     }
 
     public Aggregation sum(String columnName) {
-        query.append(SQLStatements.SUM.getValue()).append(MarkingChars.openBracket)
-                .append(createColumn(columnName).getName()).append(MarkingChars.closedBracket);
+        query.append(SQLStatements.SUM.getValue()).append(MarkingChars.OPEN_BRACKET)
+                .append(createColumn(columnName).getName()).append(MarkingChars.CLOSED_BRACKET);
         return this;
     }
 

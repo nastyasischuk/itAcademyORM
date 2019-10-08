@@ -14,16 +14,16 @@ public class SQLTableQueryCreator {
 
     public String createTableQuery() {
         StringBuilder query = new StringBuilder();
-        query.append(SQLStatements.CREATE_TABLE.getValue()).append(MarkingChars.space).append(table.getTableName()).append(MarkingChars.openBracket);
+        query.append(SQLStatements.CREATE_TABLE.getValue()).append(MarkingChars.SPACE).append(table.getTableName()).append(MarkingChars.OPEN_BRACKET);
         for (Column column : table.getColumns()) {
             if (column.isForeignKey() && column.getName().equals(findPKName(table.getColumns())))
                 continue;
             if (column.isManyToMany())
                 continue;
 
-            query.append(column.getName()).append(MarkingChars.space).append(column.getType());
+            query.append(column.getName()).append(MarkingChars.SPACE).append(column.getType());
             if (column.getType().equals(SQLTypes.VARCHAR)) {
-                query.append(MarkingChars.openBracket).append(column.getType().getLength()).append(MarkingChars.closedBracket);
+                query.append(MarkingChars.OPEN_BRACKET).append(column.getType().getLength()).append(MarkingChars.CLOSED_BRACKET);
             }
             if (!column.isNullable()) {
                 query.append(SQLStatements.NOT_NULL.getValue());
@@ -38,17 +38,17 @@ public class SQLTableQueryCreator {
                 query.append(SQLStatements.DEFAULT.getValue()).append(column.getDefaultValue());
             }
             if (!(table.getCheckConstraint() == null)) {
-                query.append(SQLStatements.CHECK.getValue()).append(MarkingChars.openBracket).append(table.getCheckConstraint()).append(MarkingChars.closedBracket);
+                query.append(SQLStatements.CHECK.getValue()).append(MarkingChars.OPEN_BRACKET).append(table.getCheckConstraint()).append(MarkingChars.CLOSED_BRACKET);
             }
 
-            query.append(MarkingChars.comma);
+            query.append(MarkingChars.COMMA);
         }
 
-        query.append(SQLStatements.PK.getValue()).append(MarkingChars.openBracket)
-                .append(table.getPrimaryKey().getColumnPrimaryKey().getName()).append(MarkingChars.closedBracket);
-        query.append(MarkingChars.closedBracket).append(MarkingChars.semicolon);
-        if (query.toString().endsWith(MarkingChars.redundantComa))
-            query = new StringBuilder(query.toString().replace(MarkingChars.redundantComa, MarkingChars.closeBracketAndSemicolon));
+        query.append(SQLStatements.PK.getValue()).append(MarkingChars.OPEN_BRACKET)
+                .append(table.getPrimaryKey().getColumnPrimaryKey().getName()).append(MarkingChars.CLOSED_BRACKET);
+        query.append(MarkingChars.CLOSED_BRACKET).append(MarkingChars.SEMICOLON);
+        if (query.toString().endsWith(MarkingChars.REDUNDANT_COMA))
+            query = new StringBuilder(query.toString().replace(MarkingChars.REDUNDANT_COMA, MarkingChars.CLOSE_BRACKET_AND_SEMICOLON));
         return query.toString();
     }
 
@@ -75,10 +75,10 @@ public class SQLTableQueryCreator {
             for (Column column : index.getColumnsInIndex()) {
                 columns.append(column);
                 if (!column.equals(lastColumnInIndex)) {
-                    columns.append(MarkingChars.comma);
+                    columns.append(MarkingChars.COMMA);
                 }
-                request.append(MarkingChars.openBracket).append(columns).append(MarkingChars.closedBracket)
-                        .append(MarkingChars.semicolon);
+                request.append(MarkingChars.OPEN_BRACKET).append(columns).append(MarkingChars.CLOSED_BRACKET)
+                        .append(MarkingChars.SEMICOLON);
                 queryIndexList.add(request.toString());
             }
         }
@@ -92,10 +92,10 @@ public class SQLTableQueryCreator {
             if (!table.getForeignKeys().isEmpty()) {
                 request.append(SQLStatements.ALTER_TABLE.getValue()).append(fk.getTableName())
                         .append(SQLStatements.ADD.getValue()).append(SQLStatements.CONSTRAINT.getValue()).append(fk.getConstructionName())
-                        .append(SQLStatements.FK.getValue()).append(MarkingChars.openBracket).append(fk.getForeignKeyName()).append(MarkingChars.closedBracket)
+                        .append(SQLStatements.FK.getValue()).append(MarkingChars.OPEN_BRACKET).append(fk.getForeignKeyName()).append(MarkingChars.CLOSED_BRACKET)
                         .append(SQLStatements.REFERENCE.getValue()).append(fk.getReferenceTableName())
-                        .append(MarkingChars.openBracket).append(fk.getReferencePKName()).append(MarkingChars.closedBracket)
-                        .append(SQLStatements.ON_DELETE_CASCADE.getValue()).append(MarkingChars.semicolon);
+                        .append(MarkingChars.OPEN_BRACKET).append(fk.getReferencePKName()).append(MarkingChars.CLOSED_BRACKET)
+                        .append(SQLStatements.ON_DELETE_CASCADE.getValue()).append(MarkingChars.SEMICOLON);
                 queryFKList.add(request.toString());
             }
         return queryFKList;
@@ -108,32 +108,32 @@ public class SQLTableQueryCreator {
         StringBuilder querySecondCreateTableMTMT = new StringBuilder();
         for (ManyToMany mtm : table.getMtmAssociations()) {
             queryCreateTableMTMT.append(SQLStatements.CREATE_TABLE.getValue()).append(mtm.getAssociatedTableName())
-                    .append(MarkingChars.openBracket).append(mtm.getForeignKeyToOriginalTableName())
-                    .append(MarkingChars.space).append(mtm.getTypeOfPKOriginal()).append(SQLStatements.NOT_NULL.getValue())
-                    .append(MarkingChars.comma)
-                    .append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.space).append(mtm.getTypeOfPKLinked())
+                    .append(MarkingChars.OPEN_BRACKET).append(mtm.getForeignKeyToOriginalTableName())
+                    .append(MarkingChars.SPACE).append(mtm.getTypeOfPKOriginal()).append(SQLStatements.NOT_NULL.getValue())
+                    .append(MarkingChars.COMMA)
+                    .append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.SPACE).append(mtm.getTypeOfPKLinked())
                     .append(SQLStatements.NOT_NULL.getValue())
-                    .append(MarkingChars.comma).append(SQLStatements.PK.getValue()).append(MarkingChars.openBracket)
-                    .append(mtm.getForeignKeyToOriginalTableName()).append(MarkingChars.comma)
-                    .append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.closedBracket).append(MarkingChars.closedBracket).append(MarkingChars.semicolon);
+                    .append(MarkingChars.COMMA).append(SQLStatements.PK.getValue()).append(MarkingChars.OPEN_BRACKET)
+                    .append(mtm.getForeignKeyToOriginalTableName()).append(MarkingChars.COMMA)
+                    .append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.CLOSED_BRACKET).append(MarkingChars.CLOSED_BRACKET).append(MarkingChars.SEMICOLON);
             queryMTMList.add(queryCreateTableMTMT.toString());
         }
         for (ManyToMany mtm : table.getMtmAssociations()) {
-            queryAlterMTM.append(SQLStatements.ALTER_TABLE.getValue()).append(mtm.getAssociatedTableName()).append(MarkingChars.space)
+            queryAlterMTM.append(SQLStatements.ALTER_TABLE.getValue()).append(mtm.getAssociatedTableName()).append(MarkingChars.SPACE)
                     .append(SQLStatements.ADD.getValue()).append(SQLStatements.FK.getValue())
-                    .append(MarkingChars.openBracket).append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.closedBracket)
+                    .append(MarkingChars.OPEN_BRACKET).append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.CLOSED_BRACKET)
                     .append(SQLStatements.REFERENCE.getValue()).append(mtm.getLinkedTableName())
-                    .append(MarkingChars.openBracket).append(mtm.getPrimaryKeyOfLinkedTableName()).append(MarkingChars.closedBracket)
-                    .append(SQLStatements.ON_DELETE_CASCADE.getValue()).append(MarkingChars.semicolon);
+                    .append(MarkingChars.OPEN_BRACKET).append(mtm.getPrimaryKeyOfLinkedTableName()).append(MarkingChars.CLOSED_BRACKET)
+                    .append(SQLStatements.ON_DELETE_CASCADE.getValue()).append(MarkingChars.SEMICOLON);
             queryMTMList.add(queryAlterMTM.toString());
         }
         for (ManyToMany mtm : table.getMtmAssociations()) {
-            querySecondCreateTableMTMT.append(SQLStatements.ALTER_TABLE.getValue()).append(mtm.getAssociatedTableName()).append(MarkingChars.space)
+            querySecondCreateTableMTMT.append(SQLStatements.ALTER_TABLE.getValue()).append(mtm.getAssociatedTableName()).append(MarkingChars.SPACE)
                     .append(SQLStatements.ADD).append(SQLStatements.FK.getValue())
-                    .append(MarkingChars.openBracket).append(mtm.getForeignKeyToOriginalTableName()).append(MarkingChars.closedBracket)
+                    .append(MarkingChars.OPEN_BRACKET).append(mtm.getForeignKeyToOriginalTableName()).append(MarkingChars.CLOSED_BRACKET)
                     .append(SQLStatements.REFERENCE.getValue()).append(mtm.getOriginalTableName())
-                    .append(MarkingChars.openBracket).append(mtm.getPrimaryKeyOfOriginalTableName()).append(MarkingChars.closedBracket)
-                    .append(SQLStatements.ON_DELETE_CASCADE.getValue()).append(MarkingChars.semicolon);
+                    .append(MarkingChars.OPEN_BRACKET).append(mtm.getPrimaryKeyOfOriginalTableName()).append(MarkingChars.CLOSED_BRACKET)
+                    .append(SQLStatements.ON_DELETE_CASCADE.getValue()).append(MarkingChars.SEMICOLON);
             queryMTMList.add(querySecondCreateTableMTMT.toString());
         }
 

@@ -21,7 +21,7 @@ public class UpdateQueryBuilder extends QueryBuilder {
         Iterator columnNamesIterator = row.getMap().keySet().iterator();
         String lastColumnNameIterator = null;
 
-        request.append(SQLStatements.UPDATE.getValue()).append(MarkingChars.space).append(row.getTableName())
+        request.append(SQLStatements.UPDATE.getValue()).append(MarkingChars.SPACE).append(row.getTableName())
                 .append(SQLStatements.SET.getValue());
 
         while (columnNamesIterator.hasNext()) {
@@ -29,15 +29,15 @@ public class UpdateQueryBuilder extends QueryBuilder {
         }
 
         for (Map.Entry<String, String> pair : row.getMap().entrySet()) {
-            columnNamesAndColumnValues.append(pair.getKey()).append(MarkingChars.equally).append(MarkingChars.space)
-                    .append(MarkingChars.quote).append(pair.getValue()).append(MarkingChars.quote);
+            columnNamesAndColumnValues.append(pair.getKey()).append(MarkingChars.EQUALLY).append(MarkingChars.SPACE)
+                    .append(MarkingChars.QUOTE).append(pair.getValue()).append(MarkingChars.QUOTE);
             if (!pair.getKey().equals(lastColumnNameIterator)) {
-                columnNamesAndColumnValues.append(MarkingChars.comma);
+                columnNamesAndColumnValues.append(MarkingChars.COMMA);
             }
         }
         request.append(columnNamesAndColumnValues);
-        request.append(SQLStatements.WHERE.getValue()).append(row.getIdName()).append(MarkingChars.equally)
-                .append(row.getIdValue()).append(MarkingChars.semicolon);
+        request.append(SQLStatements.WHERE.getValue()).append(row.getIdName()).append(MarkingChars.EQUALLY)
+                .append(row.getIdValue()).append(MarkingChars.SEMICOLON);
 
         return request.toString();
     }

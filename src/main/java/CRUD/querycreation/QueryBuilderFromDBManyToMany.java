@@ -18,8 +18,8 @@ public class QueryBuilderFromDBManyToMany extends QueryBuilderFromDB {
         StringBuilder query = new StringBuilder();
         query.append(SQLStatements.SELECT.getValue()).append(row.getInverseColumn())
                 .append(SQLStatements.FROM.getValue()).append(row.getManyToManyTableName())
-                .append(SQLStatements.WHERE.getValue()).append(row.getJoinCoulmn()).append(MarkingChars.equally)
-                .append(row.getIdValue()).append(MarkingChars.semicolon);
+                .append(SQLStatements.WHERE.getValue()).append(row.getJoinCoulmn()).append(MarkingChars.EQUALLY)
+                .append(row.getIdValue()).append(MarkingChars.SEMICOLON);
         return query.toString();
     }
 }
