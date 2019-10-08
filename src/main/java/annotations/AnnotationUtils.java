@@ -9,8 +9,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class AnnotationUtils {
     private static Logger logger = Logger.getLogger(AnnotationUtils.class);
@@ -47,7 +45,7 @@ public class AnnotationUtils {
     }
 
     @SafeVarargs
-    public static boolean isAnyOfAnnotationIsPresent(Field field, Class<? extends Annotation> ... annotations) {
+    public static boolean isAnyOfAnnotationIsPresent(Field field, Class<? extends Annotation>... annotations) {
         for (Class<? extends Annotation> annotation : annotations) {
             if (field.isAnnotationPresent(annotation))
                 return true;
@@ -56,7 +54,7 @@ public class AnnotationUtils {
     }
 
     public static String getTableName(Class toBuildClass) {
-        if(!toBuildClass.isAnnotationPresent(Table.class)) return toBuildClass.getSimpleName();
+        if (!toBuildClass.isAnnotationPresent(Table.class)) return toBuildClass.getSimpleName();
         return ((annotations.Table) toBuildClass.getAnnotation(annotations.Table.class)).name();
     }
 
@@ -113,19 +111,19 @@ public class AnnotationUtils {
         throw new FieldIsNotCollectionException("Field is not Collection");
     }
 
-    public static AssociatedClass getAssociatedTable(Field field){
-        if(field.isAnnotationPresent(AssociatedTable.class)){
+    public static AssociatedClass getAssociatedTable(Field field) {
+        if (field.isAnnotationPresent(AssociatedTable.class)) {
             AssociatedTable associatedTable = field.getAnnotation(AssociatedTable.class);
             return new AssociatedClass(associatedTable.associatedTableName(),
-                    associatedTable.joinColumns().name(),associatedTable.inverseJoinColumns().name());
-        }else{
+                    associatedTable.joinColumns().name(), associatedTable.inverseJoinColumns().name());
+        } else {
             AssociatedTable associatedTable = findAssociatedTable(field);
             return new AssociatedClass(associatedTable.associatedTableName(),
-                    associatedTable.inverseJoinColumns().name(),associatedTable.joinColumns().name());
-    }
+                    associatedTable.inverseJoinColumns().name(), associatedTable.joinColumns().name());
+        }
     }
 
-    private static AssociatedTable findAssociatedTable(Field field){
+    private static AssociatedTable findAssociatedTable(Field field) {
         String mappedBy = field.getAnnotation(ManyToMany.class).mappedBy();
         Class classWithAssociatedTable = classGetTypeOfCollectionField(field);
         AssociatedTable foundAssociatedTable = null;
@@ -133,16 +131,17 @@ public class AnnotationUtils {
             Field fieldOfAssociatedTable = classWithAssociatedTable.getDeclaredField(mappedBy);
             foundAssociatedTable = fieldOfAssociatedTable.getAnnotation(AssociatedTable.class);
         } catch (NoSuchFieldException e) {
-            logger.error(e,e.getCause());
+            logger.error(e, e.getCause());
         }
         return foundAssociatedTable;
     }
-    public static Field getFieldByColemnName(Class classWithFields,String columnName){
+
+    public static Field getFieldByColemnName(Class classWithFields, String columnName) {
         Field[] fields = classWithFields.getDeclaredFields();
-        for(Field field:fields){
-            if(isColumnPresentAndNotEmpty(field)){
+        for (Field field : fields) {
+            if (isColumnPresentAndNotEmpty(field)) {
                 logger.info(field.getName());
-                if(field.getAnnotation(Column.class).name().equals(columnName))
+                if (field.getAnnotation(Column.class).name().equals(columnName))
                     return field;
             }
         }

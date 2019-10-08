@@ -36,15 +36,15 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
     public void setResultFromResultSet() throws NoSuchFieldException, IllegalAccessException {
         List<Collection<Object>> listOfCollectionInObject = new ArrayList<>();
         for (Map.Entry<String, Class> entry : row.getNameAndType().entrySet()) {
-            if(row.getIdValue()==null){
+            if (row.getIdValue() == null) {
                 String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(row.getNameAndType().get(row.getIdName()));
-                row.setIdValue( getValueFromResultSet(nameOfMethodInResultSetToGetValue, row.getIdName()).toString());
+                row.setIdValue(getValueFromResultSet(nameOfMethodInResultSetToGetValue, row.getIdName()).toString());
             }
-            Field field=null;
-            if(AnnotationUtils.getFieldByColemnName(classType,entry.getKey())!=null){
-                field = classType.getDeclaredField(AnnotationUtils.getFieldByColemnName(classType,entry.getKey()).getName());
-            }else
-             field = classType.getDeclaredField(entry.getKey());
+            Field field = null;
+            if (AnnotationUtils.getFieldByColemnName(classType, entry.getKey()) != null) {
+                field = classType.getDeclaredField(AnnotationUtils.getFieldByColemnName(classType, entry.getKey()).getName());
+            } else
+                field = classType.getDeclaredField(entry.getKey());
 
             field.setAccessible(true);
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(entry.getValue());
@@ -53,12 +53,11 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
                 if (nameOfMethodInResultSetToGetValue == null) {
                     fieldValue = handleCasesWhenTypeIsNotSimple(field, entry.getKey());
                 } else {
-                    fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue,entry.getKey());
+                    fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, entry.getKey());
                 }
             } catch (Exception e) {
-                logger.error(e,e.getCause());
+                logger.error(e, e.getCause());
             }
-
             field.set(objectToBuildFromDB, fieldValue);
             if (AnnotationUtils.isManyToOnePresent(field)) {
                 listOfCollectionInObject.add(setToCollection(fieldValue));
@@ -75,25 +74,27 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
             fieldValue = database.getCrud().find(field.getType(), foreignKeyValue);
 
         } else if (AnnotationUtils.isOneToManyPresent(field)) {
-          fieldValue = handleOneTOMany(field);
+            fieldValue = handleOneTOMany(field);
         } else if (AnnotationUtils.isManyToManyPresent(field)) {
-             fieldValue = handleManyTOMany(field);
+            fieldValue = handleManyTOMany(field);
 
         }
         return fieldValue;
     }
-    private Collection<Object> handleOneTOMany(Field field){
+
+    private Collection<Object> handleOneTOMany(Field field) {
         Collection<Object> foundObjectCollection = null;
         try {
             foundObjectCollection = database.getCrud().findCollection(field.getAnnotation(OneToMany.class).
                     typeOfReferencedObject(), row.getIdValue(), objectToBuildFromDB, field.getAnnotation(OneToMany.class).mappedBy());
 
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
         return foundObjectCollection;
     }
-    private Collection<Object> handleManyTOMany(Field field){
+
+    private Collection<Object> handleManyTOMany(Field field) {
         Collection<Object> foundObjectCollection = null;
         try {
             foundObjectCollection = database.getCrud().
@@ -102,7 +103,7 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
                             AnnotationUtils.getAssociatedTable(field));
 
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
         return foundObjectCollection;
     }
@@ -150,7 +151,6 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
 
 
     public void removeAllDuplicates(List<Collection<Object>> toRemoveDublicates) {
-
         for (Collection<Object> collection : toRemoveDublicates) {
             removeDuplicateInCollection(collection);
         }
@@ -161,7 +161,8 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
         for (Object element : collection) {
             try {
                 if (determinePrimaryKeyValue(element).equals(determinePrimaryKeyValue(this.objectToBuildFromDB)) && this.objectToBuildFromDB != element) {
-                    objectToRemove = element; }
+                    objectToRemove = element;
+                }
             } catch (IllegalAccessException e) {
                 logger.error(e);
             }

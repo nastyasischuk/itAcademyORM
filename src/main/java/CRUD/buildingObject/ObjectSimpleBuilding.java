@@ -1,4 +1,5 @@
 package CRUD.buildingObject;
+
 import annotations.PrimaryKey;
 import annotations.AnnotationUtils;
 
@@ -64,14 +65,11 @@ public class ObjectSimpleBuilding {
         try {
             method = CachedRowSet.class.getMethod(nameOfMethod, int.class);
             valueOfObject = method.invoke(resultSet, 1);
-        } catch (NoSuchMethodException | IllegalAccessException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             logger.error(e, e.getCause());
-        } catch (InvocationTargetException e) {
-            logger.error(e,e.getCause());
         }
         return valueOfObject;
     }
-
 
     private Field primaryKeyField() {
         Field[] fields = classType.getDeclaredFields();

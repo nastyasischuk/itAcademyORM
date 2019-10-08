@@ -5,7 +5,7 @@ import customQuery.MarkingChars;
 import java.util.ArrayList;
 import java.util.List;
 
-public class  SQLTableQueryCreator {
+public class SQLTableQueryCreator {
     private Table table;
 
     public SQLTableQueryCreator(Table table) {

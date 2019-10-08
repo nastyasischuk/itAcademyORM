@@ -11,7 +11,6 @@ import exceptions.OpenConnectionException;
 import exceptions.SeveralPrimaryKeysException;
 import fluentquery.Dslmpl.QueryOrderedImpl;
 import org.apache.log4j.Logger;
-import tablecreation.ManyToMany;
 import tablecreation.SQLTableQueryCreator;
 import tablecreation.TableConstructorImpl;
 import transaction.TransactionsManager;
@@ -65,9 +64,11 @@ public class DataBaseImplementation implements DataBase {
         if (createTables)
             createAllTables();
     }
-    private void createAspect(){
+
+    private void createAspect() {
         ManyToManyAspect.setDb(this);
     }
+
     public void openConnection() {
         this.checkExistingConnection(this.name);
 
@@ -78,7 +79,7 @@ public class DataBaseImplementation implements DataBase {
             logger.debug("Connection has opened " + connection);
             OpenedConnection.addConnection(this.name, connection);
         } catch (SQLException | ClassNotFoundException e) {
-            logger.error(e,e.getCause());
+            logger.error(e, e.getCause());
             throw new OpenConnectionException(e.getMessage());
         }
     }
@@ -88,6 +89,7 @@ public class DataBaseImplementation implements DataBase {
             throw new OpenConnectionException("Connection " + name + "is already existing.");
         }
     }
+
     public Connection getConnection() {
         Connection connection = OpenedConnection.getConnection(this.name);
         if (connection == null) {
@@ -137,7 +139,6 @@ public class DataBaseImplementation implements DataBase {
                 mtmQueriesToExecute.addAll(queriesMTM);
 
             executeQueryForCreateDB(createTableQuery);
-            //executeQueryForCreateDB(createPKQuery); //todo remove this later
         }
 
         logger.debug("Size og fks = " + fkQueriesToExecute.size());
@@ -216,6 +217,7 @@ public class DataBaseImplementation implements DataBase {
             logger.error(e.getMessage());
         }
     }
+
     @Override
     public TransactionsManager getTransactionManager() {
         if (transactionsManager == null)
@@ -225,11 +227,11 @@ public class DataBaseImplementation implements DataBase {
 
     @Override
     public QueryBuilderImpl getQueryBuilder(Class<?> classType) {
-        return new QueryBuilderImpl(classType,this);
+        return new QueryBuilderImpl(classType, this);
     }
 
     @Override
     public QueryOrderedImpl getQueryOrdered(Class<?> classType) {
-        return new QueryOrderedImpl(this,classType);
+        return new QueryOrderedImpl(this, classType);
     }
 }

@@ -21,8 +21,11 @@ public interface DataBase {
     CRUD getCrud();
 
     void closeStatement(Statement statement);
+
     TransactionsManager getTransactionManager();
+
     QueryBuilderImpl getQueryBuilder(Class<?> classType);
+
     QueryOrderedImpl getQueryOrdered(Class<?> classType);
 
 }
