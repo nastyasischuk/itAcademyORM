@@ -18,7 +18,7 @@ import java.util.HashSet;
 
 @Aspect
 public class ManyToManyAspect {
-    protected static org.apache.log4j.Logger logger = Logger.getLogger(ManyToManyAspect.class);
+    private static org.apache.log4j.Logger logger = Logger.getLogger(ManyToManyAspect.class);
     private static DataBase dataBase;
 
     @Pointcut("execution(* get*(..))")
@@ -89,7 +89,7 @@ public class ManyToManyAspect {
     private void addInitialObjectToCollection(Object owner, Collection<Object> collection) {
         Object toReplace = null;
         for (Object inCollection : collection) {
-            findPK(inCollection).equals(findPK(owner));
+            findPK(inCollection).equals(findPK(owner));//todo check
             toReplace = inCollection;
             break;
         }

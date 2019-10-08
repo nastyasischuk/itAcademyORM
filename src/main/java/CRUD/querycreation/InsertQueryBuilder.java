@@ -32,12 +32,11 @@ public class InsertQueryBuilder extends QueryBuilder {
         }
         if (!row.isAutoIncrement()) {
             columnNames.append(row.getIdName()).append(MarkingChars.comma);
-            //todo ~ >_<
-            columnValues.append("'").append(row.getIdValue()).append("'").append(MarkingChars.comma);
+            columnValues.append(MarkingChars.singleQuote).append(row.getIdValue()).append(MarkingChars.singleQuote).append(MarkingChars.comma);
         }
         for (Map.Entry<String, String> pair : row.getMap().entrySet()) {
             columnNames.append(pair.getKey());
-            columnValues.append("'").append(pair.getValue()).append("'");
+            columnValues.append(MarkingChars.singleQuote).append(pair.getValue()).append(MarkingChars.singleQuote);
             if (!pair.getKey().equals(lastColumnNameIterator)) {
                 columnNames.append(MarkingChars.comma);
                 columnValues.append(MarkingChars.comma);

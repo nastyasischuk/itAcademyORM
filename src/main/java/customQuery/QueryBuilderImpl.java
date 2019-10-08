@@ -1,10 +1,5 @@
 package customQuery;
 
-
-import annotations.Table;
-import exceptions.NoPrimaryKeyException;
-import exceptions.SeveralPrimaryKeysException;
-
 import annotations.AnnotationUtils;
 import connection.DataBase;
 import tablecreation.SQLStatements;

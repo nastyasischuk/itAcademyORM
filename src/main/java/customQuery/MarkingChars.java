@@ -16,4 +16,5 @@ public class MarkingChars {
     public static final String underscore ="_";
     public static final String redundantComa = ", );";
     public static final String closeBracketAndSemicolon = ");";
+    public static final String singleQuote = "'";
 }

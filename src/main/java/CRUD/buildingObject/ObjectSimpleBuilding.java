@@ -1,6 +1,5 @@
 package CRUD.buildingObject;
 
-import annotations.PrimaryKey;
 import annotations.AnnotationUtils;
 
 import org.apache.log4j.Logger;
@@ -12,7 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ObjectSimpleBuilding {
-    public static Logger logger = Logger.getLogger(ObjectSimpleBuilding.class);
+    private static Logger logger = Logger.getLogger(ObjectSimpleBuilding.class);
 
     public static final String METHOD_NAME_FOR_INTEGER = "getInt";
     public static final String START_OF_METHOD_RESULTSET_TO_GET_VALUE = "get";

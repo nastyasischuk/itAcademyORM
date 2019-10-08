@@ -12,7 +12,7 @@ import javax.sql.rowset.CachedRowSet;
 import java.sql.Statement;
 
 public class FindHandler extends FindAllHandler {
-    protected static org.apache.log4j.Logger logger = Logger.getLogger(FindHandler.class);
+    private static org.apache.log4j.Logger logger = Logger.getLogger(FindHandler.class);
     protected RowFromDB row;
     protected DataBase dataBase;
     protected Class objectType;

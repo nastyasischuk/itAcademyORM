@@ -13,7 +13,6 @@ public class PersonTestManyToMany {
     @Column
     private String name;
 
-
     @ManyToMany(mappedBy = "person")
             @AssociatedTable(associatedTableName = "cat_person",
             joinColumns =@ForeignKey(name = "p_id"),

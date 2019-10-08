@@ -74,7 +74,7 @@ public class Limits {
     }
 
     public Limits like(String command, String value) {
-        switch (command) {
+        switch (command) {//todo chnge to constants
             case "starts": {
                 query.append(SQLStatements.LIKE.getValue()).append(MarkingChars.quote)
                         .append(value).append(MarkingChars.percent).append(MarkingChars.quote);

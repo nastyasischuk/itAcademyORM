@@ -1,5 +1,6 @@
 package CRUD;
 
+import customQuery.MarkingChars;
 import exceptions.QueryExecutionException;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
@@ -22,7 +23,7 @@ import java.util.List;
 import static annotations.AnnotationUtils.classGetTypeOfCollectionField;
 
 public class SaveDelegate {
-    protected static org.apache.log4j.Logger logger = Logger.getLogger(SaveDelegate.class);
+    private static org.apache.log4j.Logger logger = Logger.getLogger(SaveDelegate.class);
 
     private CRUDImpl crud;
     private Object objectToDB;
@@ -125,13 +126,13 @@ public class SaveDelegate {
             try {
                 setIdToObject(objectToDB, calculatedId);
             } catch (NoPrimaryKeyException e) {
-                logger.error("Primary key is not found");
+                logger.error(e,e.getCause());
             }
         }
     }
 
     private List<Object> checkAndSaveInnerManyToMany(Object objectToDB) {
-        List<Object> ids = null;
+        List<Object> ids = null;//todo rename
         try {
             List<Object> collectionsToSaveBefore = getAllObjects(objectToDB, ManyToMany.class);
             ids = new ArrayList<>();
@@ -161,7 +162,7 @@ public class SaveDelegate {
                     crud.save(o);
             }
         } catch (IllegalAccessException e) {
-            logger.error(e.getMessage());
+            logger.error(e,e.getCause());
         }
     }
 
@@ -170,7 +171,7 @@ public class SaveDelegate {
         try (Statement statement = crud.getDataBase().getStatement(query)) {
             ResultSet resultSet;
             resultSet = statement.executeQuery(query);
-            Object ob = null;
+            Object ob = null;//todo rename
             while (resultSet.next()) {
                 ob = resultSet.getObject(1);
             }
@@ -223,11 +224,10 @@ public class SaveDelegate {
     private String createQueryToAssociatedTable(Object idSide, Object idMain, tablecreation.ManyToMany mtm) {
         StringBuilder query = new StringBuilder();
         query.append(SQLStatements.INSERT.getValue()).append(SQLStatements.INTO.getValue())
-                //todo >_<
-                .append(mtm.getAssociatedTableName()).append(" ");
-        query.append("( ").append(mtm.getForeignKeyToOriginalTableName()).append(", ")
-                .append(mtm.getForeignKeyToLinkedTableName()).append(" )").append(SQLStatements.VALUES.getValue()).append("( ");
-        query.append(idMain.toString()).append(", ").append(idSide.toString()).append(" );");
+                .append(mtm.getAssociatedTableName()).append(MarkingChars.space);
+        query.append(MarkingChars.openBracket).append(mtm.getForeignKeyToOriginalTableName()).append(MarkingChars.comma)
+                .append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.closedBracket).append(SQLStatements.VALUES.getValue()).append(MarkingChars.openBracket);
+        query.append(idMain.toString()).append(MarkingChars.comma).append(idSide.toString()).append(MarkingChars.closeBracketAndSemicolon);
 
         return query.toString();
     }
@@ -242,7 +242,7 @@ public class SaveDelegate {
 
             field.set(object, idToObject);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            logger.error(e);
+            logger.error(e,e.getCause());
 
         }
     }
