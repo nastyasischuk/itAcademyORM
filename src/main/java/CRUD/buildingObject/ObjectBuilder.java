@@ -84,7 +84,7 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
 
     Object handleCasesWhenTypeIsNotSimple(Field field, String nameOfFieldToGet) {
         Object fieldValue = null;
-        if (AnnotationUtils.isAnyOfAnnotationIsPresent(field, ForeignKey.class, MapsId.class, OneToOne.class, ManyToOne.class)) {
+        if (AnnotationUtils.isAnyOfAnnotationIsPresent(field, MapsId.class, OneToOne.class, ManyToOne.class) ) {
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(determinePrimaryKeyType(field));
             Object foreignKeyValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, nameOfFieldToGet);
             fieldValue = database.getCrud().find(field.getType(), foreignKeyValue);

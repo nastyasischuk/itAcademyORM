@@ -5,6 +5,7 @@ import annotations.Entity;
 import annotations.ManyToMany;
 import annotations.PrimaryKey;
 import connection.DataBase;
+import exceptions.NoPrimaryKeyException;
 import org.apache.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -22,7 +23,7 @@ public class ManyToManyAspect {
     private static DataBase dataBase;
 
     @Pointcut("execution(* get*(..))")
-    public void ManyToManyPointCutDefinition() {
+    public void manyToManyPointCutDefinition() {
     }
 
     @Before("ManyToManyPointCutDefinition()")
@@ -70,7 +71,7 @@ public class ManyToManyAspect {
     }
 
     private void linkCollections(Object owner, Object o) {
-        Field fields[] = o.getClass().getDeclaredFields();
+        Field[] fields = o.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(ManyToMany.class)
                     && (AnnotationUtils.classGetTypeOfCollectionField(field) == owner.getClass())) {
@@ -82,47 +83,55 @@ public class ManyToManyAspect {
                     logger.error(e, e.getCause());
                 }
             }
-
         }
     }
 
     private void addInitialObjectToCollection(Object owner, Collection<Object> collection) {
         Object toReplace = null;
         for (Object inCollection : collection) {
-            findPK(inCollection).equals(findPK(owner));//todo check
-            toReplace = inCollection;
-            break;
+            try {
+                if (findPK(inCollection).equals(findPK(owner))) {
+                    toReplace = inCollection;
+                    break;
+                }
+            } catch (NoPrimaryKeyException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
         collection.remove(toReplace);
         collection.add(owner);
     }
 
     private Object findObjectInDB(Object o) {
-        Object pk = findPK(o);
+        Object pk = null;
+        try {
+            pk = findPK(o);
+        } catch (NoPrimaryKeyException e) {
+            logger.error(e.getMessage());
+        }
         Class classOfObject = o.getClass();
         return dataBase.getCrud().find(classOfObject, pk);
     }
 
-
-    private Object findPK(Object objectToFind) {
-        Object PK;
+    private Object findPK(Object objectToFind) throws NoPrimaryKeyException {
+        Object primaryKey;
         Field[] fields = objectToFind.getClass().getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(PrimaryKey.class)) {
+            if (AnnotationUtils.isPrimaryKeyPresent(field)) {
                 field.setAccessible(true);
                 try {
-                    PK = field.get(objectToFind);
-                    return PK;
+                    primaryKey = field.get(objectToFind);
+                    return primaryKey;
                 } catch (IllegalAccessException e) {
-                    logger.error(e, e.getCause());
+                    logger.error(e.getMessage(), e);
                 }
             }
         }
-        return null;
+        throw new NoPrimaryKeyException();
     }
 
     private boolean checkObjectInCollectionIsNull(Object object) {
-        Field fields[] = object.getClass().getDeclaredFields();
+        Field[] fields = object.getClass().getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
             if (field.isAnnotationPresent(ManyToMany.class)) {

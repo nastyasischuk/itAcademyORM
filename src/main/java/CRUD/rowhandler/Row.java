@@ -32,7 +32,6 @@ public abstract class Row {
         return idValue;
     }
 
-
     public void setIdValue(String idValue) {
         this.idValue = idValue;
     }

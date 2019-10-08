@@ -8,7 +8,6 @@ import exceptions.WrongSQLType;
 
 import java.lang.reflect.Field;
 
-
 public class ColumnConstructor {
     private Field field;
     private tablecreation.Column column;
@@ -28,7 +27,7 @@ public class ColumnConstructor {
             return AnnotationUtils.getColumnName(field);
         } else if (AnnotationUtils.isForeignKeyPresentAndNotEmpty(field)) {
             return AnnotationUtils.getFKName(field);
-        } else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {
+        } else if (AnnotationUtils.isOneToOneAndMapsIdPresent(field)) {
             return getNameIfOneToOne();
         } else {
             return field.getName();
@@ -81,10 +80,10 @@ public class ColumnConstructor {
             }
         }
 
-        if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class)){
+        if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class)) {
             column.setForeignKey(true);
         }
-        if (field.isAnnotationPresent(NotNull.class)){
+        if (field.isAnnotationPresent(NotNull.class)) {
             column.setNullable(false);
         }
         if (AnnotationUtils.isManyToManyPresent(field) && AnnotationUtils.isAssociatedTablePresentAndNotEmpty(field)) {

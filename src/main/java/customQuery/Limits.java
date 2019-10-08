@@ -51,7 +51,7 @@ public class Limits {
         return this;
     }
 
-    public Limits in(String... values) {
+    Limits in(String... values) {
         query.append(SQLStatements.IN.getValue()).append(MarkingChars.openBracket);
         for (String value : values) {
             String lastElement = values[values.length - 1];
@@ -67,7 +67,7 @@ public class Limits {
         return this;
     }
 
-    public Limits inSubQuery(QueryBuilderImpl subQuery) {
+    Limits inSubQuery(QueryBuilderImpl subQuery) {
         query.append(SQLStatements.IN.getValue()).append(MarkingChars.openBracket)
                 .append(subQuery).append(MarkingChars.closedBracket);
         return this;

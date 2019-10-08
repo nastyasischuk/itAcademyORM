@@ -1,10 +1,8 @@
 package connection;
 
 import CRUD.CRUDImpl;
-import customQuery.QueryBuilder;
-import customQuery.QueryBuilderImpl;
 import CRUD.aspects.ManyToManyAspect;
-
+import customQuery.QueryBuilderImpl;
 import exceptions.DatabaseException;
 import exceptions.NoPrimaryKeyException;
 import exceptions.OpenConnectionException;
@@ -71,7 +69,6 @@ public class DataBaseImplementation implements DataBase {
 
     public void openConnection() {
         this.checkExistingConnection(this.name);
-
         try {
             Class.forName(parseXMLConfig.getDriverClass());
             Connection connection = DriverManager.getConnection(parseXMLConfig.getUrl(),
@@ -98,9 +95,8 @@ public class DataBaseImplementation implements DataBase {
             return connection;
         }
     }
-
+    //this is ok
     public void close() {
-        // todo: check if it is bicycle
         try {
             Connection connection = OpenedConnection.getConnection(this.name);
             if (connection == null) {
@@ -132,22 +128,21 @@ public class DataBaseImplementation implements DataBase {
             SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
 
-            List<String> queriesFK = sqlTableQueryCreator.createFKQuery();
-            if (queriesFK != null && !queriesFK.isEmpty())
-                fkQueriesToExecute.addAll(queriesFK);
-            List<String> queriesMTM = sqlTableQueryCreator.createManyToManyQuery();
-            if (queriesMTM != null && !queriesMTM.isEmpty())
-                mtmQueriesToExecute.addAll(queriesMTM);
+            addAllToList(fkQueriesToExecute, sqlTableQueryCreator.createFKQuery());
+            addAllToList(mtmQueriesToExecute, sqlTableQueryCreator.createManyToManyQuery());
 
             executeQueryForCreateDB(createTableQuery);
         }
+        executeFK(fkQueriesToExecute);
+        executeManyToMany(mtmQueriesToExecute);
+    }
 
-        logger.debug("Size og fks = " + fkQueriesToExecute.size());
-        for (String query : fkQueriesToExecute) {
-            logger.debug("Executing query for FK " + query);
-            executeQueryForCreateDB(query);
-        }
+    private void addAllToList(List<String> listToAdd, List<String> added) {
+        if (added != null && !added.isEmpty())
+            listToAdd.addAll(added);
+    }
 
+    private void executeManyToMany(List<String> mtmQueriesToExecute) {
         logger.debug("Size og mtms = " + mtmQueriesToExecute.size());
         for (String query : mtmQueriesToExecute) {
             logger.debug("Executing query for MTM " + query);
@@ -155,12 +150,17 @@ public class DataBaseImplementation implements DataBase {
         }
     }
 
+    private void executeFK(List<String> fkQueriesToExecute) {
+        logger.debug("Size og fks = " + fkQueriesToExecute.size());
+        for (String query : fkQueriesToExecute) {
+            logger.debug("Executing query for FK " + query);
+            executeQueryForCreateDB(query);
+        }
+    }
+
     private void executeQueryForCreateDB(String query) {
         this.openConnection();
-        Statement statement = null;
-        // todo try-with-resources
-        try {
-            statement = this.getConnection().createStatement();
+        try(Statement statement = this.getConnection().createStatement();) {
             logger.debug("Executing query " + query);
             statement.executeUpdate(query);
         } catch (SQLException e) {
@@ -168,9 +168,6 @@ public class DataBaseImplementation implements DataBase {
             throw new DatabaseException(e.getMessage());
         } finally {
             try {
-                if (statement != null) {
-                    statement.close();
-                }
                 this.close();
             } catch (Exception e) {
                 logger.error(e.getMessage());
@@ -182,19 +179,13 @@ public class DataBaseImplementation implements DataBase {
         return crud;
     }
 
-    public void executeUpdateQuery(String query) throws SQLException {
-        Statement statement = null;
-        try {
-            statement = this.getConnection().createStatement();
+    public void executeUpdateQuery(String query) {
+        try (Statement statement  = this.getConnection().createStatement();) {
             logger.debug("Executing query " + query);
             statement.executeUpdate(query);
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage());
-        } finally {
-            if (statement != null) {
-                statement.close();
-            }
         }
     }
 

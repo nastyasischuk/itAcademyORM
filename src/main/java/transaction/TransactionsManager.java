@@ -2,10 +2,9 @@ package transaction;
 
 import exceptions.TransactionException;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
-import java.io.File;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class TransactionsManager implements Transactions {
     private static final Logger log = Logger.getLogger(TransactionsManager.class);

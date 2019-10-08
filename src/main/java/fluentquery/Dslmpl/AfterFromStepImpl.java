@@ -29,7 +29,7 @@ public class AfterFromStepImpl implements AfterFromStep {
 
     @Override
     public AfterFromStep where(Condition condition) {
-        query.append(" where ").append(condition.toString()); //TODO toString
+        query.append(" where ").append(condition.toString());
         return new AfterFromStepImpl(query);
     }
 
