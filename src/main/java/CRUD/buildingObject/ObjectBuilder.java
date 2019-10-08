@@ -34,6 +34,7 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
     }
 
     public void setResultFromResultSet() throws NoSuchFieldException, IllegalAccessException {
+        //todo
         List<Collection<Object>> listOfCollectionInObject = new ArrayList<>();
         for (Map.Entry<String, Class> entry : row.getNameAndType().entrySet()) {
             if (row.getIdValue() == null) {

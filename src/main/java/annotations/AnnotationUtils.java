@@ -74,10 +74,6 @@ public class AnnotationUtils {
         return field.isAnnotationPresent(OneToMany.class);
     }
 
-    public static String getMappedByInOneToMany(Field field) {
-        return field.getAnnotation(OneToMany.class).mappedBy();
-    }
-
     public static boolean isManyToManyPresentAndMappedByNotEmpty(Field field) {
         return field.isAnnotationPresent(ManyToMany.class) &&
                 !StringUtils.isEmpty(field.getAnnotation(ManyToMany.class).mappedBy());

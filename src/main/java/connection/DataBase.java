@@ -1,7 +1,6 @@
 package connection;
 
 import CRUD.CRUD;
-import customQuery.QueryBuilder;
 import customQuery.QueryBuilderImpl;
 import fluentquery.Dslmpl.QueryOrderedImpl;
 import transaction.TransactionsManager;

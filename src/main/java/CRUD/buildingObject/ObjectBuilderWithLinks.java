@@ -22,6 +22,7 @@ public class ObjectBuilderWithLinks extends ObjectBuilder {
 
     @Override
     public void setResultFromResultSet() throws NoSuchFieldException, IllegalAccessException {
+        //todo the same
         for (Map.Entry<String, Class> entry : row.getNameAndType().entrySet()) {
             Field field=null;
             if(AnnotationUtils.getFieldByColemnName(classType,entry.getKey())!=null){

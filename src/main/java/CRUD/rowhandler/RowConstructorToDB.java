@@ -27,7 +27,8 @@ public class RowConstructorToDB extends RowConstructor {
         for (Field fieldToAdd : classFields) {
             if (fieldToAdd.isAnnotationPresent(OneToMany.class) || fieldToAdd.isAnnotationPresent(OneToOne.class))
                 continue;
-
+            if(!checkIfRightColumnName(fieldToAdd))
+                continue;
             String name = getNameOfField(fieldToAdd);
             String value = getValueOfAllFields(fieldToAdd);
             if (AnnotationUtils.isPrimaryKeyPresent(fieldToAdd)) {
@@ -94,5 +95,10 @@ public class RowConstructorToDB extends RowConstructor {
             }
         }
         throw new RuntimeException("Primary key is not found!");
+    }
+    private boolean checkIfRightColumnName(Field fieldToAdd){
+        if(fieldToAdd.getName().startsWith("ajc$"))
+            return false;
+        return true;
     }
 }

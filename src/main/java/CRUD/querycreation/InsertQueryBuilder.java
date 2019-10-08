@@ -32,6 +32,7 @@ public class InsertQueryBuilder extends QueryBuilder {
         }
         if (!row.isAutoIncrement()) {
             columnNames.append(row.getIdName()).append(MarkingChars.comma);
+            //todo ~ >_<
             columnValues.append("'").append(row.getIdValue()).append("'").append(MarkingChars.comma);
         }
         for (Map.Entry<String, String> pair : row.getMap().entrySet()) {

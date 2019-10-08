@@ -56,7 +56,7 @@ public class FindAllHandler {
 
    public List<Object> buildManyObjects(CachedRowSet rowSet) {
        this.row = new RowConstructorFromDB(objectType).buildRow();
-       Object resultObject = null;
+       Object resultObject;
        List<Object> objects = null;
        try {
           while(rowSet.next()) {

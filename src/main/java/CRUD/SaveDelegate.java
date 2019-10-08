@@ -223,6 +223,7 @@ public class SaveDelegate {
     private String createQueryToAssociatedTable(Object idSide, Object idMain, tablecreation.ManyToMany mtm) {
         StringBuilder query = new StringBuilder();
         query.append(SQLStatements.INSERT.getValue()).append(SQLStatements.INTO.getValue())
+                //todo >_<
                 .append(mtm.getAssociatedTableName()).append(" ");
         query.append("( ").append(mtm.getForeignKeyToOriginalTableName()).append(", ")
                 .append(mtm.getForeignKeyToLinkedTableName()).append(" )").append(SQLStatements.VALUES.getValue()).append("( ");
