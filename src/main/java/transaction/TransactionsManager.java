@@ -9,8 +9,6 @@ import java.sql.*;
 
 public class TransactionsManager implements Transactions {
     private static final Logger log = Logger.getLogger(TransactionsManager.class);
-
-
     private Connection connection;
 
     public TransactionsManager(Connection connection) {
