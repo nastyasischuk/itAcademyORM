@@ -60,7 +60,7 @@ public class ParseXMLConfig {
     private String getProperty(String propertyName) {
         NodeList properties = getNode(PROPERTY);
         if (properties == null) {
-            return null;
+            throw new ConfigFileException("Configuration is missing or wrong.");
         }
 
         for (int counter = 0; counter < properties.getLength(); counter++) {
@@ -72,7 +72,7 @@ public class ParseXMLConfig {
                 }
             }
         }
-        return null;
+        throw new ConfigFileException("Configuration is missing or wrong.");
     }
 
     private NodeList getNode(String node) {
@@ -101,18 +101,6 @@ public class ParseXMLConfig {
                 configuredClassList.add(currentClass);
             }
         }
-//        NodeList properties = getNode(MAPPING);
-//        for (int counter = 0; counter < properties.getLength(); counter++) {
-//            Node currentProperty = properties.item(counter);
-//            if (currentProperty.getNodeType() == Node.ELEMENT_NODE) {
-//                Element element = (Element) currentProperty;
-//                Class currentClass = loadClass(element);
-//                if (currentClass.isAnnotationPresent(Entity.class)) {
-//                    configuredClassList.add(currentClass);
-//                }
-//            }
-//        }
-
         return configuredClassList;
     }
 

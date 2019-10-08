@@ -1,12 +1,16 @@
 package fluentquery.Dslmpl;
 
 import annotations.AnnotationUtils;
+import customQuery.MarkingChars;
+import exceptions.WrongFieldException;
+import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 
 import static annotations.AnnotationUtils.getColumnName;
 
 public class TableForQuery {
+    private static Logger logger = Logger.getLogger(TableForQuery.class);
     private Class<?> tableClass;
 
     public TableForQuery(Class<?> tableClass) {
@@ -27,11 +31,11 @@ public class TableForQuery {
 
     public FieldImpl field(String name)  {
         try {
-            return new FieldImpl(getTableName()+ "." + getFieldName(name));
+            return new FieldImpl(getTableName()+ MarkingChars.dot + getFieldName(name));
         } catch (NoSuchFieldException e) {
-            e.printStackTrace(); //TODO LOGGER
+            logger.error(e,e.getCause());
         }
-        throw new RuntimeException("cHECK YOUR FIELDS");
+        throw new WrongFieldException(name);
     }
 
     private String getFieldName(String name) throws NoSuchFieldException {

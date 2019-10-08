@@ -1,10 +1,10 @@
 package CRUD;
 
-import exceptions.QueryExecutionException;
 import CRUD.querycreation.QueryBuilderFactory;
 import CRUD.querycreation.QueryType;
 import CRUD.rowhandler.RowToDB;
 import annotations.*;
+import customQuery.MarkingChars;
 import exceptions.NoPrimaryKeyException;
 import org.apache.log4j.Logger;
 import tablecreation.ManyToManyConstructor;
@@ -21,8 +21,8 @@ import java.util.List;
 
 import static annotations.AnnotationUtils.classGetTypeOfCollectionField;
 
-public class SaveDelegate {
-    protected static org.apache.log4j.Logger logger = Logger.getLogger(SaveDelegate.class);
+class SaveDelegate {
+    private static org.apache.log4j.Logger logger = Logger.getLogger(SaveDelegate.class);
 
     private CRUDImpl crud;
     private Object objectToDB;
@@ -61,16 +61,13 @@ public class SaveDelegate {
                 }
             } catch (NoPrimaryKeyException e) {
                 logger.error("No primary key");
-            } catch (SQLException e) {
-                logger.error(e, e.getCause());
-                throw new QueryExecutionException("Could not update existing rows", e);
             }
         }
     }
 
     private void insertIfAssociatedTableHolder(List<Object> ids, Object idMain, Field[] fields) {
         for (Field field : fields) {
-            if (field.isAnnotationPresent(ManyToMany.class) && field.isAnnotationPresent(AssociatedTable.class)) {
+            if (AnnotationUtils.isManyToManyPresent(field) && field.isAnnotationPresent(AssociatedTable.class)) {
                 try {
                     tablecreation.ManyToMany manyToMany = new ManyToManyConstructor(field).build();
                     for (Object id : ids) {
@@ -79,9 +76,6 @@ public class SaveDelegate {
                     }
                 } catch (NoPrimaryKeyException e) {
                     logger.error("No primary key, couldn`t save to DB");
-                } catch (SQLException e) {
-                    logger.error(e, e.getCause());
-                    throw new QueryExecutionException("Could not update existing rows", e);
                 }
             }
         }
@@ -111,8 +105,10 @@ public class SaveDelegate {
         try {
             List<Object> objectsOTOToSave = getAllObjects(objectToDB, OneToOne.class);
             for (Object o : objectsOTOToSave) {
-                setIdToObject(o, getValueOfPK(objectToDB));
-                crud.save(o);
+                if (o != null) {
+                    setIdToObject(o, getValueOfPK(objectToDB));
+                    crud.save(o);
+                }
             }
         } catch (IllegalAccessException | NoPrimaryKeyException e) {
             logger.error(e.getMessage());
@@ -125,20 +121,20 @@ public class SaveDelegate {
             try {
                 setIdToObject(objectToDB, calculatedId);
             } catch (NoPrimaryKeyException e) {
-                logger.error("Primary key is not found");
+                logger.error(e,e.getCause());
             }
         }
     }
 
     private List<Object> checkAndSaveInnerManyToMany(Object objectToDB) {
-        List<Object> ids = null;
+        List<Object> idsOfFoundObjects = null;
         try {
             List<Object> collectionsToSaveBefore = getAllObjects(objectToDB, ManyToMany.class);
-            ids = new ArrayList<>();
+            idsOfFoundObjects = new ArrayList<>();
             for (Object currentCollection : collectionsToSaveBefore) {
                 if (currentCollection instanceof Collection) {
                     for (Object o : (Collection) currentCollection) {
-                        ids.add(getValueOfPK(o));
+                        idsOfFoundObjects.add(getValueOfPK(o));
                         if (checkIfNotInDB(o, getValueOfPK(o))) { 
                             logger.debug("Saving object -> " + o.toString());
                         crud.save(o);
@@ -149,7 +145,7 @@ public class SaveDelegate {
         } catch (IllegalAccessException e) {
             logger.error(e.getMessage());
         }
-        return ids;
+        return idsOfFoundObjects;
     }
 
     private void checkAndSaveInnerManyToOne(Object objectToDB) {
@@ -161,22 +157,20 @@ public class SaveDelegate {
                     crud.save(o);
             }
         } catch (IllegalAccessException e) {
-            logger.error(e.getMessage());
+            logger.error(e,e.getCause());
         }
     }
 
     private Object queryId(RowToDB row, QueryType queryType) {
         String query = new QueryBuilderFactory().createQueryBuilder(row, queryType).buildQuery();
         try (Statement statement = crud.getDataBase().getStatement(query)) {
-            ResultSet resultSet;
-            resultSet = statement.executeQuery(query);
-            Object ob = null;
-            while (resultSet.next()) {
-                ob = resultSet.getObject(1);
+            try (ResultSet resultSet = statement.executeQuery(query)) {
+                Object objectOfId = null;
+                while (resultSet.next()) {
+                    objectOfId = resultSet.getObject(1);
+                }
+                return objectOfId;
             }
-            resultSet.close();
-            statement.close();
-            return ob;
         } catch (SQLException e) {
             logger.error(e, e.getCause());
         }
@@ -223,11 +217,10 @@ public class SaveDelegate {
     private String createQueryToAssociatedTable(Object idSide, Object idMain, tablecreation.ManyToMany mtm) {
         StringBuilder query = new StringBuilder();
         query.append(SQLStatements.INSERT.getValue()).append(SQLStatements.INTO.getValue())
-                //todo >_<
-                .append(mtm.getAssociatedTableName()).append(" ");
-        query.append("( ").append(mtm.getForeignKeyToOriginalTableName()).append(", ")
-                .append(mtm.getForeignKeyToLinkedTableName()).append(" )").append(SQLStatements.VALUES.getValue()).append("( ");
-        query.append(idMain.toString()).append(", ").append(idSide.toString()).append(" );");
+                .append(mtm.getAssociatedTableName()).append(MarkingChars.space);
+        query.append(MarkingChars.openBracket).append(mtm.getForeignKeyToOriginalTableName()).append(MarkingChars.comma)
+                .append(mtm.getForeignKeyToLinkedTableName()).append(MarkingChars.closedBracket).append(SQLStatements.VALUES.getValue()).append(MarkingChars.openBracket);
+        query.append(idMain.toString()).append(MarkingChars.comma).append(idSide.toString()).append(MarkingChars.closeBracketAndSemicolon);
 
         return query.toString();
     }
@@ -239,10 +232,9 @@ public class SaveDelegate {
         try {
             field = object.getClass().getDeclaredField(nameOfId);
             field.setAccessible(true);
-
             field.set(object, idToObject);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            logger.error(e);
+            logger.error(e,e.getCause());
 
         }
     }

@@ -1,6 +1,7 @@
 package CRUD.rowhandler;
 
 import annotations.*;
+import exceptions.NoPrimaryKeyException;
 import org.apache.log4j.Logger;
 import tablecreation.TableConstructorImpl;
 
@@ -31,22 +32,25 @@ public class RowConstructorFromDB extends RowConstructor {
         return rowFromDB;
     }
     protected void operationsToBuild(RowFromDB rowFromDB){
-        if(id!=null)
-        rowFromDB.setIdValue(id.toString());
-        rowFromDB.setIdName(getIdName());
+       try {
+           if (id != null)
+               rowFromDB.setIdValue(id.toString());
+           rowFromDB.setIdName(getIdName());
+       }catch (NoPrimaryKeyException e){
+           logger.error(e,e.getCause());
+       }
         rowFromDB.setTableName(getTableName(typeOfObject));
         rowFromDB.setNameAndType(getNameAndType());
     }
 
-    protected String getIdName() {
+    protected String getIdName()throws NoPrimaryKeyException {
         Field[] fields = typeOfObject.getDeclaredFields();
         for (Field field : fields) {
             if (AnnotationUtils.isPrimaryKeyPresent(field)) {
                 return getNameOfField(field);
             }
         }
-       logger.error("Primary key is not found!");
-        return null;
+       throw new NoPrimaryKeyException();
     }
 
     private Map<String, Class> getNameAndType() {

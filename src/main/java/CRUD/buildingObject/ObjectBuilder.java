@@ -34,42 +34,57 @@ public class ObjectBuilder extends ObjectSimpleBuilding {
     }
 
     public void setResultFromResultSet() throws NoSuchFieldException, IllegalAccessException {
-        //todo
         List<Collection<Object>> listOfCollectionInObject = new ArrayList<>();
         for (Map.Entry<String, Class> entry : row.getNameAndType().entrySet()) {
-            if (row.getIdValue() == null) {
-                String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(row.getNameAndType().get(row.getIdName()));
-                row.setIdValue(getValueFromResultSet(nameOfMethodInResultSetToGetValue, row.getIdName()).toString());
-            }
-            Field field = null;
-            if (AnnotationUtils.getFieldByColemnName(classType, entry.getKey()) != null) {
-                field = classType.getDeclaredField(AnnotationUtils.getFieldByColemnName(classType, entry.getKey()).getName());
-            } else
-                field = classType.getDeclaredField(entry.getKey());
-
-            field.setAccessible(true);
-            String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(entry.getValue());
-            Object fieldValue = null;
-            try {
-                if (nameOfMethodInResultSetToGetValue == null) {
-                    fieldValue = handleCasesWhenTypeIsNotSimple(field, entry.getKey());
-                } else {
-                    fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, entry.getKey());
-                }
-            } catch (Exception e) {
-                logger.error(e, e.getCause());
-            }
-            field.set(objectToBuildFromDB, fieldValue);
-            if (AnnotationUtils.isManyToOnePresent(field)) {
-                listOfCollectionInObject.add(setToCollection(fieldValue));
-            }
+        setValueToEveryFieldOfObject(entry,listOfCollectionInObject);
         }
         removeAllDuplicates(listOfCollectionInObject);
+    }
+    private void setValueToEveryFieldOfObject(Map.Entry<String, Class> entry,List<Collection<Object>> listOfCollectionInObject)throws NoSuchFieldException, IllegalAccessException{
+        setIdIfNull();
+        Field field = getFieldOfObject(entry);
+        field.setAccessible(true);
+        String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(entry.getValue());
+        Object fieldValue = getValueOfField(entry, field, nameOfMethodInResultSetToGetValue);
+        field.set(objectToBuildFromDB, fieldValue);
+        if (AnnotationUtils.isManyToOnePresent(field)) {
+            listOfCollectionInObject.add(setToCollection(fieldValue));
+        }
+    }
+
+    protected Object getValueOfField(Map.Entry<String, Class> entry, Field field, String nameOfMethodInResultSetToGetValue) {
+        Object fieldValue = null;
+        try {
+            if (nameOfMethodInResultSetToGetValue == null) {
+                fieldValue = handleCasesWhenTypeIsNotSimple(field, entry.getKey());
+            } else {
+                fieldValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, entry.getKey());
+            }
+        } catch (Exception e) {
+            logger.error(e, e.getCause());
+        }
+        return fieldValue;
+    }
+
+    protected Field getFieldOfObject(Map.Entry<String, Class> entry) throws NoSuchFieldException {
+        Field field;
+        if (AnnotationUtils.getFieldByColemnName(classType, entry.getKey()) != null) {
+            field = classType.getDeclaredField(AnnotationUtils.getFieldByColemnName(classType, entry.getKey()).getName());
+        } else
+            field = classType.getDeclaredField(entry.getKey());
+        return field;
+    }
+
+    private void setIdIfNull() {
+        if (row.getIdValue() == null) {
+            String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(row.getNameAndType().get(row.getIdName()));
+            row.setIdValue(getValueFromResultSet(nameOfMethodInResultSetToGetValue, row.getIdName()).toString());
+        }
     }
 
     Object handleCasesWhenTypeIsNotSimple(Field field, String nameOfFieldToGet) {
         Object fieldValue = null;
-        if (AnnotationUtils.isAnyOfAnnotationIsPresent(field, ForeignKey.class, MapsId.class, OneToOne.class, ManyToOne.class)) {
+        if (AnnotationUtils.isAnyOfAnnotationIsPresent(field, MapsId.class, OneToOne.class, ManyToOne.class) ) {
             String nameOfMethodInResultSetToGetValue = constructResultSetMethodName(determinePrimaryKeyType(field));
             Object foreignKeyValue = getValueFromResultSet(nameOfMethodInResultSetToGetValue, nameOfFieldToGet);
             fieldValue = database.getCrud().find(field.getType(), foreignKeyValue);

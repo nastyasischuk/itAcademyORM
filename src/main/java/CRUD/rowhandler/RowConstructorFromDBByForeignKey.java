@@ -1,6 +1,7 @@
 package CRUD.rowhandler;
 
 import annotations.*;
+import exceptions.NoPrimaryKeyException;
 
 import java.lang.reflect.Field;
 
@@ -11,12 +12,12 @@ public class RowConstructorFromDBByForeignKey extends RowConstructorFromDB {
     }
 
     @Override
-    protected String getIdName() {
+    protected String getIdName() throws NoPrimaryKeyException{
         Field[] fields = super.getTypeOfObject().getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(OneToMany.class) || field.isAnnotationPresent(ManyToOne.class))
                 return getNameOfField(field);
         }
-        throw new RuntimeException("No pk?");//todo logger exception
+        throw new NoPrimaryKeyException();
     }
 }

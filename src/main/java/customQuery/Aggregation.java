@@ -64,7 +64,7 @@ public class Aggregation {
                     try {
                         column = new ColumnConstructor(field).buildColumn();
                     } catch (NoPrimaryKeyException | WrongSQLType | WrongColumnNameException e) {
-                        logger.error(e.getMessage());
+                        logger.error(e,e.getCause());
                     }
                 }
             }

@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class FindHandlerManyToMany extends FindHandler {
-    protected static org.apache.log4j.Logger logger = Logger.getLogger(FindHandlerManyToMany.class);
+    private static org.apache.log4j.Logger logger = Logger.getLogger(FindHandlerManyToMany.class);
     private AssociatedClass associatedClass;
 
     public FindHandlerManyToMany(DataBase dataBase, Class<?> objectType, Object id, AssociatedClass associatedClass) {

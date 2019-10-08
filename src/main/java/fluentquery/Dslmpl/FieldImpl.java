@@ -5,10 +5,10 @@ import fluentquery.Dslnterfaces.*;
 public class FieldImpl extends SimpleFieldImpl implements Field {
     private StringBuilder queryCondition;
 
-    public FieldImpl(String name) {
+    FieldImpl(String name) {
         super(name);
         queryCondition = new StringBuilder();
-        queryCondition.append(name); //TODO CHECK THIS LATER
+        queryCondition.append(name);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class FieldImpl extends SimpleFieldImpl implements Field {
     @Override
     public Condition in(AfterFromStep selectFrom) {
         queryCondition.append(" in ").append(" ( ").append(selectFrom.toString()).append(" ) ");
-        return new ConditionImpl(queryCondition); //TODO inner subqueries, think later
+        return new ConditionImpl(queryCondition);
     }
 
     @Override

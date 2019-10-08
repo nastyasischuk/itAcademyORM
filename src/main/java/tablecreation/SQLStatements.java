@@ -43,7 +43,7 @@ public enum SQLStatements {
     COUNT(" COUNT "),
     AVG("AVG"),
     SUM("SUM"),
-    ON_DELETE_CASCADE(" ON DELETE CASCADE"),//TODO Create few more requests
+    ON_DELETE_CASCADE(" ON DELETE CASCADE"),
     LEFT(" LEFT "),
     RIGHT(" RIGHT "),
     FULL(" FULL "),
