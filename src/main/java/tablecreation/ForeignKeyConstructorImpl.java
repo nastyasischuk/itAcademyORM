@@ -1,11 +1,8 @@
 package tablecreation;
 
-import annotations.ManyToOne;
-import annotations.MapsId;
-import annotations.OneToOne;
-import annotations.PrimaryKey;
+import annotations.AnnotationUtils;
 import exceptions.NoPrimaryKeyException;
-import exceptions.SeveralPrimaryKeysException;
+import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.math.BigInteger;
@@ -13,6 +10,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
+    private static Logger logger = Logger.getLogger(ForeignKeyConstructor.class);
     private Field field;
     private ForeignKey foreignKey;
 
@@ -22,47 +20,51 @@ public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
     }
 
     public ForeignKey buildForeignKey() {
-        foreignKey.setConstructionName(getConstraintNameFK());
-        foreignKey.setForeignKeyName(getForeignKeyName());
-        foreignKey.setReferencePKName(getReferencedPKName());
-        foreignKey.setTableName(getTableName());
-        foreignKey.setReferenceTableName(getReferencedTableName());
+        try {
+            foreignKey.setConstructionName(getConstraintNameFK());
+            foreignKey.setForeignKeyName(getForeignKeyName());
+            foreignKey.setReferencePKName(getReferencedPKName());
+            foreignKey.setTableName(getTableName());
+            foreignKey.setReferenceTableName(getReferencedTableName());
+        }catch (NoPrimaryKeyException e){
+            logger.error(e.getMessage(),e.getCause());
+            return null;
+        }
         return foreignKey;
     }
 
     private String getTableName() {
         Class entityClass = field.getDeclaringClass();
-        // если присутствует аннотация Table c именем отличным от `""`
-        if (entityClass.isAnnotationPresent(annotations.Table.class) &&
-                !((annotations.Table) entityClass.getAnnotation(annotations.Table.class)).name().equals("")) {
-
-            annotations.Table table = (annotations.Table) entityClass.getAnnotation(annotations.Table.class);
-            return table.name();
+        if (AnnotationUtils.isTablePresentAndNotEmpty(entityClass)) {
+            return AnnotationUtils.getTableName(entityClass);
         } else {
             return entityClass.getSimpleName();
         }
     }
 
     private String getForeignKeyName() {
-        if (field.isAnnotationPresent(annotations.ForeignKey.class) &&
-                !field.getAnnotation(annotations.ForeignKey.class).name().equals("")){
-            return field.getAnnotation(annotations.ForeignKey.class).name();
-        } else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {
-            Class currentClass = field.getDeclaringClass();
-            Field[] fields = currentClass.getDeclaredFields();
-            for (Field f : fields) {
-                if (f.isAnnotationPresent(PrimaryKey.class)) {
-                    if (f.isAnnotationPresent(annotations.Column.class) && !f.getAnnotation(annotations.Column.class).name().equals("")) {
-                        return f.getAnnotation(annotations.Column.class).name();
-                    } else {
-                        return f.getName();
-                    }
-                }
-            }
-            return field.getName();
+        if (AnnotationUtils.isForeignKeyPresentAndNotEmpty(field)){
+            return AnnotationUtils.getFKName(field);
+        } else if (AnnotationUtils.isOneToOneAndMapsIdPresent(field)) {
+            return getNameIfOneToOne();
         } else {
             return field.getName();
         }
+    }
+
+    private String getNameIfOneToOne() {
+        Class currentClass = field.getDeclaringClass();
+        Field[] fields = currentClass.getDeclaredFields();
+        for (Field f : fields) {
+            if (AnnotationUtils.isPrimaryKeyPresent(f)) {
+                if (AnnotationUtils.isColumnPresentAndNotEmpty(f)) {
+                    return AnnotationUtils.getColumnName(f);
+                } else {
+                    return f.getName();
+                }
+            }
+        }
+        return field.getName();
     }
 
     private String getConstraintNameFK() {
@@ -71,29 +73,25 @@ public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
 
     private String getReferencedTableName() {
         Class classOfReferencedTable = field.getType();
-        if (classOfReferencedTable.isAnnotationPresent(annotations.Table.class) &&
-                !((annotations.Table) classOfReferencedTable.getAnnotation(annotations.Table.class)).name().equals("")) {
-
-            annotations.Table table = (annotations.Table) classOfReferencedTable.getAnnotation(annotations.Table.class);
-            return table.name();
+        if (AnnotationUtils.isTablePresentAndNotEmpty(classOfReferencedTable)) {
+            return AnnotationUtils.getTableName(classOfReferencedTable);
         } else {
             return classOfReferencedTable.getSimpleName();
         }
     }
 
-    private String getReferencedPKName() {
+    private String getReferencedPKName() throws NoPrimaryKeyException {
         Class classOfReferencedTable = field.getType();
         Field[] fields = classOfReferencedTable.getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(annotations.PrimaryKey.class)) {
-                if (field.isAnnotationPresent(annotations.Column.class) &&
-                        !field.getAnnotation(annotations.Column.class).name().equals("")) {
-                    return field.getAnnotation(annotations.Column.class).name();
+            if (AnnotationUtils.isPrimaryKeyPresent(field)) {
+                if (AnnotationUtils.isColumnPresentAndNotEmpty(field)) {
+                    return AnnotationUtils.getColumnName(field);
                 } else {
                     return field.getName();
                 }
             } else {
-                throw new RuntimeException("There is no PK in referenced class"); //todo: create Exception?
+                throw new NoPrimaryKeyException("There is no PK in referenced class");
             }
         }
         return null;
@@ -107,13 +105,11 @@ public class ForeignKeyConstructorImpl implements ForeignKeyConstructor {
             md.update(toHash.getBytes());
             byte[] digest = md.digest();
             BigInteger bigInt = new BigInteger( 1, digest );
-            // By converting to base 35 (full alphanumeric), we guarantee
-            // that the length of the name will always be smaller than the 30
-            // character identifier restriction enforced by a few dialects.
             return "FK" + bigInt.toString( 35 );
         }
         catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException( "Unable to generate a hashed Constraint name!", e); //todo: create exception?
+          logger.error( "Unable to generate a hashed Constraint name!", e.getCause());
+          return null;
         }
     }
 }

@@ -1,13 +1,12 @@
 package CRUD.rowhandler;
 
-import com.sun.rowset.internal.Row;
+
 import org.junit.Test;
 import tablecreation.classesintesting.PersonWithConstraints;
 
 import static org.junit.Assert.*;
 
 public class RowToDBTest {
-
     @Test
     public void isAutoIncrement() {
         PersonWithConstraints person = new PersonWithConstraints(1,"Kate",12);

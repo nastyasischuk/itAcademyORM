@@ -9,9 +9,6 @@ import java.sql.*;
 
 public class TransactionsManager implements Transactions {
     private static final Logger log = Logger.getLogger(TransactionsManager.class);
-    private static final String var1 = System.getProperty("user.dir") + File.separator + "log4j.properties";
-
-
     private Connection connection;
 
     public TransactionsManager(Connection connection) {
@@ -29,7 +26,6 @@ public class TransactionsManager implements Transactions {
 
     @Override
     public void commit() {
-            PropertyConfigurator.configure(var1);
         try {
             if (connection != null && !connection.getAutoCommit()) {
                 if (log.isDebugEnabled()) {
@@ -44,7 +40,6 @@ public class TransactionsManager implements Transactions {
 
     @Override
     public void rollback() {
-        PropertyConfigurator.configure(var1);
         try {
             if (connection != null && !connection.getAutoCommit()) {
                 if (log.isDebugEnabled()) {
@@ -58,7 +53,6 @@ public class TransactionsManager implements Transactions {
     }
 
     public void resetAutoCommit() {
-        PropertyConfigurator.configure(var1);
         try {
             if (!connection.getAutoCommit()) {
                 if (log.isDebugEnabled()) {

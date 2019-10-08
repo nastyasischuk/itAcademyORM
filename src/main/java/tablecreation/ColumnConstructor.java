@@ -1,94 +1,105 @@
 package tablecreation;
 
-import annotations.*;
 import annotations.ForeignKey;
 import annotations.PrimaryKey;
+import annotations.*;
+import exceptions.NoPrimaryKeyException;
 import exceptions.WrongSQLType;
 
 import java.lang.reflect.Field;
 
 
-public class ColumnConstructor{
-   private Field field;
-   private tablecreation.Column column;
+public class ColumnConstructor {
+    private Field field;
+    private tablecreation.Column column;
 
-    public ColumnConstructor(Field field) throws WrongSQLType{
+    public ColumnConstructor(Field field) throws WrongSQLType, NoPrimaryKeyException {
         this.field = field;
-        column = new tablecreation.Column(getNameOfField(),determineTypeOfColumnInSql());
+        column = new tablecreation.Column(getNameOfField(), determineTypeOfColumnInSql());
     }
 
-    public tablecreation.Column buildColumn()
-    {
+    public tablecreation.Column buildColumn() {
         checkConstraints();
         return column;
     }
 
-    private String getNameOfField(){
+    private String getNameOfField() {
+        if (AnnotationUtils.isColumnPresentAndNotEmpty(field)) {
+            return AnnotationUtils.getColumnName(field);
+        } else if (AnnotationUtils.isForeignKeyPresentAndNotEmpty(field)) {
+            return AnnotationUtils.getFKName(field);
+        } else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {
+            return getNameIfOneToOne();
+        } else {
+            return field.getName();
+        }
+    }
 
-        if(field.isAnnotationPresent(annotations.Column.class) && !field.getAnnotation(annotations.Column.class).name().equals("")){
-            return field.getAnnotation(annotations.Column.class).name();
-        }else if(field.isAnnotationPresent(ForeignKey.class) && !field.getAnnotation(ForeignKey.class).name().equals("")){
-           return field.getAnnotation(ForeignKey.class).name();
-        }else if (field.isAnnotationPresent(MapsId.class) && field.isAnnotationPresent(OneToOne.class)) {
-            Class currentClass = field.getDeclaringClass();
-            Field[] fields = currentClass.getDeclaredFields();
-            for (Field f : fields) {
-                if (f.isAnnotationPresent(PrimaryKey.class)) {
-                    if (f.isAnnotationPresent(annotations.Column.class) && !f.getAnnotation(annotations.Column.class).name().equals("")) {
-                        return f.getAnnotation(annotations.Column.class).name();
-                    } else {
-                        return f.getName();
-                    }
+    private String getNameIfOneToOne() {
+        Class currentClass = field.getDeclaringClass();
+        Field[] fields = currentClass.getDeclaredFields();
+        for (Field currentField : fields) {
+            if (AnnotationUtils.isPrimaryKeyPresent(currentField)) {
+                if (AnnotationUtils.isColumnPresentAndNotEmpty(currentField)) {
+                    return AnnotationUtils.getColumnName(currentField);
+                } else {
+                    return currentField.getName();
                 }
             }
-            return field.getName();
-        }else{
-            return field.getName();
         }
+        return field.getName();
     }
 
-    private SQLTypes determineTypeOfColumnInSql()throws WrongSQLType{
-        if(field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class)){
-           return DeterminatorOfType.getSQLType(Integer.class);
+    private SQLTypes determineTypeOfColumnInSql() throws WrongSQLType, NoPrimaryKeyException {
+        if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class)) {
+            return DeterminatorOfType.getSQLType(determinePrimaryKeyType(field));
         }
-        if (field.isAnnotationPresent(Type.class)){
+        if (field.isAnnotationPresent(Type.class)) {
             return field.getAnnotation(Type.class).type();
         }
-            SQLTypes type = DeterminatorOfType.getSQLType(field.getType());
-            if(type==null)
-                throw new WrongSQLType(field.getClass());
-            return type;
-
+        if (AnnotationUtils.isManyToManyPresent(field))
+            return DeterminatorOfType.getSQLType(Integer.class);
+        SQLTypes type = DeterminatorOfType.getSQLType(field.getType());
+        if (type == null)
+            throw new WrongSQLType(field.getClass());
+        return type;
     }
 
-
-
-    private void checkConstraints(){
-        if(field.isAnnotationPresent(annotations.Column.class)){
-            if(field.getAnnotation(annotations.Column.class).unique()){
+    private void checkConstraints() {
+        if (AnnotationUtils.isColumnPresent(field)) {
+            if (field.getAnnotation(annotations.Column.class).unique()) {
                 column.setUnique(true);
             }
-
-            if(field.isAnnotationPresent(Default.class)){
+            if (field.isAnnotationPresent(Default.class)) {
                 column.setDefaultValue(field.getAnnotation(Default.class).value());
             }
-
-            if(field.getAnnotation(annotations.Column.class).autoincrement()){
-                column.setAutoincrement(true);
-            }
-            if(field.isAnnotationPresent(PrimaryKey.class)){
+            if (AnnotationUtils.isPrimaryKeyPresent(field)) {
+                if (field.getAnnotation(PrimaryKey.class).autoincrement())
+                    column.setAutoincrement(true);
                 column.setPrimaryKey(true);
                 column.setNullable(false);
             }
         }
 
-        if(field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class)){
+        if (field.isAnnotationPresent(ForeignKey.class) || field.isAnnotationPresent(MapsId.class)){
             column.setForeignKey(true);
         }
-        if(field.isAnnotationPresent(NotNull.class)){
+        if (field.isAnnotationPresent(NotNull.class)){
             column.setNullable(false);
         }
-
+        if (AnnotationUtils.isManyToManyPresent(field) && AnnotationUtils.isAssociatedTablePresentAndNotEmpty(field)) {
+            column.setManyToMany(true);
+        }
     }
 
+    private Class determinePrimaryKeyType(Field field) throws NoPrimaryKeyException {
+        Class classOfForeignKey = field.getType();
+        Field[] fields = classOfForeignKey.getDeclaredFields();
+        for (Field elOfFields : fields) {
+            if (AnnotationUtils.isPrimaryKeyPresent(elOfFields)) {
+                return elOfFields.getType();
+            }
+        }
+        throw new NoPrimaryKeyException();
+    }
 }
