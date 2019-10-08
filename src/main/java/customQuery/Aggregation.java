@@ -76,7 +76,7 @@ public class Aggregation {
         return query.toString();
     }
 
-    public Aggregation builder(){
+    Aggregation builder(){
         return new Aggregation(classType);
     }
 }

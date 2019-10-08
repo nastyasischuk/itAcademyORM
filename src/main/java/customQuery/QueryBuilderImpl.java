@@ -1,10 +1,5 @@
 package customQuery;
 
-
-import annotations.Table;
-import exceptions.NoPrimaryKeyException;
-import exceptions.SeveralPrimaryKeysException;
-
 import annotations.AnnotationUtils;
 import connection.DataBase;
 import tablecreation.SQLStatements;
@@ -65,26 +60,26 @@ public class QueryBuilderImpl implements QueryBuilder {
 
     public QueryBuilderImpl innerJoin(Class typeOfClass) {
         query.replace(lastIndexOfStar, lastIndexOfStar + 1, unionLaneForJoin(classType));
-        query.append(SQLStatements.INNER.getValue()).append(SQLStatements.JOIN.getValue()).append(AnnotationUtils.getTableName(classType));
+        query.append(SQLStatements.INNER.getValue()).append(SQLStatements.JOIN.getValue()).append(AnnotationUtils.getTableName(typeOfClass));
         return this;
     }
 
     public QueryBuilderImpl leftJoin(Class typeOfClass) {
         query.replace(lastIndexOfStar, lastIndexOfStar + 1, unionLaneForJoin(classType));
-        query.append(SQLStatements.LEFT.getValue()).append(SQLStatements.JOIN.getValue()).append(AnnotationUtils.getTableName(classType));
+        query.append(SQLStatements.LEFT.getValue()).append(SQLStatements.JOIN.getValue()).append(AnnotationUtils.getTableName(typeOfClass));
         return this;
     }
 
     public QueryBuilderImpl rightJoin(Class typeOfClass) {
         query.replace(lastIndexOfStar, lastIndexOfStar + 1, unionLaneForJoin(classType));
-        query.append(SQLStatements.RIGHT.getValue()).append(SQLStatements.JOIN.getValue()).append(AnnotationUtils.getTableName(classType));
+        query.append(SQLStatements.RIGHT.getValue()).append(SQLStatements.JOIN.getValue()).append(AnnotationUtils.getTableName(typeOfClass));
         return this;
     }
 
     public QueryBuilderImpl fullOuterJoin(Class typeOfClass) {
         query.replace(lastIndexOfStar, lastIndexOfStar + 1, unionLaneForJoin(classType));
         query.append(SQLStatements.FULL.getValue()).append(SQLStatements.OUTER.getValue())
-                .append(SQLStatements.JOIN.getValue()).append(AnnotationUtils.getTableName(classType));
+                .append(SQLStatements.JOIN.getValue()).append(AnnotationUtils.getTableName(typeOfClass));
         return this;
     }
 

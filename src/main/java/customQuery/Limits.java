@@ -51,6 +51,22 @@ public class Limits {
         return this;
     }
 
+    public Limits equals(String columnNameFrom, Class fromClassType, String columnNameTo, Class toClassType) {
+        query.append(getColumnName(columnNameFrom, fromClassType)).append(MarkingChars.equally).append(getColumnName(columnNameTo, toClassType));
+        return this;
+    }
+
+
+    public Limits equals(String columnName, Class fromClassType) {
+        query.append(getColumnName(columnName, fromClassType));
+        return this;
+    }
+
+    public Limits equally() {
+        query.append(MarkingChars.equally);
+        return this;
+    }
+
     public Limits in(String... values) {
         query.append(SQLStatements.IN.getValue()).append(MarkingChars.openBracket);
         for (String value : values) {
@@ -124,17 +140,6 @@ public class Limits {
         return this;
     }
 
-    public Limits equals(String columnNameFrom,Class fromClassType , String columnNameTo,Class toClassType){
-        query.append(getColumnName(columnNameFrom, fromClassType)).append(MarkingChars.equally).append(getColumnName(columnNameTo, toClassType));
-        return this;
-    }
-
-
-    public Limits equals(String columnName, Class fromClassType){
-        query.append(getColumnName(columnName, fromClassType));
-        return this;
-    }
-
     public Limits between(String valueFrom, String valueTill) {
         query.append(SQLStatements.BETWEEN.getValue()).append(MarkingChars.quote)
                 .append(valueFrom).append(MarkingChars.quote).append(SQLStatements.AND.getValue())
@@ -145,11 +150,6 @@ public class Limits {
     public Limits more(String value) {
         query.append(MarkingChars.space).append(MarkingChars.more).append(MarkingChars.space).
                 append(value);
-        return this;
-    }
-
-    public Limits equally(){
-        query.append(MarkingChars.equally);
         return this;
     }
 
@@ -221,26 +221,25 @@ public class Limits {
         return column != null ? column.getName() : null;
     }
 
-    protected List<String> getAllColumnNames(Class typeOfClass){
+    protected List<String> getAllColumnNames(Class typeOfClass) {
         List<String> allColumnNames = new ArrayList<>();
         tablecreation.Column column;
         Field[] fields = typeOfClass.getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(Column.class)) {
-                    try {
-                        column = new ColumnConstructor(field).buildColumn();
-                        allColumnNames.add(column.getName());
-                    } catch (NoPrimaryKeyException | WrongSQLType | WrongColumnNameException e) {
-                        logger.error(e.getMessage());
-                    }
+                try {
+                    column = new ColumnConstructor(field).buildColumn();
+                    allColumnNames.add(column.getName());
+                } catch (NoPrimaryKeyException | WrongSQLType | WrongColumnNameException e) {
+                    logger.error(e.getMessage());
                 }
             }
+        }
         return allColumnNames;
     }
 
     protected String getColumnName(String name, Class classType) {
         StringBuilder lane = new StringBuilder();
-        QueryBuilderImpl queryBuilderImpl = new QueryBuilderImpl(classType);
         tablecreation.Column column = null;
         Field[] fields = classType.getDeclaredFields();
         for (Field field : fields) {
@@ -262,7 +261,7 @@ public class Limits {
         return query.toString();
     }
 
-    public Limits builder() {
+    Limits builder() {
         return new Limits(classType);
     }
 

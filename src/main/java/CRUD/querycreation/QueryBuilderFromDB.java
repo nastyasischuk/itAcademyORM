@@ -1,6 +1,7 @@
 package CRUD.querycreation;
 
 import CRUD.rowhandler.RowFromDB;
+import customQuery.MarkingChars;
 import tablecreation.SQLStatements;
 
 public class QueryBuilderFromDB {
@@ -12,7 +13,8 @@ public class QueryBuilderFromDB {
 
     public String buildQuery() {
         StringBuilder query = new StringBuilder();
-        query.append(SQLStatements.SELECT.getValue()).append(" * ").append(SQLStatements.FROM.getValue())
+        query.append(SQLStatements.SELECT.getValue()).append(MarkingChars.space).append(MarkingChars.quote)
+                .append(MarkingChars.space).append(SQLStatements.FROM.getValue())
                 .append(rowFromDB.getTableName()).append(SQLStatements.WHERE.getValue()).append(rowFromDB.getIdName())
                 .append("=").append(rowFromDB.getIdValue());
         return query.toString();
