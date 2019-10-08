@@ -100,6 +100,7 @@ public class DataBaseImplementation implements DataBase {
     }
 
     public void close() {
+        // todo: check if it is bicycle
         try {
             Connection connection = OpenedConnection.getConnection(this.name);
             if (connection == null) {
@@ -157,6 +158,7 @@ public class DataBaseImplementation implements DataBase {
     private void executeQueryForCreateDB(String query) {
         this.openConnection();
         Statement statement = null;
+        // todo try-with-resources
         try {
             statement = this.getConnection().createStatement();
             logger.debug("Executing query " + query);
