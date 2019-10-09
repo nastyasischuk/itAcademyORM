@@ -3,7 +3,6 @@ package CRUD.aspects;
 import annotations.AnnotationUtils;
 import annotations.Entity;
 import annotations.ManyToMany;
-import annotations.PrimaryKey;
 import connection.DataBase;
 import exceptions.NoPrimaryKeyException;
 import org.apache.log4j.Logger;

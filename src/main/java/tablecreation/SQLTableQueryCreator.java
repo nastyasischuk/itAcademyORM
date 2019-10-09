@@ -1,13 +1,10 @@
 package tablecreation;
 
 import customQuery.MarkingChars;
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class SQLTableQueryCreator {
-    private static Logger logger = Logger.getLogger(SQLTableQueryCreator.class);
     private Table table;
 
     public SQLTableQueryCreator(Table table) {
@@ -36,10 +33,10 @@ public class SQLTableQueryCreator {
             if (column.isAutoincrement()) {
                 query.append(SQLStatements.A_INCREMENT.getValue());
             }
-            if (!(column.getDefaultValue() == null)) {
+            if ((column.getDefaultValue() != null)) {
                 query.append(SQLStatements.DEFAULT.getValue()).append(column.getDefaultValue());
             }
-            if (!(table.getCheckConstraint() == null)) {
+            if ((table.getCheckConstraint() != null)) {
                 query.append(SQLStatements.CHECK.getValue()).append(MarkingChars.OPEN_BRACKET).append(table.getCheckConstraint()).append(MarkingChars.CLOSED_BRACKET);
             }
 
@@ -67,8 +64,9 @@ public class SQLTableQueryCreator {
         List<String> queryIndexList = new ArrayList<>();
         StringBuilder request = new StringBuilder();
         StringBuilder columns = new StringBuilder();
-        request.append(SQLStatements.CREATE.getValue());
+
         for (Index index : table.getIndexes()) {
+            request.append(SQLStatements.CREATE.getValue());
             if (index.isUnique()) {
                 request.append(SQLStatements.UNIQUE.getValue());
             }
@@ -79,10 +77,12 @@ public class SQLTableQueryCreator {
                 if (!column.equals(lastColumnInIndex)) {
                     columns.append(MarkingChars.COMMA);
                 }
-                request.append(MarkingChars.OPEN_BRACKET).append(columns).append(MarkingChars.CLOSED_BRACKET)
-                        .append(MarkingChars.SEMICOLON);
-                queryIndexList.add(request.toString());
             }
+            request.append(MarkingChars.OPEN_BRACKET).append(columns).append(MarkingChars.CLOSED_BRACKET);
+            request.append(MarkingChars.SEMICOLON);
+            queryIndexList.add(request.toString());
+            request = new StringBuilder();
+            columns = new StringBuilder();
         }
         return queryIndexList;
     }

@@ -115,6 +115,7 @@ public class DataBaseImplementation implements DataBase {
     private void createAllTables() {
         List<String> fkQueriesToExecute = new ArrayList<>();
         List<String> mtmQueriesToExecute = new ArrayList<>();
+        List<String> indexes = new ArrayList<>();
 
         List<Class<?>> allEntities = parseXMLConfig.getAllClasses();
         for (Class currentClass : allEntities) {
@@ -127,14 +128,18 @@ public class DataBaseImplementation implements DataBase {
             }
             SQLTableQueryCreator sqlTableQueryCreator = new SQLTableQueryCreator(table);
             String createTableQuery = sqlTableQueryCreator.createTableQuery();
-
             addAllToList(fkQueriesToExecute, sqlTableQueryCreator.createFKQuery());
             addAllToList(mtmQueriesToExecute, sqlTableQueryCreator.createManyToManyQuery());
+            addAllToList(indexes, sqlTableQueryCreator.createIndexQuery());
 
             executeQueryForCreateDB(createTableQuery);
         }
-        executeFK(fkQueriesToExecute);
-        executeManyToMany(mtmQueriesToExecute);
+
+        executeListQueries(indexes);
+        executeListQueries(fkQueriesToExecute);
+        executeListQueries(mtmQueriesToExecute);
+//        executeFK(fkQueriesToExecute);
+//        executeManyToMany(mtmQueriesToExecute);
     }
 
     private void addAllToList(List<String> listToAdd, List<String> added) {
@@ -142,21 +147,29 @@ public class DataBaseImplementation implements DataBase {
             listToAdd.addAll(added);
     }
 
-    private void executeManyToMany(List<String> mtmQueriesToExecute) {
-        logger.debug("Size og mtms = " + mtmQueriesToExecute.size());
-        for (String query : mtmQueriesToExecute) {
-            logger.debug("Executing query for MTM " + query);
+    private void executeListQueries(List<String> listOfQueries) {
+        logger.debug("Size of list = " + listOfQueries.size());
+        for (String query : listOfQueries) {
+            logger.debug("Executing query from list " + query);
             executeQueryForCreateDB(query);
         }
     }
 
-    private void executeFK(List<String> fkQueriesToExecute) {
-        logger.debug("Size og fks = " + fkQueriesToExecute.size());
-        for (String query : fkQueriesToExecute) {
-            logger.debug("Executing query for FK " + query);
-            executeQueryForCreateDB(query);
-        }
-    }
+//    private void executeManyToMany(List<String> mtmQueriesToExecute) {
+//        logger.debug("Size og mtms = " + mtmQueriesToExecute.size());
+//        for (String query : mtmQueriesToExecute) {
+//            logger.debug("Executing query for MTM " + query);
+//            executeQueryForCreateDB(query);
+//        }
+//    }
+//
+//    private void executeFK(List<String> fkQueriesToExecute) {
+//        logger.debug("Size og fks = " + fkQueriesToExecute.size());
+//        for (String query : fkQueriesToExecute) {
+//            logger.debug("Executing query for FK " + query);
+//            executeQueryForCreateDB(query);
+//        }
+//    }
 
     private void executeQueryForCreateDB(String query) {
         this.openConnection();
