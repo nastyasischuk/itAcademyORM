@@ -75,7 +75,7 @@ public class SQLTableQueryCreator {
             Column lastColumnInIndex = index.getColumnsInIndex().get(index.getColumnsInIndex().size() - 1);
             request.append(SQLStatements.INDEX.getValue()).append(index.getName()).append(SQLStatements.ON.getValue());
             for (Column column : index.getColumnsInIndex()) {
-                columns.append(column.getName());//todo check
+                columns.append(column.getName());
                 if (!column.equals(lastColumnInIndex)) {
                     columns.append(MarkingChars.COMMA);
                 }

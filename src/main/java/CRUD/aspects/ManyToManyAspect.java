@@ -32,9 +32,7 @@ public class ManyToManyAspect {
         String signature = pointcut.getSignature().getName();
         String collectionName = signature.substring(3).toLowerCase();
         try {
-            if (caller == null || !caller.getClass().isAnnotationPresent(Entity.class)
-                    || !caller.getClass().getDeclaredField(collectionName).isAnnotationPresent(ManyToMany.class))
-                return;
+            if (!isManyToManyGetter(caller, collectionName)) return;
         } catch (NoSuchFieldException e) {
             logger.error(e, e.getCause());
         }
@@ -52,6 +50,11 @@ public class ManyToManyAspect {
             }
         }
 
+    }
+
+    private boolean isManyToManyGetter(Object caller, String collectionName) throws NoSuchFieldException {
+        return caller != null && caller.getClass().isAnnotationPresent(Entity.class)
+                && caller.getClass().getDeclaredField(collectionName).isAnnotationPresent(ManyToMany.class);
     }
 
     private void handleFindingObject(Object owner, Collection<Object> collection) {
