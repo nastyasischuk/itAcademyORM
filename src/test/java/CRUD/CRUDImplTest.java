@@ -13,8 +13,6 @@ import static org.junit.Assert.*;
 public class CRUDImplTest {
     DataBaseImplementation dataBase;
 
-    private static Logger logger = Logger.getLogger(CRUDImplTest.class);
-
     @Test
     public void findTestFindStartOneToMany() {
         CRUDImpl crud = dataBase.getCrud();
@@ -22,7 +20,6 @@ public class CRUDImplTest {
         for (CatManyToOne c : object.getCollectrion()) {
             assertEquals(c.getPerson(), object);
         }
-        logger.info(object.toString());
     }
 
     @Test
@@ -58,12 +55,9 @@ public class CRUDImplTest {
         TransactionsManager tr = dataBase.getTransactionManager();
         tr.begin();
         crud.delete(oneToMany);
-        //CatManyToOne cat = (CatManyToOne) dataBase.getCrud().find(CatManyToOne.class,12);
-        //assertNull(cat);
         tr.rollback();
         CatManyToOne cat1 = (CatManyToOne) dataBase.getCrud().find(CatManyToOne.class, 12);
         assertNotNull(cat1);
-
     }
 
     @Test
@@ -84,7 +78,6 @@ public class CRUDImplTest {
         CRUD crud = dataBase.getCrud();
         crud.update(oneToMany);
         CatManyToOne found = (CatManyToOne) crud.find(CatManyToOne.class, 12);
-        logger.info(found);
         assertEquals(found.getName(), "new Name");
     }
 }

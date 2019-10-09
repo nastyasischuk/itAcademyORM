@@ -29,7 +29,6 @@ public class TableConstructorImplTest {
     public void buildTableTestTableWithoutPrimaryKey() throws Exception {
         tableConstructor = new TableConstructorImpl(PersonWithoutPrimaryKey.class);
         tableConstructor.buildTable();
-
     }
 
     @Test
@@ -67,10 +66,10 @@ public class TableConstructorImplTest {
 
     @Test
     public void buildTableTestCheckConstraint() throws Exception {
-
         tableConstructor = new TableConstructorImpl(PersonWithConstraints.class);
         Table table = tableConstructor.buildTable();
         assertNotNull(table.getCheckConstraint());
+        assertEquals("age>18",table.getCheckConstraint());
     }
 
 

@@ -26,7 +26,7 @@ public class ManyToManyAspect {
     public void manyToManyPointCutDefinition() {
     }
 
-    @Before("ManyToManyPointCutDefinition()")
+    @Before("manyToManyPointCutDefinition()")
     public void findInDataBaseIfFieldsNull(JoinPoint pointcut) {
         Object caller = pointcut.getTarget();
         String signature = pointcut.getSignature().getName();

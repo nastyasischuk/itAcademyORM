@@ -8,13 +8,12 @@ import tablecreation.classesintesting.PersonWithSeveralForeignKeys;
 import static org.junit.Assert.*;
 
 public class SQLTableQueryCreatorTest {
-private static Logger logger = Logger.getLogger(SQLTableQueryCreatorTest.class);
 @Test
 public void createIndexQuery() throws Exception{
         TableConstructor tableConstructor = new TableConstructorImpl(PersonWithIndexes.class);
         Table table = tableConstructor.buildTable();
-        logger.info(table.getIndexes());
+        assertEquals(1,table.getIndexes().size());
         SQLTableQueryCreator creator = new SQLTableQueryCreator(table);
-        logger.info(creator.createIndexQuery());
+        assertEquals("CREATE  INDEX name_index ON (name);",creator.createIndexQuery().get(0));
         }
         }

@@ -12,7 +12,7 @@ public class TestManyToManyFetchingFromDbLazyInitialization {
     public static void main(String[] args) {
         db.openConnection();
         testcatspeople();
-        //testSeveralManyToManyInOneClass();
+        testSeveralManyToManyInOneClass();
     }
     public static void  testcatspeople(){
         ManyToManyAspect.setDb(db);

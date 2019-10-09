@@ -31,7 +31,7 @@ public class TableForQuery {
 
     public FieldImpl field(String name)  {
         try {
-            return new FieldImpl(getTableName()+ MarkingChars.dot + getFieldName(name));
+            return new FieldImpl(getTableName()+ MarkingChars.DOT + getFieldName(name));
         } catch (NoSuchFieldException e) {
             logger.error(e,e.getCause());
         }

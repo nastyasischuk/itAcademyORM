@@ -41,4 +41,13 @@ public class Index {
     public boolean isUnique() {
         return unique;
     }
+
+    @Override
+    public String toString() {
+        return "Index{" +
+                "name='" + name + '\'' +
+                ", columnsInIndex=" + columnsInIndex +
+                ", unique=" + unique +
+                '}';
+    }
 }

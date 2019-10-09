@@ -1,11 +1,13 @@
 package tablecreation;
 
 import customQuery.MarkingChars;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SQLTableQueryCreator {
+    private static Logger logger = Logger.getLogger(SQLTableQueryCreator.class);
     private Table table;
 
     public SQLTableQueryCreator(Table table) {
@@ -73,7 +75,7 @@ public class SQLTableQueryCreator {
             Column lastColumnInIndex = index.getColumnsInIndex().get(index.getColumnsInIndex().size() - 1);
             request.append(SQLStatements.INDEX.getValue()).append(index.getName()).append(SQLStatements.ON.getValue());
             for (Column column : index.getColumnsInIndex()) {
-                columns.append(column);
+                columns.append(column.getName());//todo check
                 if (!column.equals(lastColumnInIndex)) {
                     columns.append(MarkingChars.COMMA);
                 }

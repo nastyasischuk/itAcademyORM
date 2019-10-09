@@ -3,12 +3,14 @@ package customQuery;
 import connection.DataBase;
 import connection.DataBaseImplementation;
 import org.apache.log4j.Logger;
-import org.junit.Assert;
+import org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import tablecreation.classesintesting.PersonOneToMany;
 
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class QueryResultTest {
     private static Logger logger = Logger.getLogger(QueryResultTest.class);
@@ -24,8 +26,7 @@ public class QueryResultTest {
        query.select().where(query.getLimits().equals("id", "1")).fetch();
         QueryResult<PersonOneToMany> custQueryResult = new QueryResult<>(query);
         PersonOneToMany person = custQueryResult.getSingleObject();
-
-        Assert.assertEquals(1,person.getId());
+        assertEquals(1,person.getId());
     }
 
     @Test
@@ -34,6 +35,6 @@ public class QueryResultTest {
          query.select().fetch();
         QueryResult<PersonOneToMany> custQueryResult = new QueryResult<>(query);
         List<PersonOneToMany> person = custQueryResult.getListOfFoundObjects();
-        Assert.assertEquals(4,person.size());
+        assertEquals(4,person.size());
     }
 }
